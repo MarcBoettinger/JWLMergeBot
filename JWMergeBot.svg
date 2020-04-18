@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   id="Capa_1"
+   x="0px"
+   y="0px"
+   width="600"
+   height="600"
+   viewBox="0 0 600.00001 600.00001"
+   xml:space="preserve"
+   sodipodi:docname="JWMergeBot.svg"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   inkscape:export-filename="C:\Users\Hyperion\Google Drive\Sviluppo\JWLMergeBot\JWMergeDevBot.png"
+   inkscape:export-xdpi="232"
+   inkscape:export-ydpi="232"><metadata
+   id="metadata41"><rdf:RDF><cc:Work
+       rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title /></cc:Work></rdf:RDF></metadata><defs
+   id="defs39" /><sodipodi:namedview
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1"
+   objecttolerance="10"
+   gridtolerance="10"
+   guidetolerance="10"
+   inkscape:pageopacity="0"
+   inkscape:pageshadow="2"
+   inkscape:window-width="1920"
+   inkscape:window-height="1137"
+   id="namedview37"
+   showgrid="false"
+   fit-margin-top="40"
+   fit-margin-right="40"
+   fit-margin-bottom="40"
+   fit-margin-left="40"
+   inkscape:zoom="0.51041486"
+   inkscape:cx="-459.59361"
+   inkscape:cy="180.64051"
+   inkscape:window-x="1912"
+   inkscape:window-y="-8"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="Capa_1" />
+<rect
+   style="fill:#583a84;fill-opacity:1"
+   id="rect4551"
+   width="600"
+   height="600"
+   x="0"
+   y="0"
+   inkscape:label="ProductionBackground" /><rect
+   style="display:none;fill:#df8114;fill-opacity:1"
+   id="rect4551-4"
+   width="600"
+   height="600"
+   x="0"
+   y="0"
+   inkscape:label="DevBackground" /><g
+   id="g4"
+   transform="translate(68.816,68.8155)"
+   style="display:inline;fill:#ffffff"
+   inkscape:label="Foreground">
+	<path
+   d="m 0,371.825 v -59.007 c 61.959,0 92.905,-30.694 122.837,-60.378 7.288,-7.235 14.665,-14.518 22.419,-21.256 -7.755,-6.727 -15.131,-14.014 -22.419,-21.255 C 92.905,180.249 61.959,149.551 0,149.551 V 90.544 c 86.262,0 131.42,44.789 164.381,77.496 19.55,19.394 32.116,31.227 45.521,33.52 1.599,-0.085 3.166,-0.192 4.812,-0.192 v 0.626 0 H 356.596 L 332.35,140.64 c -0.816,-2.057 -0.154,-4.406 1.619,-5.733 1.762,-1.33 4.197,-1.324 5.946,0.026 l 120.544,92.672 c 1.206,0.931 1.909,2.374 1.909,3.898 0,1.524 -0.703,2.968 -1.909,3.896 l -120.544,92.675 c -0.881,0.674 -1.938,1.017 -2.991,1.017 -1.04,0 -2.08,-0.331 -2.955,-0.993 -1.773,-1.324 -2.423,-3.677 -1.619,-5.733 L 356.596,261 H 214.54 c -0.047,0 -0.092,-0.012 -0.133,-0.012 -1.531,0 -3.015,-0.095 -4.504,-0.172 -13.406,2.287 -25.966,14.121 -45.521,33.52 C 131.42,327.034 86.262,371.825 0,371.825 Z"
+   id="path2"
+   inkscape:connector-curvature="0"
+   style="fill:#ffffff" />
+</g>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</svg>

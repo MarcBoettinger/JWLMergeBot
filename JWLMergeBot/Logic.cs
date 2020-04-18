@@ -1,0 +1,389 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.IO;
+using System.Reflection;
+using Telegram.Bot.Types.InputFiles;
+using Telegram.Bot.Types;
+using JWLMerge.BackupFileServices;
+using JWLMerge.BackupFileServices.Models;
+using Telegram.Bot.Types.ReplyMarkups;
+using JWLMergeBot.Properties;
+using static JWLMergeBot.FileHandling;
+using Microsoft.Extensions.Logging;
+
+namespace JWLMergeBot
+{
+    class Logic
+    {
+        public static async void OnFile(Message message)
+        {
+            // Set user language
+            ChatConfig.Load(message.Chat.Id).ApplyLanguage();
+
+            // Symulate typing
+            await Worker.botClient.SendChatActionAsync(message.Chat.Id, Telegram.Bot.Types.Enums.ChatAction.Typing);
+
+            // Check if I can handle the file (if a temporary file exist, it means I'm working on it...)
+            if (FileHandling.IsTempFileBusy(message.Chat.Id))
+            {
+                // Feedback
+                await Worker.botClient.SendTextMessageAsync(message.Chat.Id, string.Format(Strings.busy, message.Document.FileName).Replace("\\n", "\n"));
+                return;
+            }
+
+            // Check if the received file is a jwlibrary file
+            if (!FileHandling.IsValidFileExtension(message.Document.FileName))
+            {
+                // Feedback
+                await Worker.botClient.SendTextMessageAsync(message.Chat.Id, Strings.wrong_filetype);
+                return;
+            }
+
+            // Check the incoming file size
+            if (!FileHandling.IsValidFileSize(message.Document.FileSize))
+            {
+                // Feedback
+                await Worker.botClient.SendTextMessageAsync(message.Chat.Id, Strings.max_filesize);
+                return;
+            }
+
+            // Get info about the file to donwload
+            Telegram.Bot.Types.File TelegramFile = Worker.botClient.GetFileAsync(message.Document.FileId).Result;
+
+            // Init JWLMerge
+            IBackupFileService backupFileService = new BackupFileService();
+
+            // Download file in the temp path
+            using (FileStream fs = new FileStream(FileHandling.GetFilePath(FileType.Temp, message.Chat.Id), FileMode.OpenOrCreate, FileAccess.Write))
+            {
+                await Worker.botClient.DownloadFileAsync(TelegramFile.FilePath, fs);
+            }
+
+            // Load the file (in this way you can check if is a valid jwlibrary file)
+            BackupFile TempJWLibraryFile = new BackupFile();
+            try
+            {
+                TempJWLibraryFile = backupFileService.Load(FileHandling.GetFilePath(FileType.Temp, message.Chat.Id));
+            }
+            catch (Exception exception)
+            {
+                // Delete wrong temp file
+                FileHandling.DeleteFile(FileType.Temp, message.Chat.Id);
+
+                // Feedback
+                await Worker.botClient.SendTextMessageAsync(message.Chat, string.Format(Strings.file_error, exception.Message));
+                return;
+            }
+
+            // Se c'era già un file in memoria, fai il merge
+            if (FileHandling.FileExists(FileType.Main, message.Chat.Id))
+            {
+                // Feedback
+                await Worker.botClient.SendTextMessageAsync(message.Chat.Id, Strings.received_file2);
+
+                // Symulate typing
+                await Worker.botClient.SendChatActionAsync(message.Chat.Id, Telegram.Bot.Types.Enums.ChatAction.Typing);
+
+                // Use JWLMerge to merge files
+                try
+                {
+                    // Open also the main file
+                    BackupFile MainJWLibraryFile = backupFileService.Load(FileHandling.GetFilePath(FileType.Main, message.Chat.Id));
+
+                    // Merge files
+                    BackupFile backup = backupFileService.Merge(new List<BackupFile>() { MainJWLibraryFile, TempJWLibraryFile });
+                    backupFileService.WriteNewDatabase(backup, FileHandling.GetFilePath(FileType.Merged, message.Chat.Id), FileHandling.GetFilePath(FileType.Main, message.Chat.Id));
+
+                    // Now the merged file become the main stored file
+                    FileHandling.ChangeFileType(FileType.Merged, FileType.Main, message.Chat.Id);
+
+                    // Get the user settings
+                    ChatConfig chatConfig = ChatConfig.Load(message.Chat.Id);
+
+                    // Send merged file
+                    using (FileStream fs = System.IO.File.OpenRead(FileHandling.GetFilePath(FileType.Main, message.Chat.Id)))
+                    {
+                        InputOnlineFile inputOnlineFile = new InputOnlineFile(fs, string.Format(Strings.merged_filename, DateTime.Now.ToString("s")));
+                        await Worker.botClient.SendDocumentAsync(
+                                chatId: message.Chat.Id,
+                                document: inputOnlineFile,
+                                caption: chatConfig.AutoDeleteFile ? Strings.merged_file : Strings.merged_file_keep,
+                                replyMarkup: chatConfig.AutoDeleteFile ? null : new InlineKeyboardMarkup(new[] {
+                                         InlineKeyboardButton.WithCallbackData(Strings.file_info, Command.FileInfo),
+                                         InlineKeyboardButton.WithCallbackData(Strings.delete_file, Command.Delete)
+                                })
+                               );
+                    }
+
+                    // Check if you have to delete file after send
+                    if (chatConfig.AutoDeleteFile)
+                        OnCommand(message, Command.Delete, false);
+
+                }
+                catch (Exception exception)
+                {
+                    // Delete temp file, since it won't be processed anymore
+                    Worker.Logger.LogError(message:exception.Message, exception: exception);
+                    await Worker.botClient.SendTextMessageAsync(message.Chat.Id, string.Format(Strings.processing_error, exception.Message));
+                }
+                finally
+                {
+                    // At the end, delete temp file
+                    FileHandling.DeleteFile(FileType.Temp, message.Chat.Id);
+                }
+            }
+            else
+            {
+                // Now the temp file become the main file
+                FileHandling.ChangeFileType(FileType.Temp, FileType.Main, message.Chat.Id);
+
+                // Feedback
+                await Worker.botClient.SendTextMessageAsync(
+                    chatId: message.Chat,
+                    text: Strings.received_file1,
+                    replyMarkup: new InlineKeyboardMarkup(new[] {
+                                     InlineKeyboardButton.WithCallbackData(Strings.file_info,Command.FileInfo),
+                                     InlineKeyboardButton.WithCallbackData(Strings.delete_file,Command.Delete)
+                            }));
+            }
+        }
+
+        public static async void OnOtherContent(Message message)
+        {
+            // Set user language
+            ChatConfig.Load(message.Chat.Id).ApplyLanguage();
+
+            // If another type of content
+            await Worker.botClient.SendTextMessageAsync(message.Chat.Id, Strings.wrong_filetype);
+        }
+
+        public static async void OnCommand(Message message, string command, bool fromCallback)
+        {
+            // Set user language
+            ChatConfig.Load(message.Chat.Id).ApplyLanguage();
+
+            switch (command)
+            {
+                case Command.Start:
+                    // Send welcome message
+                    await Worker.botClient.SendTextMessageAsync(
+                        chatId: message.Chat.Id,
+                        text: string.Format(Strings.start_details, message.Chat.FirstName).Replace("\\n", "\n")
+                        );
+                    break;
+
+                case Command.Delete:
+                    {
+                        // If you deleted the file, remove the buttons 
+                        if (fromCallback)
+                        {
+                            // Find out which buttons to keep
+                            List<InlineKeyboardButton> buttons = new List<InlineKeyboardButton>();
+                            foreach (var keyboard in message.ReplyMarkup.InlineKeyboard)
+                                foreach (InlineKeyboardButton button in keyboard)
+                                    if (!(button.CallbackData.Equals(Command.Delete) || button.CallbackData.Equals(Command.FileInfo)))
+                                        buttons.Add(button);
+
+                            // Refresh buttons
+                            await Worker.botClient.EditMessageReplyMarkupAsync(
+                                message.Chat.Id,
+                                message.MessageId,
+                                new InlineKeyboardMarkup(buttons));
+                        }
+
+                        if (FileHandling.FileExists(FileType.Main, message.Chat.Id))
+                        {
+                            // Delete stored files
+                            FileHandling.DeleteFile(FileType.Main, message.Chat.Id);
+                            // Feedback
+                            await Worker.botClient.SendTextMessageAsync(message.Chat.Id, Strings.file_deleted);
+                        }
+                        else
+                        {
+                            // Feedback
+                            await Worker.botClient.SendTextMessageAsync(message.Chat.Id, Strings.nothing_to_delete);
+                        }
+                    }
+                    break;
+
+                case Command.FileInfo:
+                    // Check if file exists
+                    if (!FileHandling.FileExists(FileType.Main, message.Chat.Id))
+                    {
+                        await Worker.botClient.SendTextMessageAsync(message.Chat.Id, Strings.file_not_exists);
+                        return;
+                    }
+
+                    // Init JWLMerge
+                    IBackupFileService backupFileService = new BackupFileService();
+
+                    BackupFile mainJWLibraryFile = null;
+                    try
+                    {
+                        mainJWLibraryFile = backupFileService.Load(FileHandling.GetFilePath(FileType.Main, message.Chat.Id));
+                    }
+                    catch (Exception exception)
+                    {
+                        // Feedback
+                        await Worker.botClient.SendTextMessageAsync(message.Chat.Id, string.Format(Strings.file_error, exception.Message));
+                        return;
+                    }
+
+                    // Get stored file infos
+                    string fileInfoString = string.Format(Strings.file_info_details, FileHandling.GetReadableFilesize(FileType.Main, message.Chat.Id), mainJWLibraryFile.Database.Notes.Count, mainJWLibraryFile.Database.Bookmarks.Count, mainJWLibraryFile.Database.UserMarks.Count, mainJWLibraryFile.Database.Tags.Count).Replace("\\n", "\n");
+                    if (fromCallback)
+                    {
+                        if(message.Text != null)
+                            await Worker.botClient.EditMessageTextAsync(
+                                chatId: message.Chat.Id,
+                                messageId: message.MessageId,
+                                text: message.Text + "\n\n" + fileInfoString
+                            );
+                        else if(message.Caption != null)
+                            await Worker.botClient.EditMessageCaptionAsync(
+                                chatId: message.Chat.Id,
+                                messageId: message.MessageId,
+                                caption: message.Caption + "\n\n" + fileInfoString
+                            );
+                        await Worker.botClient.EditMessageReplyMarkupAsync(
+                            chatId: message.Chat.Id,
+                            messageId: message.MessageId,
+                            replyMarkup: new InlineKeyboardMarkup(new[] {
+                                InlineKeyboardButton.WithCallbackData(Strings.delete_file,Command.Delete)
+                        }));
+                    }
+                    else
+                    {
+                        await Worker.botClient.SendTextMessageAsync(
+                            chatId: message.Chat.Id,
+                            text: fileInfoString,
+                            replyMarkup: new InlineKeyboardMarkup(new[] {
+                                 InlineKeyboardButton.WithCallbackData(Strings.delete_file,Command.Delete)
+                            }));
+                    }                    
+                    break;
+
+                case Command.BotInfo:
+                    // Feedback
+                    await Worker.botClient.SendTextMessageAsync(message.Chat.Id, string.Format(Strings.bot_info_details, Assembly.GetEntryAssembly().GetName().Version.ToString(), Assembly.GetAssembly(typeof(BackupFileService)).GetName().Version.ToString()).Replace("\\n", "\n"));
+                    break;
+
+                case Command.Stat:
+                    // Get some statistics, if admin
+                    if (ConfigFile.Load().IsAdmin(message.Chat.Username))
+                    {
+
+                        // Symulate typing
+                        await Worker.botClient.SendChatActionAsync(message.Chat.Id, Telegram.Bot.Types.Enums.ChatAction.Typing);
+
+                        // List stored files
+                        string[] StoredFiles = FileHandling.GetMainFiles();
+                        StringBuilder sb = new StringBuilder();
+                        foreach (string file in StoredFiles)
+                        {
+                            try { 
+                                var ChatInfo = Worker.botClient.GetChatAsync(Path.GetFileNameWithoutExtension(file)).Result;
+                                sb.AppendLine($"{ChatInfo.FirstName} {ChatInfo.LastName}".Trim()+(ChatInfo.Username!=null?$" @{ChatInfo.Username}":""));
+                            }
+                            catch(Exception e){
+                                e.ToString();
+                            }
+                        }
+                        await Worker.botClient.SendTextMessageAsync(message.Chat.Id, string.Format(Strings.stat, StoredFiles.Length, sb.ToString()).Replace("\\n", "\n"));
+                    }
+                    break;
+
+                case Command.Changelog:
+                    // TODO Post changelog
+                    if (ConfigFile.Load().IsAdmin(message.Chat.Username))
+                        await Worker.botClient.SendTextMessageAsync(message.Chat, "Not implemented yet...");
+                    break;
+
+                case Command.Settings:
+                    // Change settings
+                    InlineKeyboardMarkup settingsKeyboardMarkup = new InlineKeyboardMarkup(new[] {
+                             new[] { InlineKeyboardButton.WithCallbackData(Strings.change_language_detail, Command.SetLang)},
+                             ChatConfig.Load(message.Chat.Id).AutoDeleteFile?
+                             new[] { InlineKeyboardButton.WithCallbackData(string.Format(Strings.auto_delete, Strings.yes),Command.AutodeleteOff)}:
+                             new[] { InlineKeyboardButton.WithCallbackData(string.Format(Strings.auto_delete, Strings.no),Command.AutodeleteOn) }
+                        });
+
+                    if (fromCallback)
+                    {
+                        await Worker.botClient.EditMessageTextAsync(
+                            chatId: message.Chat.Id,
+                            messageId: message.MessageId,
+                            text: Strings.change_settings
+                        );
+                        await Worker.botClient.EditMessageReplyMarkupAsync(
+                                chatId: message.Chat.Id,
+                                messageId: message.MessageId,
+                                replyMarkup: settingsKeyboardMarkup
+                                );
+                    }
+                    else
+                    {
+                        await Worker.botClient.SendTextMessageAsync(
+                            chatId: message.Chat.Id,
+                            text: Strings.change_settings,
+                            replyMarkup: settingsKeyboardMarkup
+                            );
+                    }
+
+                    break;
+
+
+                // Change language 
+                case Command.SetLang:
+                    await Worker.botClient.EditMessageTextAsync(
+                        chatId: message.Chat.Id,
+                        messageId: message.MessageId,
+                        text: Strings.change_language
+                    );
+                    await Worker.botClient.EditMessageReplyMarkupAsync(
+                            chatId: message.Chat.Id,
+                            messageId: message.MessageId,
+                            replyMarkup: new InlineKeyboardMarkup(
+                                new[] {
+                                new[] { InlineKeyboardButton.WithCallbackData(Strings.lang_it, Command.SetLangIt) },
+                                new[] { InlineKeyboardButton.WithCallbackData(Strings.lang_en, Command.SetLangEn) },
+                                new[] { InlineKeyboardButton.WithCallbackData(Strings.back, Command.Settings) }
+                                    }
+                            )
+                            );
+                    break;
+
+                // Change language to italian
+                case Command.SetLangIt:
+                    {
+                        ChatConfig chatConfig = ChatConfig.Load(message.Chat.Id);
+                        chatConfig.Language = "it";
+                        chatConfig.Save(message.Chat.Id);
+                        chatConfig.ApplyLanguage();
+                    }
+                    goto case Command.Settings;
+
+                // Change language to english
+                case Command.SetLangEn:
+                    {
+                        ChatConfig chatConfig = ChatConfig.Load(message.Chat.Id);
+                        chatConfig.Language = "en";
+                        chatConfig.Save(message.Chat.Id);
+                        chatConfig.ApplyLanguage();
+                    }
+                    goto case Command.Settings;
+
+                // Change autodelete setting
+                case Command.AutodeleteOn:
+                case Command.AutodeleteOff:
+                    {
+                        ChatConfig chatConfig = ChatConfig.Load(message.Chat.Id);
+                        chatConfig.AutoDeleteFile = command.Equals(Command.AutodeleteOn);
+                        chatConfig.Save(message.Chat.Id);
+                    }
+                    goto case Command.Settings;
+            }
+        }
+    }
+}
