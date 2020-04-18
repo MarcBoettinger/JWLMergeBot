@@ -12,7 +12,8 @@ With this bot, you have to remember **nothing at all**. Just use the app. And wh
 It will keep a repository of your notes, highlights, bookmarks, ... and it will merge your files as you send them to it.
 
 ## Credits
-The bot is based on [this project](https://github.com/AntonyCorbett/JWLMerge) of _Antony Corbett_ and it uses this [.NET Client](https://github.com/TelegramBots/Telegram.Bot) to deal with the [Telegram Bot API](https://core.telegram.org/bots/api).
+The bot is based on [this project](https://github.com/AntonyCorbett/JWLMerge) of _Antony Corbett_ and it uses [this .NET Client](https://github.com/TelegramBots/Telegram.Bot) to deal with the [Telegram Bot API](https://core.telegram.org/bots/api).
+
 *JW Library* is a registered trademark of _Watch Tower Bible and Tract Society of Pennsylvania_.
 
 ## Usage
@@ -37,12 +38,12 @@ If you don't want to send your backup to the JWLMergeBot server, you can set up 
 * Create your bot with [BotFather](https://t.me/botfather) and get the _bot token_.
 * Clone this project with Visual Studio
 
-### Build it for Windows
+### Building for Windows
 * Compile the project
 * Put the _bot token_ in the **config.json** file (it must be located in the same directory of the executable)
 * Launch the bot or create a service with [`sc create`](https://docs.microsoft.com/it-it/windows-server/administration/windows-commands/sc-create)
 
-### Build it for [Raspbian](https://www.raspberrypi.org/downloads/raspbian/)
+### Building for [Raspbian](https://www.raspberrypi.org/downloads/raspbian/)
 
 * Compile the project with this command: `dotnet publish -r linux-arm`
 * Compile the SQLite library for the Raspberry. You have to:
