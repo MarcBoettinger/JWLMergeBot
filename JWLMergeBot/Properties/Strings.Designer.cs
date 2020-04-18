@@ -88,7 +88,7 @@ namespace JWLMergeBot.Properties {
         }
         
         /// <summary>
-        ///   Cerca una stringa localizzata simile a JWLMergeBot version: {0}\nJWLMerge version: {1}\nRepository: https://gitlab.com/AlessandroLucchet/JWLMergeBot.
+        ///   Cerca una stringa localizzata simile a JWLMergeBot version: {0}\nJWLMerge version: {1}\nRepository and infos: https://gitlab.com/AlessandroLucchet/JWLMergeBot.
         /// </summary>
         internal static string bot_info_details {
             get {

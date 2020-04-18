@@ -127,7 +127,7 @@
     <value>Bot info</value>
   </data>
   <data name="bot_info_details" xml:space="preserve">
-    <value>JWLMergeBot version: {0}\nJWLMerge version: {1}\nRepository: https://gitlab.com/AlessandroLucchet/JWLMergeBot</value>
+    <value>JWLMergeBot version: {0}\nJWLMerge version: {1}\nRepository and infos: https://gitlab.com/AlessandroLucchet/JWLMergeBot</value>
   </data>
   <data name="bot_started" xml:space="preserve">
     <value>Started JWLMergeBot v{0}</value>
