@@ -102,7 +102,7 @@ namespace JWLMergeBot
         public static async void BotClient_OnCallbackQuery(object sender, CallbackQueryEventArgs e)
         {
             // Gotta somethings
-            Worker.Logger.LogInformation(string.Format(Strings.received_something, Strings.message_type_callbackquery, (e.CallbackQuery.Message.Chat.FirstName + " " + e.CallbackQuery.Message.Chat.LastName).Trim(), e.CallbackQuery.Data));
+            Worker.Logger.LogInformation(string.Format(Strings.received_something, Strings.message_type_callbackquery, (e.CallbackQuery.Message.Chat.FirstName + " " + e.CallbackQuery.Message.Chat.LastName).Trim(), e.CallbackQuery.Message.Chat.Id, e.CallbackQuery.Data));
 
             // Answer to the callback (in this way you indicate you got it)
             await botClient.AnswerCallbackQueryAsync(e.CallbackQuery.Id);
