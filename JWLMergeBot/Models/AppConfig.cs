@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace JWLMergeBot
 {
-	public class ConfigFile
+	public class AppConfig
 	{
 		public string BotToken { get; set; }
 		public List<string> Admins { get; set; }
@@ -15,10 +15,10 @@ namespace JWLMergeBot
 			var json = JsonConvert.SerializeObject(this, Formatting.Indented);
 			File.WriteAllText(FileHandling.GetConfigFilePath(), json);
 		}
-		public static ConfigFile Load() 
+		public static AppConfig Load() 
 		{
 			var json = File.ReadAllText(FileHandling.GetConfigFilePath()); 
-			return JsonConvert.DeserializeObject<ConfigFile>(json);
+			return JsonConvert.DeserializeObject<AppConfig>(json);
 		}
 
 		public bool IsAdmin(string adminUsername)

@@ -108,9 +108,8 @@ namespace JWLMergeBot
                         await Worker.botClient.SendDocumentAsync(
                                 chatId: message.Chat.Id,
                                 document: inputOnlineFile,
-                                caption: chatConfig.AutoDeleteFile ? Strings.merged_file : Strings.merged_file_keep,
+                                caption: (chatConfig.AutoDeleteFile ? Strings.merged_file : Strings.merged_file_keep) + "\n\n" + GetFileInfoString(MainJWLibraryFile, message.Chat.Id),
                                 replyMarkup: chatConfig.AutoDeleteFile ? null : new InlineKeyboardMarkup(new[] {
-                                         InlineKeyboardButton.WithCallbackData(Strings.file_info, Command.FileInfo),
                                          InlineKeyboardButton.WithCallbackData(Strings.delete_file, Command.Delete)
                                 })
                                );
@@ -141,9 +140,8 @@ namespace JWLMergeBot
                 // Feedback
                 await Worker.botClient.SendTextMessageAsync(
                     chatId: message.Chat,
-                    text: Strings.received_file1,
+                    text: Strings.received_file1 + "\n\n" + GetFileInfoString(TempJWLibraryFile, message.Chat.Id),
                     replyMarkup: new InlineKeyboardMarkup(new[] {
-                                     InlineKeyboardButton.WithCallbackData(Strings.file_info,Command.FileInfo),
                                      InlineKeyboardButton.WithCallbackData(Strings.delete_file,Command.Delete)
                             }));
             }
@@ -182,7 +180,7 @@ namespace JWLMergeBot
                             List<InlineKeyboardButton> buttons = new List<InlineKeyboardButton>();
                             foreach (var keyboard in message.ReplyMarkup.InlineKeyboard)
                                 foreach (InlineKeyboardButton button in keyboard)
-                                    if (!(button.CallbackData.Equals(Command.Delete) || button.CallbackData.Equals(Command.FileInfo)))
+                                    if (!button.CallbackData.Equals(Command.Delete))
                                         buttons.Add(button);
 
                             // Refresh buttons
@@ -218,10 +216,10 @@ namespace JWLMergeBot
                     // Init JWLMerge
                     IBackupFileService backupFileService = new BackupFileService();
 
-                    BackupFile mainJWLibraryFile = null;
+                    BackupFile MainJWLibraryFile = null;
                     try
                     {
-                        mainJWLibraryFile = backupFileService.Load(FileHandling.GetFilePath(FileType.Main, message.Chat.Id));
+                        MainJWLibraryFile = backupFileService.Load(FileHandling.GetFilePath(FileType.Main, message.Chat.Id));
                     }
                     catch (Exception exception)
                     {
@@ -231,37 +229,12 @@ namespace JWLMergeBot
                     }
 
                     // Get stored file infos
-                    string fileInfoString = string.Format(Strings.file_info_details, FileHandling.GetReadableFilesize(FileType.Main, message.Chat.Id), mainJWLibraryFile.Database.Notes.Count, mainJWLibraryFile.Database.Bookmarks.Count, mainJWLibraryFile.Database.UserMarks.Count, mainJWLibraryFile.Database.Tags.Count).Replace("\\n", "\n");
-                    if (fromCallback)
-                    {
-                        if(message.Text != null)
-                            await Worker.botClient.EditMessageTextAsync(
-                                chatId: message.Chat.Id,
-                                messageId: message.MessageId,
-                                text: message.Text + "\n\n" + fileInfoString
-                            );
-                        else if(message.Caption != null)
-                            await Worker.botClient.EditMessageCaptionAsync(
-                                chatId: message.Chat.Id,
-                                messageId: message.MessageId,
-                                caption: message.Caption + "\n\n" + fileInfoString
-                            );
-                        await Worker.botClient.EditMessageReplyMarkupAsync(
+                    await Worker.botClient.SendTextMessageAsync(
                             chatId: message.Chat.Id,
-                            messageId: message.MessageId,
-                            replyMarkup: new InlineKeyboardMarkup(new[] {
-                                InlineKeyboardButton.WithCallbackData(Strings.delete_file,Command.Delete)
-                        }));
-                    }
-                    else
-                    {
-                        await Worker.botClient.SendTextMessageAsync(
-                            chatId: message.Chat.Id,
-                            text: fileInfoString,
+                            text: GetFileInfoString(MainJWLibraryFile, message.Chat.Id),
                             replyMarkup: new InlineKeyboardMarkup(new[] {
                                  InlineKeyboardButton.WithCallbackData(Strings.delete_file,Command.Delete)
-                            }));
-                    }                    
+                            }));  
                     break;
 
                 case Command.BotInfo:
@@ -271,7 +244,7 @@ namespace JWLMergeBot
 
                 case Command.Stat:
                     // Get some statistics, if admin
-                    if (ConfigFile.Load().IsAdmin(message.Chat.Username))
+                    if (AppConfig.Load().IsAdmin(message.Chat.Username))
                     {
 
                         // Symulate typing
@@ -296,7 +269,7 @@ namespace JWLMergeBot
 
                 case Command.Changelog:
                     // TODO Post changelog
-                    if (ConfigFile.Load().IsAdmin(message.Chat.Username))
+                    if (AppConfig.Load().IsAdmin(message.Chat.Username))
                         await Worker.botClient.SendTextMessageAsync(message.Chat, "Not implemented yet...");
                     break;
 
@@ -384,6 +357,11 @@ namespace JWLMergeBot
                     }
                     goto case Command.Settings;
             }
+        }
+
+        private static String GetFileInfoString(BackupFile JWLibraryFile, long chatId)
+        {
+            return string.Format(Strings.file_info_details, FileHandling.GetReadableFilesize(FileType.Main, chatId), JWLibraryFile.Database.Notes.Count, JWLibraryFile.Database.Bookmarks.Count, JWLibraryFile.Database.UserMarks.Count, JWLibraryFile.Database.Tags.Count).Replace("\\n", "\n");
         }
     }
 }

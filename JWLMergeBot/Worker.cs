@@ -34,7 +34,7 @@ namespace JWLMergeBot
             try
             {
                 // Init Telegram Bot Client
-                botClient = new TelegramBotClient(ConfigFile.Load().BotToken);
+                botClient = new TelegramBotClient(AppConfig.Load().BotToken);
 
                 // Listen for messages
                 botClient.OnMessage += Bot_OnMessage;

@@ -160,7 +160,7 @@
     <value>Info</value>
   </data>
   <data name="file_info_details" xml:space="preserve">
-    <value>ℹ️ Here are some info regarding the file I stored\nFile size: {0}\nNotes count: {1}\nBookmarks count: {2}\nHighlights count: {3}\nTags count: {4}</value>
+    <value>ℹ️ Some info regarding the file:\nFile size: {0}\nNotes count: {1}\nBookmarks count: {2}\nHighlights count: {3}\nTags count: {4}</value>
   </data>
   <data name="file_not_exists" xml:space="preserve">
     <value>👾 I've no file in memory</value>
