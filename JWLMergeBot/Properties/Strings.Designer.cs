@@ -331,6 +331,24 @@ namespace JWLMergeBot.Properties {
         }
         
         /// <summary>
+        ///   Cerca una stringa localizzata simile a UserDataBackup_Old_Schema.jwlibrary.
+        /// </summary>
+        internal static string old_filename {
+            get {
+                return ResourceManager.GetString("old_filename", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Cerca una stringa localizzata simile a ❌ I cannot merge the last file you sent me with the one I had in my memory. This last one is created by an old version of JW Library and it should be updated in order to be processed.\n\nThe file attached to this message is the old file. If you want to merge it you should:\n- Backup up your current data from JW Library\n- Restore this old file from JW Library\n- Create a new backup and send it to me\n\nIn my memory I&apos;ve replaced the old file with the new one you sent me.
+        /// </summary>
+        internal static string old_schema_error {
+            get {
+                return ResourceManager.GetString("old_schema_error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Cerca una stringa localizzata simile a ❗️ Error while merging file: {0}.
         /// </summary>
         internal static string processing_error {

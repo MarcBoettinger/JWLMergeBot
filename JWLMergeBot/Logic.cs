@@ -101,11 +101,35 @@ namespace JWLMergeBot
                 await Worker.botClient.SendChatActionAsync(message.Chat.Id, Telegram.Bot.Types.Enums.ChatAction.Typing);
 
                 // Use JWLMerge to merge files
+                BackupFile MainJWLibraryFile = null;
                 try
                 {
                     // Open also the main file
-                    BackupFile MainJWLibraryFile = backupFileService.Load(FileHandling.GetFilePath(FileType.Main, message.Chat.Id));
+                    MainJWLibraryFile = backupFileService.Load(FileHandling.GetFilePath(FileType.Main, message.Chat.Id));
+                }
+                catch (Exception exception)
+                {
+                    // If the stored files failed to load, it (probably) means that the supported schema version has changed.
+                    Worker.Logger.LogError(message: exception.Message, exception: exception);
+                    
+                    // Send back the old backup
+                    using (FileStream fs = System.IO.File.OpenRead(FileHandling.GetFilePath(FileType.Main, message.Chat.Id)))
+                    {
+                        InputOnlineFile inputOnlineFile = new InputOnlineFile(fs, Strings.old_filename);
+                        await Worker.botClient.SendDocumentAsync(
+                                chatId: message.Chat.Id,
+                                document: inputOnlineFile,
+                                caption: Strings.old_schema_error.Replace("\\n", "\n")
+                               );
+                    }
 
+                    // Replace the old file with this one
+                    FileHandling.ChangeFileType(FileType.Temp, FileType.Main, message.Chat.Id);
+                    return;
+                }
+
+                try
+                {
                     // Merge files
                     BackupFile backup = backupFileService.Merge(new List<BackupFile>() { MainJWLibraryFile, TempJWLibraryFile });
                     backupFileService.WriteNewDatabase(backup, FileHandling.GetFilePath(FileType.Merged, message.Chat.Id), FileHandling.GetFilePath(FileType.Main, message.Chat.Id));

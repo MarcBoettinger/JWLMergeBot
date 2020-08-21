@@ -207,6 +207,12 @@
   <data name="nothing_to_delete" xml:space="preserve">
     <value>👾 I've checked, but I've nothing yours in my memory</value>
   </data>
+  <data name="old_filename" xml:space="preserve">
+    <value>UserDataBackup_Old_Schema.jwlibrary</value>
+  </data>
+  <data name="old_schema_error" xml:space="preserve">
+    <value>❌ I cannot merge the last file you sent me with the one I had in my memory. This last one is created by an old version of JW Library and it should be updated in order to be processed.\n\nThe file attached to this message is the old file. If you want to merge it you should:\n- Backup up your current data from JW Library\n- Restore this old file from JW Library\n- Create a new backup and send it to me\n\nIn my memory I've replaced the old file with the new one you sent me</value>
+  </data>
   <data name="processing_error" xml:space="preserve">
     <value>❗️ Error while merging file: {0}</value>
   </data>

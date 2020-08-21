@@ -207,6 +207,12 @@
   <data name="nothing_to_delete" xml:space="preserve">
     <value>👾 Ho guardato, ma non ho nulla di tuo in memoria</value>
   </data>
+  <data name="old_filename" xml:space="preserve">
+    <value>UserDataBackup_Old_Schema.jwlibrary</value>
+  </data>
+  <data name="old_schema_error" xml:space="preserve">
+    <value>❌ Non riesco ad unire l'ultimo file che mi hai mandato con quello che avevo in memoria. Quest'ultimo è stato creato da una vecchia versione di JW Library e dovrebbe essere aggiornato per poter essere processato.\n\nIl file allegato a questo messaggio è il vecchio file. Se vuoi unirlo dovresti:\n- Eseguire un backup dei dati correnti da JW Library\n- Ripristinare qu esto vecchio file in JW Library\n- Creare un nuovo backup e mandarmelo\n\nNella mia memoria ho rimpiazzato il vecchio file con il nuovo che mi hai mandato</value>
+  </data>
   <data name="processing_error" xml:space="preserve">
     <value>❗️ Errore nell'unione del file: {0}</value>
   </data>
