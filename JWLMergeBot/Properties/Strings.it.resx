@@ -135,6 +135,9 @@
   <data name="busy" xml:space="preserve">
     <value>❗️ Sto già lavorando su un altro file… Manda un file per volta 😅\nIl file {0} verrà ignorato 🙄</value>
   </data>
+  <data name="cannot_download_file_retry" xml:space="preserve">
+    <value>❌ Impossibile scaricare il file. Rimandamelo più tardi</value>
+  </data>
   <data name="change_language" xml:space="preserve">
     <value>💬 Modifica lingua</value>
   </data>

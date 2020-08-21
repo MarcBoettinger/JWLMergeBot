@@ -11,6 +11,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 using JWLMergeBot.Properties;
 using static JWLMergeBot.FileHandling;
 using Microsoft.Extensions.Logging;
+using Polly;
 
 namespace JWLMergeBot
 {
@@ -48,8 +49,22 @@ namespace JWLMergeBot
                 return;
             }
 
-            // Get info about the file to donwload
-            Telegram.Bot.Types.File TelegramFile = Worker.botClient.GetFileAsync(message.Document.FileId).Result;
+            // Get info about the file to download
+            Telegram.Bot.Types.File TelegramFile = null;
+            Policy
+                .Handle<Exception>()
+                .WaitAndRetry(20, index => TimeSpan.FromSeconds(1), 
+                (exception,timeSpan) => {
+                    Worker.Logger.LogError(message: exception.Message, exception: exception);
+                }).Execute(() => { 
+                    TelegramFile = Worker.botClient.GetFileAsync(message.Document.FileId).Result; 
+                });
+            if(TelegramFile == null)
+            {
+                // Feedback
+                await Worker.botClient.SendTextMessageAsync(message.Chat, Strings.cannot_download_file_retry);
+                return;
+            }
 
             // Init JWLMerge
             IBackupFileService backupFileService = new BackupFileService();

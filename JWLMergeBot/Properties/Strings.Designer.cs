@@ -115,6 +115,15 @@ namespace JWLMergeBot.Properties {
         }
         
         /// <summary>
+        ///   Cerca una stringa localizzata simile a ❌ Cannot download file. Please send it back later.
+        /// </summary>
+        internal static string cannot_download_file_retry {
+            get {
+                return ResourceManager.GetString("cannot_download_file_retry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Cerca una stringa localizzata simile a 💬 Change language.
         /// </summary>
         internal static string change_language {
