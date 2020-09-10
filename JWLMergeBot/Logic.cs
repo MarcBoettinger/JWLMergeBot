@@ -147,7 +147,7 @@ namespace JWLMergeBot
                         await Worker.botClient.SendDocumentAsync(
                                 chatId: message.Chat.Id,
                                 document: inputOnlineFile,
-                                caption: (chatConfig.AutoDeleteFile ? Strings.merged_file : Strings.merged_file_keep) + "\n\n" + GetFileInfoString(MainJWLibraryFile, message.Chat.Id),
+                                caption: (chatConfig.AutoDeleteFile ? Strings.merged_file : Strings.merged_file_keep) + "\n\n" + GetFileInfoString(backup, message.Chat.Id),
                                 replyMarkup: chatConfig.AutoDeleteFile ? null : new InlineKeyboardMarkup(new[] {
                                          InlineKeyboardButton.WithCallbackData(Strings.delete_file, Command.Delete)
                                 })
