@@ -142,8 +142,8 @@
                     currentVerseSpec.ChapterNumber, 
                     currentVerseSpec.VerseNumber),
 
-                NoteTitle = titleAndContent.Title,
-                NoteContent = titleAndContent.Content,
+                NoteTitle = titleAndContent.Title.Trim(),
+                NoteContent = titleAndContent.Content.Trim(),
                 ColourIndex = currentVerseSpec.ColourIndex,
                 StartTokenInVerse = currentVerseSpec.StartWordIndex,
                 EndTokenInVerse = currentVerseSpec.EndWordIndex,
@@ -215,7 +215,7 @@
                 int.TryParse(digits[3], out var startWord) && 
                 int.TryParse(digits[4], out var endWord) && 
                 endWord >= startWord && 
-                startWord >= 0)
+                startWord >= 0 && (startWord != 0 || endWord != 0))
             {
                 result.StartWordIndex = startWord;
                 result.EndWordIndex = endWord;

@@ -1,3 +1,25 @@
+## [1.3.0.6] - 2020-03-13
+
+* Updated JWLMerge library (1.1.0.7)
+
+## [1.2.2.5] - 2020-09-10
+
+* Fixed wrong stats of merged file
+
+## [1.2.1.4] - 2020-08-21
+
+* Now the bot can handle stored files with old schema versions
+* Updated Telegram.Bot library (15.7.1)
+* Handling of a bug on the getFile method of Telegram API
+
+## [1.2.0.3] - 2020-07-13
+
+* Updated JWLMerge library (1.1.0.5)
+
+## [1.1.0.2] - 2020-04-22
+
+* Informations about file are now sent automatically
+
 ## [1.0.0.0] - 2020-04-18
 
 * First release
