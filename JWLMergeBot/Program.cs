@@ -19,11 +19,11 @@ namespace JWLMergeBot
                 .ConfigureLogging(logging =>
                 {
                     // Settings for file logging
-                    logging.AddFile(FileHandling.GetLogFilePath("Log-{Date}.txt"), levelOverrides: new Dictionary<string, LogLevel> {
+                    logging.AddFile(FileHandling.GetLogFilePath("Log-{Date}.txt"), retainedFileCountLimit: 365, levelOverrides: new Dictionary<string, LogLevel> {
                         { "Microsoft", LogLevel.Warning },
                         { "System", LogLevel.Warning }
                     });
-
+                    
                     // Settings for console logging
                     logging.AddConsole();
                     logging.AddFilter("Microsoft", LogLevel.Warning);
