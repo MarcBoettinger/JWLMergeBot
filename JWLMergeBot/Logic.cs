@@ -158,6 +158,10 @@ namespace JWLMergeBot
                     if (chatConfig.AutoDeleteFile)
                         OnCommand(message, Command.Delete, false);
 
+                    // Increase merged files count
+                    chatConfig.MergedFileCount++;
+                    chatConfig.Save(message.Chat.Id);
+
                 }
                 catch (Exception exception)
                 {

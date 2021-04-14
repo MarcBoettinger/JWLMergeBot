@@ -1,3 +1,8 @@
+## [1.3.1.7] - 2021-04-14
+
+* Increased the number of retained log files
+* Now the bot counts the number of merged files by user
+
 ## [1.3.0.6] - 2021-03-13
 
 * Updated JWLMerge library (1.1.0.7)

@@ -12,6 +12,7 @@ namespace JWLMergeBot
 	{
 		public string Language { get; set; }
 		public bool AutoDeleteFile { get; set; }
+		public int MergedFileCount { get; set; }
 
 		public void ApplyLanguage()
 		{
@@ -38,6 +39,7 @@ namespace JWLMergeBot
 				ChatConfig config = new ChatConfig();
 				config.Language = "en";
 				config.AutoDeleteFile = false;
+				config.MergedFileCount = 0;
 
 				return config;
 			}
