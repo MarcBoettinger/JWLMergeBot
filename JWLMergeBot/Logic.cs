@@ -177,16 +177,25 @@ namespace JWLMergeBot
             }
             else
             {
-                // Now the temp file become the main file
-                FileHandling.ChangeFileType(FileType.Temp, FileType.Main, message.Chat.Id);
+                try
+                {
+                    // Now the temp file become the main file
+                    FileHandling.ChangeFileType(FileType.Temp, FileType.Main, message.Chat.Id);
 
-                // Feedback
-                await Worker.botClient.SendTextMessageAsync(
+                    // Feedback
+                    await Worker.botClient.SendTextMessageAsync(
                     chatId: message.Chat,
                     text: Strings.received_file1 + "\n\n" + GetFileInfoString(TempJWLibraryFile, message.Chat.Id),
                     replyMarkup: new InlineKeyboardMarkup(new[] {
                                      InlineKeyboardButton.WithCallbackData(Strings.delete_file,Command.Delete)
                             }));
+                }
+                catch (Exception exception)
+                {
+                    // Log errors while moving temp file
+                    Worker.Logger.LogError(message: exception.Message, exception: exception);
+                    await Worker.botClient.SendTextMessageAsync(message.Chat.Id, string.Format(Strings.processing_error, exception.Message));
+                }
             }
         }
 
