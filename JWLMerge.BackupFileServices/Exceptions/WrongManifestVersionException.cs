@@ -20,7 +20,7 @@
         {
         }
 
-        public string Filename { get; }
+        public string? Filename { get; }
 
         public int ExpectedVersion { get; }
 

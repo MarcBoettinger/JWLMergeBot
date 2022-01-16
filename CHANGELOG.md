@@ -1,3 +1,8 @@
+## [1.4.0.8] - 2022-01-16
+
+* Updated Telegram.Bot library (17.0.0)
+* Updated JWLMerge library (2.0.0.8)
+
 ## [1.3.1.7] - 2021-04-14
 
 * Increased the number of retained log files

@@ -7,8 +7,9 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot;
-using Telegram.Bot.Args;
 using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Extensions.Polling;
+using Telegram.Bot.Types;
 
 namespace JWLMergeBot
 {
@@ -23,7 +24,7 @@ namespace JWLMergeBot
             Logger = workerLogger;
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             // Begin
             Logger.LogInformation(string.Format(Strings.bot_started, Assembly.GetEntryAssembly().GetName().Version.ToString()));
@@ -37,10 +38,7 @@ namespace JWLMergeBot
                 botClient = new TelegramBotClient(AppConfig.Load().BotToken);
 
                 // Listen for messages
-                botClient.OnMessage += Bot_OnMessage;
-                botClient.OnCallbackQuery += BotClient_OnCallbackQuery;
-                botClient.OnReceiveGeneralError += BotClient_OnReceiveGeneralError;
-                botClient.StartReceiving();
+                startReceiving(cancellationToken);
 
             }
             catch (FileNotFoundException fnfe)
@@ -52,63 +50,81 @@ namespace JWLMergeBot
                 Logger.LogError(message: Strings.invalid_token, exception: aex);
             }
 
-            while (!stoppingToken.IsCancellationRequested)
+            while (!cancellationToken.IsCancellationRequested)
             {
-                await Task.Delay(5000, stoppingToken);
+                await Task.Delay(5000, cancellationToken);
             }
-
-            // End gracefully
-            botClient.StopReceiving();
         }
 
-        public static void BotClient_OnReceiveGeneralError(object sender, ReceiveGeneralErrorEventArgs e)
+        async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
-            // If an error occours, stop listening for a while...
-            botClient.StopReceiving();
-            // ...wait...
-            Thread.Sleep(ConnectionDelay);
-            // ...and then try to, restart
-            botClient.StartReceiving();
-        }
+            // If the update is a message
+            if (update.Message is Message message)
+            {
+                if (message.Text != null)
+                {
+                    // Gotta somethings
+                    Worker.Logger.LogInformation(string.Format(Strings.received_something, Strings.message_type_text, (message.Chat.FirstName + " " + message.Chat.LastName).Trim(), message.Chat.Id, message.Text));
 
-        public static void Bot_OnMessage(object sender, MessageEventArgs e)
-        {
-            if (e.Message.Text != null)
+                    // Process command
+                    Logic.OnCommand(message, message.Text, false);
+                }
+                else if (message.Document != null)
+                {
+                    // Gotta somethings
+                    Worker.Logger.LogInformation(string.Format(Strings.received_something, Strings.message_type_file, message.Chat.FirstName + " " + message.Chat.LastName, message.Chat.Id, message.Document.FileName));
+
+                    // Process file
+                    Logic.OnFile(message);
+                }
+                else if (message.Type != MessageType.Sticker)
+                {
+                    // Gotta somethings
+                    Worker.Logger.LogInformation(string.Format(Strings.received_something, Strings.message_type_unhandled, message.Chat.FirstName + " " + message.Chat.LastName, message.Chat.Id, message.Type.ToString()));
+
+                    // If another unhandled type of content
+                    Logic.OnOtherContent(message);
+                }
+            } else 
+            // If the update is a callback query
+            if (update.CallbackQuery is CallbackQuery callbackQuery)
             {
                 // Gotta somethings
-                Worker.Logger.LogInformation(string.Format(Strings.received_something, Strings.message_type_text, (e.Message.Chat.FirstName + " " + e.Message.Chat.LastName).Trim(), e.Message.Chat.Id, e.Message.Text));
+                Worker.Logger.LogInformation(string.Format(Strings.received_something, Strings.message_type_callbackquery, (callbackQuery.Message.Chat.FirstName + " " + callbackQuery.Message.Chat.LastName).Trim(), callbackQuery.Message.Chat.Id, callbackQuery.Data));
+
+                // Answer to the callback (in this way you indicate you got it)
+                await botClient.AnswerCallbackQueryAsync(callbackQuery.Id);
 
                 // Process command
-                Logic.OnCommand(e.Message, e.Message.Text, false);
-            }
-            else if (e.Message.Document != null)
-            {
-                // Gotta somethings
-                Worker.Logger.LogInformation(string.Format(Strings.received_something, Strings.message_type_file, e.Message.Chat.FirstName + " " + e.Message.Chat.LastName, e.Message.Chat.Id, e.Message.Document.FileName));
-
-                // Process file
-                Logic.OnFile(e.Message);
-            }
-            else if(e.Message.Type != MessageType.Sticker)
-            { 
-                // Gotta somethings
-                Worker.Logger.LogInformation(string.Format(Strings.received_something, Strings.message_type_unhandled, e.Message.Chat.FirstName + " " + e.Message.Chat.LastName, e.Message.Chat.Id, e.Message.Type.ToString()));
-
-                // If another unhandled type of content
-                Logic.OnOtherContent(e.Message);
+                Logic.OnCommand(callbackQuery.Message, callbackQuery.Data, true);
             }
         }
 
-        public static async void BotClient_OnCallbackQuery(object sender, CallbackQueryEventArgs e)
+        async Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
         {
-            // Gotta somethings
-            Worker.Logger.LogInformation(string.Format(Strings.received_something, Strings.message_type_callbackquery, (e.CallbackQuery.Message.Chat.FirstName + " " + e.CallbackQuery.Message.Chat.LastName).Trim(), e.CallbackQuery.Message.Chat.Id, e.CallbackQuery.Data));
+            // If an error occours, stop listening for a while...
+            Thread.Sleep(ConnectionDelay);
+            // ...and then try to, restart
+            startReceiving(cancellationToken);
+        }
 
-            // Answer to the callback (in this way you indicate you got it)
-            await botClient.AnswerCallbackQueryAsync(e.CallbackQuery.Id);
-
-            // Process command
-            Logic.OnCommand(e.CallbackQuery.Message, e.CallbackQuery.Data, true);
+        async private void startReceiving(CancellationToken cancellationToken)
+        {
+            try { 
+            await botClient.ReceiveAsync(
+                    HandleUpdateAsync,
+                    HandleErrorAsync,
+                    new ReceiverOptions
+                    {
+                        AllowedUpdates = { /*UpdateType.Message, UpdateType.CallbackQuery */},
+                        ThrowPendingUpdates = true
+                    },
+                    cancellationToken
+                );
+            }catch(Telegram.Bot.Exceptions.RequestException e)
+            {
+                Logger.LogError(message: "Connection error", exception: e);
+            }
         }
     }
 }

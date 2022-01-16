@@ -2,9 +2,10 @@
 {
     using System;
     using System.Collections.Generic;
-    using JWLMerge.BackupFileServices.Events;
-    using JWLMerge.BackupFileServices.Models;
-    using JWLMerge.BackupFileServices.Models.DatabaseModels;
+    using Events;
+    using Models;
+    using Models.DatabaseModels;
+    using ExcelServices;
 
     /// <summary>
     /// The BackupFileService interface.
@@ -47,6 +48,62 @@
         BackupFile CreateBlank();
 
         /// <summary>
+        /// Removes all favourites from the specified backup file.
+        /// </summary>
+        /// <param name="backup">The target backup file.</param>
+        void RemoveFavourites(BackupFile backup);
+
+        /// <summary>
+        /// Redacts all notes.
+        /// </summary>
+        /// <param name="backup">The target backup file.</param>
+        /// <returns>Number of notes redacted.</returns>
+        int RedactNotes(BackupFile backup);
+
+        /// <summary>
+        /// Remove notes by tag.
+        /// </summary>
+        /// <param name="backup">The target backup file.</param>
+        /// <param name="tagIds">Tag IDs to match.</param>
+        /// <param name="removeUntaggedNotes">Whether to remove notes that have no tag.</param>
+        /// <param name="removeAssociatedUnderlining">Whether to remove any associated underlining.</param>
+        /// <param name="removeAssociatedTags">Whether to remove any associated tags.</param>
+        /// <returns>Number of notes removed.</returns>
+        int RemoveNotesByTag(
+            BackupFile backup,
+            int[]? tagIds,
+            bool removeUntaggedNotes,
+            bool removeAssociatedUnderlining,
+            bool removeAssociatedTags);
+
+        /// <summary>
+        /// Removes underlining by colour.
+        /// </summary>
+        /// <param name="backup">The target backup.</param>
+        /// <param name="colorIndexes">The color indexes to target.</param>
+        /// <param name="removeAssociatedNotes">Whether associated notes should also be removed.</param>
+        /// <returns>Number of underlined items removed.</returns>
+        int RemoveUnderliningByColour(BackupFile backup, int[]? colorIndexes, bool removeAssociatedNotes);
+
+        /// <summary>
+        /// Removes underlining by publication and colour.
+        /// </summary>
+        /// <param name="backup">The target backup.</param>
+        /// <param name="colorIndex">The colour to match.</param>
+        /// <param name="anyColor">Whether any colour matches.</param>
+        /// <param name="publicationSymbol">The publication symbol to match.</param>
+        /// <param name="anyPublication">Whether any publication matches.</param>
+        /// <param name="removeAssociatedNotes">Whether associated notes should also be removed.</param>
+        /// <returns>Number of underlined items removed.</returns>
+        int RemoveUnderliningByPubAndColor(
+            BackupFile backup,
+            int colorIndex,
+            bool anyColor,
+            string? publicationSymbol,
+            bool anyPublication,
+            bool removeAssociatedNotes);
+
+        /// <summary>
         /// Imports bible notes.
         /// </summary>
         /// <param name="originalBackupFile">Backup file.</param>
@@ -63,6 +120,19 @@
             string bibleKeySymbol,
             int mepsLanguageId, 
             ImportBibleNotesParams options);
+
+        void ExportBibleNotesToExcel(BackupFile backupFile, string bibleNotesExportFilePath, IExcelService excelService);
+
+        /// <summary>
+        /// Cleans the database (ensuring integrity), then writes the specified backup to a "jwlibrary" file.
+        /// </summary>
+        /// <param name="backup">The backup data.</param>
+        /// <param name="newDatabaseFilePath">The new database file path.</param>
+        /// <param name="originalJwlibraryFilePathForSchema">The original jwlibrary file path on which to base the new schema.</param>
+        void WriteNewDatabaseWithClean(
+            BackupFile backup,
+            string newDatabaseFilePath,
+            string originalJwlibraryFilePathForSchema);
 
         /// <summary>
         /// Writes the specified backup to a "jwlibrary" file.

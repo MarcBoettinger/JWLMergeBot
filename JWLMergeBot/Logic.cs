@@ -5,6 +5,7 @@ using System.IO;
 using System.Reflection;
 using Telegram.Bot.Types.InputFiles;
 using Telegram.Bot.Types;
+using Telegram.Bot;
 using JWLMerge.BackupFileServices;
 using JWLMerge.BackupFileServices.Models;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -42,7 +43,7 @@ namespace JWLMergeBot
             }
 
             // Check the incoming file size
-            if (!FileHandling.IsValidFileSize(message.Document.FileSize))
+            if (!FileHandling.IsValidFileSize((long)(message.Document.FileSize)))
             {
                 // Feedback
                 await Worker.botClient.SendTextMessageAsync(message.Chat.Id, Strings.max_filesize);
@@ -76,7 +77,7 @@ namespace JWLMergeBot
             }
 
             // Load the file (in this way you can check if is a valid jwlibrary file)
-            BackupFile TempJWLibraryFile = new BackupFile();
+            BackupFile TempJWLibraryFile = null;
             try
             {
                 TempJWLibraryFile = backupFileService.Load(FileHandling.GetFilePath(FileType.Temp, message.Chat.Id));
