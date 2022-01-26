@@ -111,19 +111,19 @@ namespace JWLMergeBot
         async private void startReceiving(CancellationToken cancellationToken)
         {
             try { 
-            await botClient.ReceiveAsync(
-                    HandleUpdateAsync,
-                    HandleErrorAsync,
-                    new ReceiverOptions
-                    {
-                        AllowedUpdates = { /*UpdateType.Message, UpdateType.CallbackQuery */},
-                        ThrowPendingUpdates = true
-                    },
-                    cancellationToken
-                );
+                await botClient.ReceiveAsync(
+                        HandleUpdateAsync,
+                        HandleErrorAsync,
+                        new ReceiverOptions
+                        {
+                            AllowedUpdates = { /*UpdateType.Message, UpdateType.CallbackQuery */},
+                            ThrowPendingUpdates = true
+                        },
+                        cancellationToken
+                    );
             }catch(Telegram.Bot.Exceptions.RequestException e)
             {
-                Logger.LogError(message: "Connection error", exception: e);
+                //Logger.LogError(message: "Connection error", exception: e);
             }
         }
     }
