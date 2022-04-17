@@ -18,6 +18,7 @@ namespace JWLMergeBot
         public static ITelegramBotClient botClient;
         private static int ConnectionDelay = 5000;
         public static ILogger<Worker> Logger;
+        private bool Disconnected = false;
 
         public Worker(ILogger<Worker> workerLogger)
         {
@@ -37,9 +38,26 @@ namespace JWLMergeBot
                 // Init Telegram Bot Client
                 botClient = new TelegramBotClient(AppConfig.Load().BotToken);
 
-                // Listen for messages
-                startReceiving(cancellationToken);
-
+                // Try to connect
+                while(!cancellationToken.IsCancellationRequested)
+                {
+                    try { 
+                        await botClient.ReceiveAsync(
+                                HandleUpdateAsync,
+                                HandleErrorAsync,
+                                new ReceiverOptions
+                                {
+                                    AllowedUpdates = { /*UpdateType.Message, UpdateType.CallbackQuery */},
+                                    ThrowPendingUpdates = false
+                                },
+                                cancellationToken
+                            );
+                    }
+                    catch (Telegram.Bot.Exceptions.RequestException e)
+                    {
+                        Thread.Sleep(ConnectionDelay);
+                    }
+                }
             }
             catch (FileNotFoundException fnfe)
             {
@@ -58,13 +76,16 @@ namespace JWLMergeBot
 
         async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
+            // An update received: clear DisconnectionArise flag
+            Disconnected = false;
+
             // If the update is a message
             if (update.Message is Message message)
             {
                 if (message.Text != null)
                 {
                     // Gotta somethings
-                    Worker.Logger.LogInformation(string.Format(Strings.received_something, Strings.message_type_text, (message.Chat.FirstName + " " + message.Chat.LastName).Trim(), message.Chat.Id, message.Text));
+                    Logger.LogInformation(string.Format(Strings.received_something, Strings.message_type_text, (message.Chat.FirstName + " " + message.Chat.LastName).Trim(), message.Chat.Id, message.Text));
 
                     // Process command
                     Logic.OnCommand(message, message.Text, false);
@@ -72,7 +93,7 @@ namespace JWLMergeBot
                 else if (message.Document != null)
                 {
                     // Gotta somethings
-                    Worker.Logger.LogInformation(string.Format(Strings.received_something, Strings.message_type_file, message.Chat.FirstName + " " + message.Chat.LastName, message.Chat.Id, message.Document.FileName));
+                    Logger.LogInformation(string.Format(Strings.received_something, Strings.message_type_file, message.Chat.FirstName + " " + message.Chat.LastName, message.Chat.Id, message.Document.FileName));
 
                     // Process file
                     Logic.OnFile(message);
@@ -80,7 +101,7 @@ namespace JWLMergeBot
                 else if (message.Type != MessageType.Sticker)
                 {
                     // Gotta somethings
-                    Worker.Logger.LogInformation(string.Format(Strings.received_something, Strings.message_type_unhandled, message.Chat.FirstName + " " + message.Chat.LastName, message.Chat.Id, message.Type.ToString()));
+                    Logger.LogInformation(string.Format(Strings.received_something, Strings.message_type_unhandled, message.Chat.FirstName + " " + message.Chat.LastName, message.Chat.Id, message.Type.ToString()));
 
                     // If another unhandled type of content
                     Logic.OnOtherContent(message);
@@ -90,7 +111,7 @@ namespace JWLMergeBot
             if (update.CallbackQuery is CallbackQuery callbackQuery)
             {
                 // Gotta somethings
-                Worker.Logger.LogInformation(string.Format(Strings.received_something, Strings.message_type_callbackquery, (callbackQuery.Message.Chat.FirstName + " " + callbackQuery.Message.Chat.LastName).Trim(), callbackQuery.Message.Chat.Id, callbackQuery.Data));
+                Logger.LogInformation(string.Format(Strings.received_something, Strings.message_type_callbackquery, (callbackQuery.Message.Chat.FirstName + " " + callbackQuery.Message.Chat.LastName).Trim(), callbackQuery.Message.Chat.Id, callbackQuery.Data));
 
                 // Answer to the callback (in this way you indicate you got it)
                 await botClient.AnswerCallbackQueryAsync(callbackQuery.Id);
@@ -102,29 +123,12 @@ namespace JWLMergeBot
 
         async Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
         {
-            // If an error occours, stop listening for a while...
-            Thread.Sleep(ConnectionDelay);
-            // ...and then try to, restart
-            startReceiving(cancellationToken);
-        }
+            if(!Disconnected)
+                Logger.LogError(message: Strings.bot_disconnected /*, exception: exception*/);
+            Disconnected = true;
 
-        async private void startReceiving(CancellationToken cancellationToken)
-        {
-            try { 
-                await botClient.ReceiveAsync(
-                        HandleUpdateAsync,
-                        HandleErrorAsync,
-                        new ReceiverOptions
-                        {
-                            AllowedUpdates = { /*UpdateType.Message, UpdateType.CallbackQuery */},
-                            ThrowPendingUpdates = true
-                        },
-                        cancellationToken
-                    );
-            }catch(Telegram.Bot.Exceptions.RequestException e)
-            {
-                //Logger.LogError(message: "Connection error", exception: e);
-            }
+            // Wait a bit (otherwise botClient will try to reconnect with a bit too zeal)
+            Thread.Sleep(ConnectionDelay);
         }
     }
 }

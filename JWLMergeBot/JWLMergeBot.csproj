@@ -4,8 +4,8 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Version>1.4.1</Version>
-    <AssemblyVersion>1.4.1.9</AssemblyVersion>
-    <FileVersion>1.4.1.9</FileVersion>
+    <AssemblyVersion>1.4.1.10</AssemblyVersion>
+    <FileVersion>1.4.1.10</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

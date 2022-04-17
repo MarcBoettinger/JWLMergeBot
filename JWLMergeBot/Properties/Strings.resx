@@ -123,6 +123,9 @@
   <data name="back" xml:space="preserve">
     <value>Back</value>
   </data>
+  <data name="bot_disconnected" xml:space="preserve">
+    <value>Connection with the bot has been lost and it will be re-established when possible</value>
+  </data>
   <data name="bot_info" xml:space="preserve">
     <value>Bot info</value>
   </data>

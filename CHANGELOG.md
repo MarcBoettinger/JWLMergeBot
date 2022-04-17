@@ -1,3 +1,7 @@
+## [1.4.1.10] - 2022-04-17
+
+* Better handling of bot disconnections
+
 ## [1.4.0.8] - 2022-01-16
 
 * Updated Telegram.Bot library (17.0.0)

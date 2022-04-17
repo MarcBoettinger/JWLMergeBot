@@ -79,6 +79,15 @@ namespace JWLMergeBot.Properties {
         }
         
         /// <summary>
+        ///   Cerca una stringa localizzata simile a Connection with the bot has been lost and it will be re-established when possible.
+        /// </summary>
+        internal static string bot_disconnected {
+            get {
+                return ResourceManager.GetString("bot_disconnected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Cerca una stringa localizzata simile a Bot info.
         /// </summary>
         internal static string bot_info {
