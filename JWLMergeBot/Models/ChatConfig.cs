@@ -27,22 +27,24 @@ namespace JWLMergeBot
 
 		public static ChatConfig Load(long ChatId)
 		{
-			try
-			{
-				var json = File.ReadAllText(FileHandling.GetChatConfigFilePath(ChatId));
-				return JsonConvert.DeserializeObject<ChatConfig>(json);
-			}catch(Exception e)
-			{
-				e.ToString();
-
-				// Default settings
-				ChatConfig config = new ChatConfig();
-				config.Language = "en";
-				config.AutoDeleteFile = false;
-				config.MergedFileCount = 0;
-
-				return config;
+			if (File.Exists(FileHandling.GetChatConfigFilePath(ChatId)))
+			{ 
+				try
+				{
+					var json = File.ReadAllText(FileHandling.GetChatConfigFilePath(ChatId));
+					return JsonConvert.DeserializeObject<ChatConfig>(json);
+				}catch (Exception)
+                {
+				}
 			}
+
+			// Default settings
+			ChatConfig config = new ChatConfig();
+			config.Language = "en";
+			config.AutoDeleteFile = false;
+			config.MergedFileCount = 0;
+
+			return config;
 		}
 	}
 }
