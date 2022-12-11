@@ -10,7 +10,7 @@ namespace JWLMergeBot
         public static List<string> JWLibraryExtensions = new List<string> { ".jwlibrary", ".jwlibrary.bin" };
         private static int MaxFilesizeByte = 20 * 1024 * 1024;
         private static long TempFileBusyTimeout = 60;
-        public enum FileType { Main, Temp, Merged, Log };
+        public enum FileType { Main, Temp, Merged, Log, Chat };
         #endregion
 
         #region Directories
@@ -23,6 +23,10 @@ namespace JWLMergeBot
         private static string GetTempDirectory()
         {
             return Directory.CreateDirectory(Path.Combine(GetApplicationDirectory(), "Temp")).FullName;
+        }
+        private static string GetTempChatDirectory(long chatId)
+        {
+            return Directory.CreateDirectory(Path.Combine(GetApplicationDirectory(), "Temp", $"{chatId}")).FullName;
         }
         private static string GetLogDirectory()
         {
@@ -60,7 +64,7 @@ namespace JWLMergeBot
         }
         #endregion
 
-        public static String GetFilePath(FileType fileType, long chatId)
+        public static String GetFilePath(FileType fileType, long chatId, Telegram.Bot.Types.Document document = null)
         {
             switch (fileType)
             {
@@ -70,6 +74,8 @@ namespace JWLMergeBot
                     return Path.Combine(GetTempDirectory(), $"{chatId}_temp.jwlibrary");
                 case FileType.Merged:
                     return Path.Combine(GetTempDirectory(), $"{chatId}_merged.jwlibrary");
+                case FileType.Chat:
+                    return Path.Combine(GetTempChatDirectory(chatId), document.FileName);
                 default:
                     return null;
             }
