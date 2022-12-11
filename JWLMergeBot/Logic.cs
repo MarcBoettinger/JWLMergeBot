@@ -23,9 +23,6 @@ namespace JWLMergeBot
             // Set user language
             ChatConfig.Load(message.Chat.Id).ApplyLanguage();
 
-            // Symulate typing
-            await Worker.botClient.SendChatActionAsync(message.Chat.Id, Telegram.Bot.Types.Enums.ChatAction.Typing);
-
             // Check if I can handle the file (if a temporary file exist, it means I'm working on it...)
             if (FileHandling.IsTempFileBusy(message.Chat.Id))
             {
@@ -50,6 +47,9 @@ namespace JWLMergeBot
                 return;
             }
 
+            // Symulate typing
+            await Worker.botClient.SendChatActionAsync(message.Chat.Id, Telegram.Bot.Types.Enums.ChatAction.Typing);
+
             // Get info about the file to download
             Telegram.Bot.Types.File TelegramFile = null;
             Policy
@@ -57,7 +57,7 @@ namespace JWLMergeBot
                 .WaitAndRetry(20, index => TimeSpan.FromSeconds(1), 
                 (exception,timeSpan) => {
                     Worker.Logger.LogError(message: exception.Message, exception: exception);
-                }).Execute(() => { 
+                }).Execute(() => {
                     TelegramFile = Worker.botClient.GetFileAsync(message.Document.FileId).Result; 
                 });
             if(TelegramFile == null)
