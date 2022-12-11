@@ -1,4 +1,6 @@
-﻿namespace JWLMerge.BackupFileServices
+﻿using JWLMerge.ExcelServices.Models;
+
+namespace JWLMerge.BackupFileServices
 {
     using System;
     using System.Collections.Generic;
@@ -84,7 +86,7 @@
             {
                 throw new ArgumentNullException(nameof(backup));
             }
-
+            
             backup.Database.TagMaps.RemoveAll(x => x.TagId == 1);
         }
 
@@ -495,7 +497,7 @@
             return new BackupFile(newManifest, originalBackupFile.Database, originalBackupFile.FilePath);
         }
 
-        public void ExportBibleNotesToExcel(
+        public ExportBibleNotesResult ExportBibleNotesToExcel(
             BackupFile backupFile, string bibleNotesExportFilePath, IExcelService excelService)
         {
             File.Delete(bibleNotesExportFilePath);
@@ -548,7 +550,7 @@
 
             notesToWrite.Sort(SortBibleNotes);
 
-            excelService.AppendToBibleNotesFile(bibleNotesExportFilePath, notesToWrite, 0, bibleNotesExportFilePath);
+            return excelService.AppendToBibleNotesFile(bibleNotesExportFilePath, notesToWrite, 0, bibleNotesExportFilePath);
         }
 
         private static void RemoveSelectedTags(Database database, HashSet<int> tagIds)
