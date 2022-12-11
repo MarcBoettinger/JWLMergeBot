@@ -150,6 +150,9 @@
   <data name="change_settings" xml:space="preserve">
     <value>⚙️ Modifica impostazioni</value>
   </data>
+  <data name="chat_name" xml:space="preserve">
+    <value>{0}{1} (ChatId: {2})</value>
+  </data>
   <data name="config_not_found" xml:space="preserve">
     <value>⚙️ File di configurazione "config.json" non trovato</value>
   </data>
@@ -192,6 +195,9 @@
   <data name="merged_file_keep" xml:space="preserve">
     <value>🔗 Ecco il file unito! Lo terrò in memoria</value>
   </data>
+  <data name="message_dropped" xml:space="preserve">
+    <value>Un messaggio da {0} è stato ignorato perché la chat è stata temporaneamente bannata</value>
+  </data>
   <data name="message_type_callbackquery" xml:space="preserve">
     <value>una callback query</value>
   </data>
@@ -226,7 +232,7 @@
     <value>📥 Ho ricevuto il file 🔗 Ora lo unisco con quello che ho in memoria… </value>
   </data>
   <data name="received_something" xml:space="preserve">
-    <value>Ho ricevuto {0} da {1} (ChatId: {2}): {3}</value>
+    <value>Ho ricevuto {0} da {1}: {2}</value>
   </data>
   <data name="settings" xml:space="preserve">
     <value>Impostazioni</value>

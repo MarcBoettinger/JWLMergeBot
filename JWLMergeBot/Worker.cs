@@ -10,6 +10,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
+using JWLMergeBot.Helpers;
 
 namespace JWLMergeBot
 {
@@ -82,10 +83,17 @@ namespace JWLMergeBot
             // If the update is a message
             if (update.Message is Message message)
             {
+                // Check if this chat is banned. If so, stop processing the message
+                if(Banner.CheckIsChatBanned(message.Chat.Id))
+                {
+                    Logger.LogWarning(string.Format(Strings.message_dropped, GetFormattedChatName(message.Chat)));
+                    return;
+                }
+
                 if (message.Text != null)
                 {
                     // Gotta somethings
-                    Logger.LogInformation(string.Format(Strings.received_something, Strings.message_type_text, (message.Chat.FirstName + " " + message.Chat.LastName).Trim(), message.Chat.Id, message.Text));
+                    Logger.LogInformation(string.Format(Strings.received_something, Strings.message_type_text, GetFormattedChatName(message.Chat), message.Text));
 
                     // Process command
                     Logic.OnCommand(message, message.Text, false);
@@ -93,7 +101,7 @@ namespace JWLMergeBot
                 else if (message.Document != null)
                 {
                     // Gotta somethings
-                    Logger.LogInformation(string.Format(Strings.received_something, Strings.message_type_file, message.Chat.FirstName + " " + message.Chat.LastName, message.Chat.Id, message.Document.FileName));
+                    Logger.LogInformation(string.Format(Strings.received_something, Strings.message_type_file, GetFormattedChatName(message.Chat), message.Document.FileName));
 
                     // Process file
                     Logic.OnFile(message);
@@ -101,7 +109,7 @@ namespace JWLMergeBot
                 else if (message.Type != MessageType.Sticker)
                 {
                     // Gotta somethings
-                    Logger.LogInformation(string.Format(Strings.received_something, Strings.message_type_unhandled, message.Chat.FirstName + " " + message.Chat.LastName, message.Chat.Id, message.Type.ToString()));
+                    Logger.LogInformation(string.Format(Strings.received_something, Strings.message_type_unhandled, GetFormattedChatName(message.Chat), message.Type.ToString()));
 
                     // If another unhandled type of content
                     Logic.OnOtherContent(message);
@@ -111,7 +119,7 @@ namespace JWLMergeBot
             if (update.CallbackQuery is CallbackQuery callbackQuery)
             {
                 // Gotta somethings
-                Logger.LogInformation(string.Format(Strings.received_something, Strings.message_type_callbackquery, (callbackQuery.Message.Chat.FirstName + " " + callbackQuery.Message.Chat.LastName).Trim(), callbackQuery.Message.Chat.Id, callbackQuery.Data));
+                Logger.LogInformation(string.Format(Strings.received_something, Strings.message_type_callbackquery, GetFormattedChatName(callbackQuery.Message.Chat), callbackQuery.Data));
 
                 // Answer to the callback (in this way you indicate you got it)
                 await botClient.AnswerCallbackQueryAsync(callbackQuery.Id);
@@ -119,6 +127,11 @@ namespace JWLMergeBot
                 // Process command
                 Logic.OnCommand(callbackQuery.Message, callbackQuery.Data, true);
             }
+        }
+
+        private static String GetFormattedChatName(Chat chat)
+        {
+            return string.Format(Strings.chat_name, (chat.FirstName + " " + chat.LastName).Trim(), (chat.Username != null ? " @" + chat.Username : ""), chat.Id);
         }
 
         async Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)

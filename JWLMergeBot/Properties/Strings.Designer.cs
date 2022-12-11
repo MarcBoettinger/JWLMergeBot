@@ -19,7 +19,7 @@ namespace JWLMergeBot.Properties {
     // tramite uno strumento quale ResGen o Visual Studio.
     // Per aggiungere o rimuovere un membro, modificare il file con estensione ResX ed eseguire nuovamente ResGen
     // con l'opzione /str oppure ricompilare il progetto VS.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Strings {
@@ -160,6 +160,15 @@ namespace JWLMergeBot.Properties {
         }
         
         /// <summary>
+        ///   Cerca una stringa localizzata simile a {0}{1} (ChatId: {2}).
+        /// </summary>
+        internal static string chat_name {
+            get {
+                return ResourceManager.GetString("chat_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Cerca una stringa localizzata simile a ⚙️ Configuration file &quot;config.json&quot; not found.
         /// </summary>
         internal static string config_not_found {
@@ -286,6 +295,15 @@ namespace JWLMergeBot.Properties {
         }
         
         /// <summary>
+        ///   Cerca una stringa localizzata simile a A message from {0} has been dropped because the chat has been temporary banned.
+        /// </summary>
+        internal static string message_dropped {
+            get {
+                return ResourceManager.GetString("message_dropped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Cerca una stringa localizzata simile a a callback query.
         /// </summary>
         internal static string message_type_callbackquery {
@@ -385,7 +403,7 @@ namespace JWLMergeBot.Properties {
         }
         
         /// <summary>
-        ///   Cerca una stringa localizzata simile a I received {0} from {1} (ChatId: {2}): {3}.
+        ///   Cerca una stringa localizzata simile a I received {0} from {1}: {2}.
         /// </summary>
         internal static string received_something {
             get {

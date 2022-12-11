@@ -150,6 +150,9 @@
   <data name="change_settings" xml:space="preserve">
     <value>⚙️ Change settings</value>
   </data>
+  <data name="chat_name" xml:space="preserve">
+    <value>{0}{1} (ChatId: {2})</value>
+  </data>
   <data name="config_not_found" xml:space="preserve">
     <value>⚙️ Configuration file "config.json" not found</value>
   </data>
@@ -192,6 +195,9 @@
   <data name="merged_file_keep" xml:space="preserve">
     <value>🔗 Here is the merged file! I will keep it in my memory</value>
   </data>
+  <data name="message_dropped" xml:space="preserve">
+    <value>A message from {0} has been dropped because the chat has been temporary banned</value>
+  </data>
   <data name="message_type_callbackquery" xml:space="preserve">
     <value>a callback query</value>
   </data>
@@ -226,7 +232,7 @@
     <value>📥 I've got the file 🔗 Now I merge it with the file in my memory… </value>
   </data>
   <data name="received_something" xml:space="preserve">
-    <value>I received {0} from {1} (ChatId: {2}): {3}</value>
+    <value>I received {0} from {1}: {2}</value>
   </data>
   <data name="settings" xml:space="preserve">
     <value>Settings</value>
