@@ -1,3 +1,8 @@
+## [1.5.0.11] - 2022-12-11
+
+* Auto-ban chats if too many messages
+* Updated JWLMerge library (2.0.0.12)
+
 ## [1.4.1.10] - 2022-04-17
 
 * Better handling of bot disconnections
