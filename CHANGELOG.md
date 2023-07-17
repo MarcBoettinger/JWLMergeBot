@@ -1,3 +1,9 @@
+## [1.6.0.12] - 2023-07-xx
+
+* Support for the v13 db schema
+* Updated JWLMerge library (2.0.0.12)
+
+
 ## [1.5.0.11] - 2022-12-11
 
 * Auto-ban chats if too many messages
