@@ -22,7 +22,7 @@ public class Tag
     /// The optional image file name.
     /// </summary>
     /// <remarks>Added in db ver 7 April 2020.</remarks>
-    public string? ImageFileName { get; set; }
+    //public string? ImageFileName { get; set; }  // #patch13 This field has been removed
 
     public Tag Clone()
     {

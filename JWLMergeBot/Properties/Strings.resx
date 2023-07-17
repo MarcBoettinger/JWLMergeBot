@@ -169,7 +169,7 @@
     <value>Info</value>
   </data>
   <data name="file_info_details" xml:space="preserve">
-    <value>ℹ️ Some info regarding the file:\nFile size: {0}\nNotes count: {1}\nBookmarks count: {2}\nHighlights count: {3}\nTags count: {4}</value>
+    <value>ℹ️ Some info regarding the file:\nFile size: {0}\nNotes count: {1}\nBookmarks count: {2}\nHighlights count: {3}\nTags count: {4}\nPlaylists count: None! I don't support them</value>
   </data>
   <data name="file_not_exists" xml:space="preserve">
     <value>👾 I've no file in memory</value>
@@ -184,7 +184,7 @@
     <value>🇮🇹 Italian</value>
   </data>
   <data name="max_filesize" xml:space="preserve">
-    <value>❌ File must be smaller than 20MB</value>
+    <value>❌ File must be smaller than 20MB. If your backup includes playlists, I suggest you to export them, delete them and re-send me the backup file</value>
   </data>
   <data name="merged_file" xml:space="preserve">
     <value>🔗 Here is the merged file!</value>
@@ -241,7 +241,7 @@
     <value>Start</value>
   </data>
   <data name="start_details" xml:space="preserve">
-    <value>Hello {0}, I'm @JWLMergeBot 🤖\nMy purpose is to merge two backup files of JW Library into a single one 🔗\n\nI work like this:\n1. You send me a file 📩\n2. I store it 📨\n3. You send me another file 📩\n4. I merge it with the first and then I send back to you the merged file 🔗\n\nObviously, sending me a file you agree that I store it 📝\nHow could I merge it if I don't store it? 🤪\nHowever you can delete it whenever you want with the appropriate command /delete 🗑\n\nEnjoy! 🤖</value>
+    <value>Hello {0}, I'm @JWLMergeBot 🤖\nMy purpose is to merge two backup files of JW Library into a single one 🔗\n\nI work like this:\n1. You send me a file 📩\n2. I store it 📨\n3. You send me another file 📩\n4. I merge it with the first and then I send back to you the merged file 🔗\n\nObviously, sending me a file you agree that I store it 📝\nHow could I merge it if I don't store it? 🤪\nHowever you can delete it whenever you want with the appropriate command /delete 🗑\n\nPlease note! I don't currently support playlists. Playlists will be removed from merged files ❗️\n\nEnjoy! 🤖</value>
   </data>
   <data name="stat" xml:space="preserve">
     <value>Stored files: {0}\nUsers:\n{1}</value>

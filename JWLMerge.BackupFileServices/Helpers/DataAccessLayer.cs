@@ -148,8 +148,19 @@ internal sealed class DataAccessLayer
         ClearTable(connection, "Note");
         ClearTable(connection, "Tag");
         ClearTable(connection, "UserMark");
+
+        ///region #patch13 Delete all the entries of the playlist tables. In this way it's possible to clear Location table and start it over
+        ClearTable(connection, "PlaylistItemLocationMap");
+        ClearTable(connection, "PlaylistItemIndependentMediaMap");
+        ClearTable(connection, "PlaylistItemMarkerBibleVerseMap");
+        ClearTable(connection, "PlaylistItemMarkerParagraphMap");
+        ClearTable(connection, "PlaylistItemMarker");
+        ClearTable(connection, "PlaylistItem");
+        ClearTable(connection, "IndependentMedia");
+        ///endregion
+
         ClearTable(connection, "Location");
-            
+
         UpdateLastModified(connection);
 
         VacuumDatabase(connection);
@@ -169,7 +180,8 @@ internal sealed class DataAccessLayer
     {
         using var command = connection.CreateCommand();
 
-        command.CommandText = "delete from LastModified; insert into LastModified default values";
+        command.CommandText = "update LastModified set LastModified = strftime('%Y-%m-%dT%H:%M:%SZ', 'now')"; // #patch13 update the LastModified date in a new way 
+        //command.CommandText = "delete from LastModified; insert into LastModified default values";
         Log.Logger.Debug($"SQL: {command.CommandText}");
 
         command.ExecuteNonQuery();
@@ -276,7 +288,7 @@ internal sealed class DataAccessLayer
             TagId = ReadInt(reader, "TagId"),
             Type = ReadInt(reader, "Type"),
             Name = ReadString(reader, "Name"),
-            ImageFileName = ReadNullableString(reader, "ImageFilename"),    // added in db v7 April 2020
+            //ImageFileName = ReadNullableString(reader, "ImageFilename"),    // added in db v7 April 2020 // #patch13 This field has been removed
         };
     }
 

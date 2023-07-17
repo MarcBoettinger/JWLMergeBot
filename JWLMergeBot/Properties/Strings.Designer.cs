@@ -214,7 +214,7 @@ namespace JWLMergeBot.Properties {
         }
         
         /// <summary>
-        ///   Cerca una stringa localizzata simile a ℹ️ Some info regarding the file:\nFile size: {0}\nNotes count: {1}\nBookmarks count: {2}\nHighlights count: {3}\nTags count: {4}.
+        ///   Cerca una stringa localizzata simile a ℹ️ Some info regarding the file:\nFile size: {0}\nNotes count: {1}\nBookmarks count: {2}\nHighlights count: {3}\nTags count: {4}\nPlaylists count: None! I don&apos;t support them.
         /// </summary>
         internal static string file_info_details {
             get {
@@ -259,7 +259,7 @@ namespace JWLMergeBot.Properties {
         }
         
         /// <summary>
-        ///   Cerca una stringa localizzata simile a ❌ File must be smaller than 20MB.
+        ///   Cerca una stringa localizzata simile a ❌ File must be smaller than 20MB. If your backup includes playlists, I suggest you to export them, delete them and re-send me the backup file.
         /// </summary>
         internal static string max_filesize {
             get {
@@ -430,7 +430,7 @@ namespace JWLMergeBot.Properties {
         }
         
         /// <summary>
-        ///   Cerca una stringa localizzata simile a Hello {0}, I&apos;m @JWLMergeBot 🤖\nMy purpose is to merge two backup files of JW Library into a single one 🔗\n\nI work like this:\n1. You send me a file 📩\n2. I store it 📨\n3. You send me another file 📩\n4. I merge it with the first and then I send back to you the merged file 🔗\n\nObviously, sending me a file you agree that I store it 📝\nHow could I merge it if I don&apos;t store it? 🤪\nHowever you can delete it whenever you want with the appropriate command /delete 🗑\n\nEnjoy! 🤖.
+        ///   Cerca una stringa localizzata simile a Hello {0}, I&apos;m @JWLMergeBot 🤖\nMy purpose is to merge two backup files of JW Library into a single one 🔗\n\nI work like this:\n1. You send me a file 📩\n2. I store it 📨\n3. You send me another file 📩\n4. I merge it with the first and then I send back to you the merged file 🔗\n\nObviously, sending me a file you agree that I store it 📝\nHow could I merge it if I don&apos;t store it? 🤪\nHowever you can delete it whenever you want with the appropriate command /delete 🗑\n\nPlease note! I don&apos;t currently suppo [stringa troncata]&quot;;.
         /// </summary>
         internal static string start_details {
             get {
