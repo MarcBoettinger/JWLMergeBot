@@ -22,10 +22,15 @@ The bot is based on [this project](https://github.com/AntonyCorbett/JWLMerge) of
 * Send the second .jwlibrary file
 * Get the merged .jwlibrary file and restore it with _JW Library_
 
+## Limitations
+
+Currently, the bot **doesn't support the playlists merge**.\
+If you send a backup with a playlist, the merged file will not contains the playlists anymore.
+
 ## Disclaimer
-The bot needs to process your backup files to works.
-So, when you send the first backup file, this file is kept in the memory of a server.
-When you send the second one, the bot merge it with the first one, and it keeps in memory the result.
+The bot needs to process your backup files to works.\
+So, when you send the first backup file, this file is kept in the memory of a server.\
+When you send the second one, the bot merge it with the first one, and it keeps in memory the result.\
 _Keep this in mind if you store sensitive informations in your notes._
 >Note: You can manually delete all your data with the **/delete** command. Or you can enable the option to delete all your data immediately after the merge with the **/autodelete_on** command.
 
