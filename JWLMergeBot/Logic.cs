@@ -13,6 +13,7 @@ using JWLMergeBot.Properties;
 using static JWLMergeBot.FileHandling;
 using Microsoft.Extensions.Logging;
 using Polly;
+using JWLMerge.BackupFileServices.Exceptions;
 
 namespace JWLMergeBot
 {
@@ -87,8 +88,19 @@ namespace JWLMergeBot
                 // Delete wrong temp file
                 FileHandling.DeleteFile(FileType.Temp, message.Chat.Id);
 
-                // Feedback
-                await Worker.botClient.SendTextMessageAsync(message.Chat, string.Format(Strings.file_error, exception.Message));
+                // Feedback for WrongDatabaseVersionException
+                if (exception is WrongDatabaseVersionException)
+                {
+                    int Expected = ((WrongDatabaseVersionException)exception).ExpectedVersion;
+                    int Found = ((WrongDatabaseVersionException)exception).FoundVersion;
+                    if (Found<Expected)
+                        await Worker.botClient.SendTextMessageAsync(message.Chat, string.Format(Strings.wrong_database_version_lower, Found, Expected));
+                    else
+                        await Worker.botClient.SendTextMessageAsync(message.Chat, string.Format(Strings.wrong_database_version_higher, Found, Expected));
+                }
+                else
+                    // Generic feedback
+                    await Worker.botClient.SendTextMessageAsync(message.Chat, string.Format(Strings.file_error, exception.Message));
                 return;
             }
 

@@ -448,6 +448,24 @@ namespace JWLMergeBot.Properties {
         }
         
         /// <summary>
+        ///   Cerca una stringa localizzata simile a ❗️The version of the backup you sent ({0}) is not the one I support ({1}). Maybe I will be updated to support this new version..
+        /// </summary>
+        internal static string wrong_database_version_higher {
+            get {
+                return ResourceManager.GetString("wrong_database_version_higher", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Cerca una stringa localizzata simile a ❗️The version of the backup you sent ({0}) is not the one I support ({1}). Please, update JW Library and send me again the file..
+        /// </summary>
+        internal static string wrong_database_version_lower {
+            get {
+                return ResourceManager.GetString("wrong_database_version_lower", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Cerca una stringa localizzata simile a ❌ I can only deal with JW Library backup files (*.jwlibrary).
         /// </summary>
         internal static string wrong_filetype {
