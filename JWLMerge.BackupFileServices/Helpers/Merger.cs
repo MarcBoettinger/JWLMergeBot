@@ -258,6 +258,9 @@ internal sealed class Merger
                 InsertTag(tag, destination);
             }
         }
+
+        // Remove all playlist tags #patch13 
+        destination.Tags.RemoveAll(t => t.Type == 2);
     }
 
     private void MergeUserMarks(Database source, Database destination)

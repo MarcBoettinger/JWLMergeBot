@@ -9,7 +9,7 @@ public class Tag
 
     /// <summary>
     /// The tag type.
-    /// There appear to be 3 tag types (0 = Favourite, 1 = User-defined, 2 = ?).
+    /// There appear to be 3 tag types (0 = Favourite, 1 = User-defined, 2 = Playlist).
     /// </summary>
     public int Type { get; set; }
 
