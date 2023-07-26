@@ -214,7 +214,7 @@ namespace JWLMergeBot.Properties {
         }
         
         /// <summary>
-        ///   Cerca una stringa localizzata simile a ℹ️ Some info regarding the file:\nFile size: {0}\nNotes count: {1}\nBookmarks count: {2}\nHighlights count: {3}\nTags count: {4}\nPlaylists count: None! I don&apos;t support them.
+        ///   Cerca una stringa localizzata simile a ℹ️ Some info regarding the file:\nFile size: {0}\nNotes count: {1}\nBookmarks count: {2}\nHighlights count: {3}\nTags count: {4}\nPlaylists count: none! I don&apos;t support them.
         /// </summary>
         internal static string file_info_details {
             get {

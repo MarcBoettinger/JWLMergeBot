@@ -169,7 +169,7 @@
     <value>Informazioni</value>
   </data>
   <data name="file_info_details" xml:space="preserve">
-    <value>ℹ️ Alcune informazioni sul file:\nDimensione file: {0}\nNumero di note: {1}\nNumero di segnalibri: {2}\nNumero di evidenziature: {3}\nNumero di tag: {4}\nNumero di playlist: Nessuna! Non le supporto</value>
+    <value>ℹ️ Alcune informazioni sul file:\nDimensione file: {0}\nNumero di note: {1}\nNumero di segnalibri: {2}\nNumero di evidenziature: {3}\nNumero di tag: {4}\nNumero di playlist: nessuna! Non le supporto</value>
   </data>
   <data name="file_not_exists" xml:space="preserve">
     <value>👾 Non ho il file in memoria</value>
