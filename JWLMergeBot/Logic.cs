@@ -308,6 +308,7 @@ namespace JWLMergeBot
                     break;
 
                 case Command.Stat:
+                case Command.Stats:
                     // Get some statistics, if admin
                     if (AppConfig.Load().IsAdmin(message.Chat.Username))
                     {

@@ -22,6 +22,7 @@ namespace JWLMergeBot
         #region Admins only
         public const string Changelog = "/changelog";
         public const string Stat = "/stat";
+        public const string Stats = "/stats";
         #endregion
     }
 }
