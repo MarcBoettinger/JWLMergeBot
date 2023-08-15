@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -12,9 +13,20 @@ namespace JWLMergeBot
 	{
 		public string Language { get; set; }
 		public bool AutoDeleteFile { get; set; }
-		public int MergedFileCount { get; set; }
+		private int _MergedFileCount;
+        public int MergedFileCount
+        {
+            get { return _MergedFileCount; }
+            set
+            {
+				_MergedFileCount = value;
+				LastMerge = DateTime.Now;
+            }
+        }
+        [JsonConverter(typeof(IsoDateTimeConverter))]
+        public DateTime? LastMerge { get; set; }
 
-		public void ApplyLanguage()
+        public void ApplyLanguage()
 		{
 			Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(Language!=null?Language:"en");
 		}
@@ -43,6 +55,7 @@ namespace JWLMergeBot
 			config.Language = "en";
 			config.AutoDeleteFile = false;
 			config.MergedFileCount = 0;
+			config.LastMerge = null;
 
 			return config;
 		}
