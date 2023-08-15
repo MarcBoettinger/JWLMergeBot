@@ -259,7 +259,7 @@ internal sealed class DataAccessLayer
             Track = ReadNullableInt(reader, "Track"),
             IssueTagNumber = ReadInt(reader, "IssueTagNumber"),
             KeySymbol = ReadString(reader, "KeySymbol"),
-            MepsLanguage = ReadInt(reader, "MepsLanguage"),
+            MepsLanguage = ReadNullableInt(reader, "MepsLanguage"),
             Type = ReadInt(reader, "Type"),
             Title = ReadNullableString(reader, "Title"),
         };
