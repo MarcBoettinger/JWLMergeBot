@@ -1,3 +1,12 @@
+## [1.7.0.15] - 2023-08-16
+
+* Support for the v14 db schema
+* The bot can now send messages to users
+
+## [1.6.2.14] - 2023-07-26
+
+* Bugfix
+
 ## [1.6.1.13] - 2023-07-17
 
 * Improved the handling of the file if db version doesn't match with supported one
