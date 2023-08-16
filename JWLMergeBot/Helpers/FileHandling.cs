@@ -130,5 +130,10 @@ namespace JWLMergeBot
         {
             return Directory.GetFiles(GetApplicationDirectory(), "*" + JWLibraryExtensions[0], SearchOption.TopDirectoryOnly);
         }
+
+        public static string[] GetConfigFiles()
+        {
+            return Directory.GetFiles(GetApplicationDirectory(), "*.json", SearchOption.TopDirectoryOnly);
+        }
     }
 }
