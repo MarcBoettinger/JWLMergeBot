@@ -14,6 +14,9 @@ using static JWLMergeBot.FileHandling;
 using Microsoft.Extensions.Logging;
 using Polly;
 using JWLMerge.BackupFileServices.Exceptions;
+using System.Text.RegularExpressions;
+using Newtonsoft.Json;
+using JWLMergeBot.Models;
 
 namespace JWLMergeBot
 {
@@ -299,7 +302,7 @@ namespace JWLMergeBot
                             text: GetFileInfoString(MainJWLibraryFile, message.Chat.Id),
                             replyMarkup: new InlineKeyboardMarkup(new[] {
                                  InlineKeyboardButton.WithCallbackData(Strings.delete_file,Command.Delete)
-                            }));  
+                            }));
                     break;
 
                 case Command.BotInfo:
@@ -321,16 +324,23 @@ namespace JWLMergeBot
                         StringBuilder sb = new StringBuilder();
                         foreach (string file in StoredFiles)
                         {
-                            try { 
+                            try
+                            {
                                 var ChatInfo = Worker.botClient.GetChatAsync(Path.GetFileNameWithoutExtension(file)).Result;
-                                sb.AppendLine($"{ChatInfo.FirstName} {ChatInfo.LastName}".Trim()+(ChatInfo.Username!=null?$" @{ChatInfo.Username}":""));
+                                sb.AppendLine($"{ChatInfo.FirstName} {ChatInfo.LastName}".Trim() + (ChatInfo.Username != null ? $" @{ChatInfo.Username}" : ""));
                             }
-                            catch(Exception e){
+                            catch (Exception e)
+                            {
                                 e.ToString();
                             }
                         }
                         await Worker.botClient.SendTextMessageAsync(message.Chat.Id, string.Format(Strings.stat, StoredFiles.Length, sb.ToString()).Replace("\\n", "\n"));
                     }
+                    break;
+
+                case Command.SendMessage:
+                    if (AppConfig.Load().IsAdmin(message.Chat.Username))
+                        await Worker.botClient.SendTextMessageAsync(message.Chat, Strings.message_syntax.Replace("\\n", "\n"));
                     break;
 
                 case Command.Changelog:
@@ -422,6 +432,86 @@ namespace JWLMergeBot
                         chatConfig.Save(message.Chat.Id);
                     }
                     goto case Command.Settings;
+            }
+
+            // Regex commands
+            // Regexs
+            List<String> regexs = new List<string> { Command.SendMessageRegex };
+            foreach (string regex in regexs)
+            {
+                Match regexMatch = Regex.Match(command, regex);
+                if (regexMatch.Success)
+                {
+                    switch (regex)
+                    {
+                        case Command.SendMessageRegex:
+                            // Send message, if admin
+                            if (AppConfig.Load().IsAdmin(message.Chat.Username))
+                            {
+                                // Try to parse the message
+                                BotMessage botMessage = JsonConvert.DeserializeObject<BotMessage>(regexMatch.Groups[1].Value);
+
+                                // Check if the message is valid
+                                if (botMessage != null && botMessage.IsValid())
+                                {
+                                    List<int> ChatIds = new List<int>();
+                                    // Single or multiple recipient?
+                                    if (botMessage.IsSingleRecipient())
+                                    {
+                                        // Single recipient
+                                        ChatIds.Add(int.Parse(botMessage.Recipients));
+                                    }
+                                    else
+                                    {
+                                        // Multiple recipients
+                                        string[] files = new string[0];
+                                        if (botMessage.Recipients.Equals(BotMessage.RecipientsWithStoredFile))
+                                            files = FileHandling.GetMainFiles();
+                                        else if(botMessage.Recipients.Equals(BotMessage.RecipientsWithSettingsInitialized))
+                                            files = FileHandling.GetConfigFiles();
+                                        foreach (string file in files)
+                                            if (int.TryParse(Path.GetFileNameWithoutExtension(file), out int number))
+                                                ChatIds.Add(number);
+                                    }
+
+                                    // Send Text to every chat
+                                    List<string> messagesExceptions = new List<string>();
+                                    foreach(int ChatId in ChatIds)
+                                    {
+                                        // Get chatIdSettings
+                                        ChatConfig chatConfig = ChatConfig.Load(ChatId);
+
+                                        // Send the message
+                                        try
+                                        {
+                                            await Worker.botClient.SendTextMessageAsync(ChatId, botMessage.Text[chatConfig.Language]);
+                                        }
+                                        catch (Exception exception)
+                                        {
+                                            // Feedback
+                                            messagesExceptions.Add(string.Format("({0}) {1}", ChatId, exception.Message));
+                                        }
+                                    }
+
+                                    // Feedback
+                                    int exceptionCount = messagesExceptions.Count;
+                                    int sentCount = ChatIds.Count - exceptionCount;
+                                    string messageText = string.Format(Strings.messages_sent, sentCount);
+                                    if (exceptionCount > 0)
+                                    {
+                                        messageText += "\n" + string.Format(Strings.messages_not_sent, exceptionCount);
+                                        foreach (string exc in messagesExceptions)
+                                            messageText += "\n" + exc;
+                                    }
+                                    Worker.Logger.LogError(message: messageText);
+                                    await Worker.botClient.SendTextMessageAsync(message.Chat.Id, messageText);
+                                }
+                                else
+                                    await Worker.botClient.SendTextMessageAsync(message.Chat.Id, Strings.invalid_message_syntax);
+                            }
+                            break;
+                    }
+                }
             }
         }
 

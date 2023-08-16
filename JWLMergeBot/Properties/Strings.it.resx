@@ -174,6 +174,9 @@
   <data name="file_not_exists" xml:space="preserve">
     <value>👾 Non ho il file in memoria</value>
   </data>
+  <data name="invalid_message_syntax" xml:space="preserve">
+    <value>❗️Sintassi del messaggio non valida</value>
+  </data>
   <data name="invalid_token" xml:space="preserve">
     <value>🔑 Token non valido! Controllare di aver inserito nel file "config.json" il valore corretto su "BotToken"</value>
   </data>
@@ -195,8 +198,17 @@
   <data name="merged_file_keep" xml:space="preserve">
     <value>🔗 Ecco il file unito! Lo terrò in memoria</value>
   </data>
+  <data name="messages_not_sent" xml:space="preserve">
+    <value>❌ Messaggi non inviati: {0}</value>
+  </data>
+  <data name="messages_sent" xml:space="preserve">
+    <value>✔️ Messaggi inviati: {0}</value>
+  </data>
   <data name="message_dropped" xml:space="preserve">
     <value>Un messaggio da {0} è stato ignorato perché la chat è stata temporaneamente bannata</value>
+  </data>
+  <data name="message_syntax" xml:space="preserve">
+    <value>ℹ️ Questa è la sintassi del comando:\n/sendmessage {\n  "Recipients":"ChatId|WithSettingsInitialized|WithStoredFile",\n  "Text":{\n    "it": "\uD83D\uDCE2 Italian message",\n    "en": "\u2139\uFE0F English message"\n  }\n}</value>
   </data>
   <data name="message_type_callbackquery" xml:space="preserve">
     <value>una callback query</value>

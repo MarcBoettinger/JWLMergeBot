@@ -232,6 +232,15 @@ namespace JWLMergeBot.Properties {
         }
         
         /// <summary>
+        ///   Cerca una stringa localizzata simile a ❗️Invalid message syntax.
+        /// </summary>
+        internal static string invalid_message_syntax {
+            get {
+                return ResourceManager.GetString("invalid_message_syntax", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Cerca una stringa localizzata simile a 🔑 Invalid token! Please, verify that in the &quot;config.json&quot; file there is the correct value on &quot;BotToken&quot;.
         /// </summary>
         internal static string invalid_token {
@@ -304,6 +313,15 @@ namespace JWLMergeBot.Properties {
         }
         
         /// <summary>
+        ///   Cerca una stringa localizzata simile a ℹ️ This is the syntax of the command:\n/sendmessage {\n  &quot;Recipients&quot;:&quot;ChatId|WithSettingsInitialized|WithStoredFile&quot;,\n  &quot;Text&quot;:{\n    &quot;it&quot;: &quot;\uD83D\uDCE2 Italian message&quot;,\n    &quot;en&quot;: &quot;\u2139\uFE0F English message&quot;\n  }\n}.
+        /// </summary>
+        internal static string message_syntax {
+            get {
+                return ResourceManager.GetString("message_syntax", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Cerca una stringa localizzata simile a a callback query.
         /// </summary>
         internal static string message_type_callbackquery {
@@ -336,6 +354,24 @@ namespace JWLMergeBot.Properties {
         internal static string message_type_unhandled {
             get {
                 return ResourceManager.GetString("message_type_unhandled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Cerca una stringa localizzata simile a ❌ Messages not sent: {0}.
+        /// </summary>
+        internal static string messages_not_sent {
+            get {
+                return ResourceManager.GetString("messages_not_sent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Cerca una stringa localizzata simile a ✔️ Messages sent: {0}.
+        /// </summary>
+        internal static string messages_sent {
+            get {
+                return ResourceManager.GetString("messages_sent", resourceCulture);
             }
         }
         

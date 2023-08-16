@@ -11,7 +11,11 @@ namespace JWLMergeBot
 {
     class ChatConfig
 	{
-		public string Language { get; set; }
+		private string _Language;
+		public string Language {
+			get { return _Language != null ? _Language : "en"; }
+			set { _Language = value; } 
+		}
 		public bool AutoDeleteFile { get; set; }
 		private int _MergedFileCount;
         public int MergedFileCount
@@ -28,7 +32,7 @@ namespace JWLMergeBot
 
         public void ApplyLanguage()
 		{
-			Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(Language!=null?Language:"en");
+			Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(Language);
 		}
 
 		public void Save(long ChatId)

@@ -23,6 +23,11 @@ namespace JWLMergeBot
         public const string Changelog = "/changelog";
         public const string Stat = "/stat";
         public const string Stats = "/stats";
+        public const string SendMessage = "/sendmessage";
+        #endregion
+
+        #region Regex of commands
+        public const string SendMessageRegex = "^\\/sendmessage ({(\n|.)+})";
         #endregion
     }
 }
