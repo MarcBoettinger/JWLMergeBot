@@ -151,18 +151,18 @@ namespace JWLMergeBot
                     // Merge files
                     BackupFile backup = backupFileService.Merge(new List<BackupFile>() { MainJWLibraryFile, TempJWLibraryFile });
                     
-                    // Set the greatest Modification date (TODO controlla che funzioni e che sia il punto corretto in cui scrivere la data)
-                    /*if (
-                        DateTime.TryParseExact(MainJWLibraryFile.Manifest.UserDataBackup.LastModifiedDate, "yyyy-MM-ddTHH:mm:sszzz", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out DateTime dateTime1) &&
-                        DateTime.TryParseExact(TempJWLibraryFile.Manifest.UserDataBackup.LastModifiedDate, "yyyy-MM-ddTHH:mm:sszzz", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out DateTime dateTime2)
+                    // Set the greatest Modification date
+                    if (
+                        DateTime.TryParseExact(MainJWLibraryFile.Manifest.UserDataBackup.LastModifiedDate, ManifestDateTimeFormat, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out DateTime MainJWLibraryFileLastModifiedDate) &&
+                        DateTime.TryParseExact(TempJWLibraryFile.Manifest.UserDataBackup.LastModifiedDate, ManifestDateTimeFormat, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out DateTime TempJWLibraryFileLastModifiedDate)
                         )
                     {
-                        
-                        if (dateTime1 > dateTime2) 
-                            backup.Manifest.UserDataBackup.LastModifiedDate = dateTime1.ToString("yyyy-MM-ddTHH:mm:ss.fffffffzzz");
+                        if (MainJWLibraryFileLastModifiedDate > TempJWLibraryFileLastModifiedDate) 
+                            backup.Manifest.UserDataBackup.LastModifiedDate = MainJWLibraryFile.Manifest.UserDataBackup.LastModifiedDate;
                         else
-                            backup.Manifest.UserDataBackup.LastModifiedDate = dateTime2.ToString("yyyy-MM-ddTHH:mm:ss.fffffffzzz");
-                    }*/
+                            backup.Manifest.UserDataBackup.LastModifiedDate = TempJWLibraryFile.Manifest.UserDataBackup.LastModifiedDate;
+                    }
+                    MainJWLibraryFile.Manifest.CreationDate = DateTime.Now.ToString(ManifestDateTimeFormat);
 
                     // Write the merged database
                     backupFileService.WriteNewDatabase(backup, FileHandling.GetFilePath(FileType.Merged, message.Chat.Id), FileHandling.GetFilePath(FileType.Main, message.Chat.Id));
@@ -423,6 +423,10 @@ namespace JWLMergeBot
                         // Delete favorites
                         MainJWLibraryFile.Database.TagMaps.RemoveAll(tagmap => tagmap.TagId == 1);
 
+                        // Update last modified date
+                        MainJWLibraryFile.Manifest.UserDataBackup.LastModifiedDate = DateTime.Now.ToString(ManifestDateTimeFormat);
+                        MainJWLibraryFile.Manifest.CreationDate = DateTime.Now.ToString(ManifestDateTimeFormat);
+
                         // Write the merged database
                         backupFileService.WriteNewDatabase(MainJWLibraryFile, FileHandling.GetFilePath(FileType.Temp, message.Chat.Id), FileHandling.GetFilePath(FileType.Main, message.Chat.Id));
 
@@ -594,6 +598,8 @@ namespace JWLMergeBot
                 }
             }
         }
+
+        private static String ManifestDateTimeFormat = "yyyy-MM-ddTHH:mm:sszzz";
 
         private static String GetFileInfoString(BackupFile JWLibraryFile, long chatId)
         {
