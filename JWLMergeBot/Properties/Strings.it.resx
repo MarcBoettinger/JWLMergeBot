@@ -160,7 +160,7 @@
     <value>🗑 Elimina preferiti ⭐</value>
   </data>
   <data name="delete_favorites_confirm" xml:space="preserve">
-    <value>Vuoi eliminare tutti i preferiti?</value>
+    <value>⚠️ Vuoi eliminare tutti i preferiti?</value>
   </data>
   <data name="delete_file" xml:space="preserve">
     <value>Elimina file memorizzato</value>

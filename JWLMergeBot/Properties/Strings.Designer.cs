@@ -187,7 +187,7 @@ namespace JWLMergeBot.Properties {
         }
         
         /// <summary>
-        ///   Cerca una stringa localizzata simile a Do you really want to delete all favorites?.
+        ///   Cerca una stringa localizzata simile a ⚠️ Do you really want to delete all favorites?.
         /// </summary>
         internal static string delete_favorites_confirm {
             get {

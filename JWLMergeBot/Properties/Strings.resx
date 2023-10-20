@@ -160,7 +160,7 @@
     <value>🗑 Delete favorites ⭐</value>
   </data>
   <data name="delete_favorites_confirm" xml:space="preserve">
-    <value>Do you really want to delete all favorites?</value>
+    <value>⚠️ Do you really want to delete all favorites?</value>
   </data>
   <data name="delete_file" xml:space="preserve">
     <value>Delete stored file</value>
