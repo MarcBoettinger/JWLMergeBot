@@ -1,3 +1,8 @@
+## [1.8.0.16] - 2023-10-20
+
+* New command: edit file. The first available command is: "Delete favorites" to clear all favorites from file
+* Fix: now the last modified date of the merged file is correctly filled
+
 ## [1.7.0.15] - 2023-08-16
 
 * Support for the v14 db schema
