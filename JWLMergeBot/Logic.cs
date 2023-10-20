@@ -17,6 +17,7 @@ using JWLMerge.BackupFileServices.Exceptions;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using JWLMergeBot.Models;
+using DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace JWLMergeBot
 {
@@ -148,6 +149,21 @@ namespace JWLMergeBot
                 {
                     // Merge files
                     BackupFile backup = backupFileService.Merge(new List<BackupFile>() { MainJWLibraryFile, TempJWLibraryFile });
+                    
+                    // Set the greatest Modification date (TODO controlla che funzioni e che sia il punto corretto in cui scrivere la data)
+                    if (
+                        DateTime.TryParseExact(MainJWLibraryFile.Manifest.UserDataBackup.LastModifiedDate, "yyyy-MM-ddTHH:mm:sszzz", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out DateTime dateTime1) &&
+                        DateTime.TryParseExact(TempJWLibraryFile.Manifest.UserDataBackup.LastModifiedDate, "yyyy-MM-ddTHH:mm:sszzz", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out DateTime dateTime2)
+                        )
+                    {
+                        
+                        if (dateTime1 > dateTime2) 
+                            backup.Manifest.UserDataBackup.LastModifiedDate = dateTime1.ToString("yyyy-MM-ddTHH:mm:ss.fffffffzzz");
+                        else
+                            backup.Manifest.UserDataBackup.LastModifiedDate = dateTime2.ToString("yyyy-MM-ddTHH:mm:ss.fffffffzzz");
+                    }
+
+                    // Write the merged database
                     backupFileService.WriteNewDatabase(backup, FileHandling.GetFilePath(FileType.Merged, message.Chat.Id), FileHandling.GetFilePath(FileType.Main, message.Chat.Id));
 
                     // Now the merged file become the main stored file
@@ -349,8 +365,39 @@ namespace JWLMergeBot
                         await Worker.botClient.SendTextMessageAsync(message.Chat, "Not implemented yet...");
                     break;
 
+                case Command.EditFile:
+                    // Check if any file is stored
+                    if (!FileHandling.FileExists(FileType.Main, message.Chat.Id))
+                    {
+                        await Worker.botClient.SendTextMessageAsync(message.Chat.Id, Strings.file_not_exists);
+                        return;
+                    }
+
+                    // Set edit file buttons
+                    InlineKeyboardMarkup editFileKeyboardMarkup = new InlineKeyboardMarkup(new[] {
+                             new[] { InlineKeyboardButton.WithCallbackData(Strings.delete_favorites, Command.DeleteFavorites) },
+                        });
+
+                    // Insert or update the menu
+                    InsertUpdateMenu(Strings.edit_stored_file, message, fromCallback, editFileKeyboardMarkup);
+
+                    break;
+
+                case Command.DeleteFavorites:
+                    // Prompt the user to confirm
+                    InsertUpdateMenu(Strings.delete_favorites_confirm, message, fromCallback, new InlineKeyboardMarkup(
+                    new[] {
+                                new[] { InlineKeyboardButton.WithCallbackData(Strings.yes, Command.DeleteFavoritesConfirmed) },
+                                new[] { InlineKeyboardButton.WithCallbackData(Strings.no, Command.EditFile) }
+                        }));
+                    break;
+
+                case Command.DeleteFavoritesConfirmed:
+                    // Fire!
+                    break;
+
                 case Command.Settings:
-                    // Change settings
+                    // Set settings buttons
                     InlineKeyboardMarkup settingsKeyboardMarkup = new InlineKeyboardMarkup(new[] {
                              new[] { InlineKeyboardButton.WithCallbackData(Strings.change_language_detail, Command.SetLang)},
                              ChatConfig.Load(message.Chat.Id).AutoDeleteFile?
@@ -358,27 +405,8 @@ namespace JWLMergeBot
                              new[] { InlineKeyboardButton.WithCallbackData(string.Format(Strings.auto_delete, Strings.no),Command.AutodeleteOn) }
                         });
 
-                    if (fromCallback)
-                    {
-                        await Worker.botClient.EditMessageTextAsync(
-                            chatId: message.Chat.Id,
-                            messageId: message.MessageId,
-                            text: Strings.change_settings
-                        );
-                        await Worker.botClient.EditMessageReplyMarkupAsync(
-                                chatId: message.Chat.Id,
-                                messageId: message.MessageId,
-                                replyMarkup: settingsKeyboardMarkup
-                                );
-                    }
-                    else
-                    {
-                        await Worker.botClient.SendTextMessageAsync(
-                            chatId: message.Chat.Id,
-                            text: Strings.change_settings,
-                            replyMarkup: settingsKeyboardMarkup
-                            );
-                    }
+                    // Insert or update the menu
+                    InsertUpdateMenu(Strings.change_settings, message, fromCallback, settingsKeyboardMarkup);
 
                     break;
 
@@ -519,5 +547,33 @@ namespace JWLMergeBot
         {
             return string.Format(Strings.file_info_details, FileHandling.GetReadableFilesize(FileType.Main, chatId), JWLibraryFile.Database.Notes.Count, JWLibraryFile.Database.Bookmarks.Count, JWLibraryFile.Database.UserMarks.Count, JWLibraryFile.Database.Tags.Count).Replace("\\n", "\n");
         }
+
+        public static async void InsertUpdateMenu(String title, Message message, bool fromCallback, InlineKeyboardMarkup keyboardMarkup)
+        {
+            // If the command came from a callback, it means that the user press the "back" button. So edit the message
+            if (fromCallback)
+            {
+                await Worker.botClient.EditMessageTextAsync(
+                    chatId: message.Chat.Id,
+                    messageId: message.MessageId,
+                    text: title
+                );
+                await Worker.botClient.EditMessageReplyMarkupAsync(
+                        chatId: message.Chat.Id,
+                        messageId: message.MessageId,
+                        replyMarkup: keyboardMarkup
+                        );
+            }
+            else
+            {
+                // Otherwise, send a new message
+                await Worker.botClient.SendTextMessageAsync(
+                    chatId: message.Chat.Id,
+                    text: title,
+                    replyMarkup: keyboardMarkup
+                    );
+            }
+        }
+
     }
 }

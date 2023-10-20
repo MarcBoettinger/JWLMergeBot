@@ -178,11 +178,38 @@ namespace JWLMergeBot.Properties {
         }
         
         /// <summary>
+        ///   Cerca una stringa localizzata simile a Delete favorites.
+        /// </summary>
+        internal static string delete_favorites {
+            get {
+                return ResourceManager.GetString("delete_favorites", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Cerca una stringa localizzata simile a Do you really want to delete all favorites?.
+        /// </summary>
+        internal static string delete_favorites_confirm {
+            get {
+                return ResourceManager.GetString("delete_favorites_confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Cerca una stringa localizzata simile a Delete stored file.
         /// </summary>
         internal static string delete_file {
             get {
                 return ResourceManager.GetString("delete_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Cerca una stringa localizzata simile a Edit stored file.
+        /// </summary>
+        internal static string edit_stored_file {
+            get {
+                return ResourceManager.GetString("edit_stored_file", resourceCulture);
             }
         }
         

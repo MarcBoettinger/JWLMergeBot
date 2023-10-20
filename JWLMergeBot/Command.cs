@@ -17,6 +17,9 @@ namespace JWLMergeBot
         public const string Start = "/start";
         public const string AutodeleteOn = "/autodelete_on";
         public const string AutodeleteOff = "/autodelete_off";
+        public const string EditFile = "/editfile";
+        public const string DeleteFavorites = "/deletefavorites";
+        public const string DeleteFavoritesConfirmed = "/deletefavorites_confirm";
         #endregion
 
         #region Admins only
