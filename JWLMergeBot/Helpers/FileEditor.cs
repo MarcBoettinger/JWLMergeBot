@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JWLMerge.BackupFileServices.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,9 +9,10 @@ namespace JWLMergeBot.Helpers
 {
     static class FileEditor
     {
-        public static bool DeleteFavorites()
+        public static bool DeleteFavorites(BackupFile MainJWLibraryFile)
         {
-
+            // TODO To implement logic 
+            // DELETE FROM TagMap WHERE TagId = 1
             return true;
         }
     }

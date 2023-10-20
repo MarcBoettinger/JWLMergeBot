@@ -205,11 +205,29 @@ namespace JWLMergeBot.Properties {
         }
         
         /// <summary>
-        ///   Cerca una stringa localizzata simile a Edit stored file.
+        ///   Cerca una stringa localizzata simile a 🖋️ Edit stored file.
         /// </summary>
         internal static string edit_stored_file {
             get {
                 return ResourceManager.GetString("edit_stored_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Cerca una stringa localizzata simile a 🖋️ Here is the edited file!.
+        /// </summary>
+        internal static string edited_file {
+            get {
+                return ResourceManager.GetString("edited_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Cerca una stringa localizzata simile a UserDataBackup_{0}_Edited.jwlibrary.
+        /// </summary>
+        internal static string edited_filename {
+            get {
+                return ResourceManager.GetString("edited_filename", resourceCulture);
             }
         }
         
