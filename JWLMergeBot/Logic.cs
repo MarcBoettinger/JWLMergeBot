@@ -403,6 +403,9 @@ namespace JWLMergeBot
                             return;
                         }
 
+                        // Feedback
+                        InsertUpdateMenu(Strings.editing_file, message, fromCallback, null);
+
                         // Load stored file
                         IBackupFileService backupFileService = new BackupFileService();
                         BackupFile MainJWLibraryFile = null;
@@ -418,31 +421,29 @@ namespace JWLMergeBot
                         }
 
                         // Delete favorites
-                        if (FileEditor.DeleteFavorites(MainJWLibraryFile))
+                        MainJWLibraryFile.Database.TagMaps.RemoveAll(tagmap => tagmap.TagId == 1);
+
+                        // Write the merged database
+                        backupFileService.WriteNewDatabase(MainJWLibraryFile, FileHandling.GetFilePath(FileType.Temp, message.Chat.Id), FileHandling.GetFilePath(FileType.Main, message.Chat.Id));
+
+                        // Now the modified file become the main stored file
+                        FileHandling.ChangeFileType(FileType.Temp, FileType.Main, message.Chat.Id);
+
+                        // Get the user settings
+                        ChatConfig chatConfig = ChatConfig.Load(message.Chat.Id);
+
+                        // Send edited file
+                        using (FileStream fs = System.IO.File.OpenRead(FileHandling.GetFilePath(FileType.Main, message.Chat.Id)))
                         {
-                            // Write the merged database
-                            backupFileService.WriteNewDatabase(MainJWLibraryFile, FileHandling.GetFilePath(FileType.Temp, message.Chat.Id), FileHandling.GetFilePath(FileType.Main, message.Chat.Id));
-
-                            // Now the modified file become the main stored file
-                            FileHandling.ChangeFileType(FileType.Temp, FileType.Main, message.Chat.Id);
-
-                            // Get the user settings
-                            ChatConfig chatConfig = ChatConfig.Load(message.Chat.Id);
-
-                            // Send edited file
-                            using (FileStream fs = System.IO.File.OpenRead(FileHandling.GetFilePath(FileType.Main, message.Chat.Id)))
-                            {
-                                InputOnlineFile inputOnlineFile = new InputOnlineFile(fs, string.Format(Strings.edited_filename, DateTime.Now.ToString("s")));
-                                await Worker.botClient.SendDocumentAsync(
-                                        chatId: message.Chat.Id,
-                                        document: inputOnlineFile,
-                                        caption: Strings.edited_file + "\n\n" + GetFileInfoString(MainJWLibraryFile, message.Chat.Id)
-                                       );
-                            }
-                        }
-                        else
-                        {
-                            // Error while removing favorites
+                            InputOnlineFile inputOnlineFile = new InputOnlineFile(fs, string.Format(Strings.edited_filename, DateTime.Now.ToString("s")));
+                            await Worker.botClient.SendDocumentAsync(
+                                    chatId: message.Chat.Id,
+                                    document: inputOnlineFile,
+                                    caption: Strings.edited_file + "\n\n" + GetFileInfoString(MainJWLibraryFile, message.Chat.Id),
+                                    replyMarkup: chatConfig.AutoDeleteFile ? null : new InlineKeyboardMarkup(new[] {
+                                        InlineKeyboardButton.WithCallbackData(Strings.delete_file, Command.Delete)
+                                    })
+                                    );
                         }
                     }
                     break;
@@ -609,11 +610,12 @@ namespace JWLMergeBot
                     messageId: message.MessageId,
                     text: title
                 );
-                await Worker.botClient.EditMessageReplyMarkupAsync(
-                        chatId: message.Chat.Id,
-                        messageId: message.MessageId,
-                        replyMarkup: keyboardMarkup
-                        );
+                if(keyboardMarkup != null)
+                    await Worker.botClient.EditMessageReplyMarkupAsync(
+                            chatId: message.Chat.Id,
+                            messageId: message.MessageId,
+                            replyMarkup: keyboardMarkup
+                            );
             }
             else
             {

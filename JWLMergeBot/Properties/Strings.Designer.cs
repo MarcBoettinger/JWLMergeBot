@@ -178,7 +178,7 @@ namespace JWLMergeBot.Properties {
         }
         
         /// <summary>
-        ///   Cerca una stringa localizzata simile a Delete favorites.
+        ///   Cerca una stringa localizzata simile a 🗑 Delete favorites ⭐.
         /// </summary>
         internal static string delete_favorites {
             get {
@@ -228,6 +228,15 @@ namespace JWLMergeBot.Properties {
         internal static string edited_filename {
             get {
                 return ResourceManager.GetString("edited_filename", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Cerca una stringa localizzata simile a 📥 Editing file… 🖋️.
+        /// </summary>
+        internal static string editing_file {
+            get {
+                return ResourceManager.GetString("editing_file", resourceCulture);
             }
         }
         
@@ -475,7 +484,7 @@ namespace JWLMergeBot.Properties {
         }
         
         /// <summary>
-        ///   Cerca una stringa localizzata simile a 📥 I&apos;ve got the file 🔗 Now I merge it with the file in my memory… .
+        ///   Cerca una stringa localizzata simile a 📥 I&apos;ve got the file 🔗 Now I merge it with the file in my memory….
         /// </summary>
         internal static string received_file2 {
             get {

@@ -157,7 +157,7 @@
     <value>⚙️ File di configurazione "config.json" non trovato</value>
   </data>
   <data name="delete_favorites" xml:space="preserve">
-    <value>Elimina preferiti</value>
+    <value>🗑 Elimina preferiti ⭐</value>
   </data>
   <data name="delete_favorites_confirm" xml:space="preserve">
     <value>Vuoi eliminare tutti i preferiti?</value>
@@ -170,6 +170,9 @@
   </data>
   <data name="edited_filename" xml:space="preserve">
     <value>UserDataBackup_{0}_Edited.jwlibrary</value>
+  </data>
+  <data name="editing_file" xml:space="preserve">
+    <value>📥 Sto modificando il file… 🖋️</value>
   </data>
   <data name="edit_stored_file" xml:space="preserve">
     <value>🖋️ Modifica file memorizzato</value>
@@ -187,7 +190,7 @@
     <value>ℹ️ Alcune informazioni sul file:\nDimensione file: {0}\nNumero di note: {1}\nNumero di segnalibri: {2}\nNumero di evidenziature: {3}\nNumero di tag: {4}\nNumero di playlist: nessuna! Non le supporto</value>
   </data>
   <data name="file_not_exists" xml:space="preserve">
-    <value>👾 Non ho il file in memoria</value>
+    <value>👾 Non ho nessun file in memoria</value>
   </data>
   <data name="invalid_message_syntax" xml:space="preserve">
     <value>❗️Sintassi del messaggio non valida</value>
