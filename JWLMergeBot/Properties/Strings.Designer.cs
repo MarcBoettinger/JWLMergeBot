@@ -178,11 +178,65 @@ namespace JWLMergeBot.Properties {
         }
         
         /// <summary>
+        ///   Cerca una stringa localizzata simile a 🗑 Delete favorites ⭐.
+        /// </summary>
+        internal static string delete_favorites {
+            get {
+                return ResourceManager.GetString("delete_favorites", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Cerca una stringa localizzata simile a ⚠️ Do you really want to delete all favorites?.
+        /// </summary>
+        internal static string delete_favorites_confirm {
+            get {
+                return ResourceManager.GetString("delete_favorites_confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Cerca una stringa localizzata simile a Delete stored file.
         /// </summary>
         internal static string delete_file {
             get {
                 return ResourceManager.GetString("delete_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Cerca una stringa localizzata simile a 🖋️ Edit stored file.
+        /// </summary>
+        internal static string edit_stored_file {
+            get {
+                return ResourceManager.GetString("edit_stored_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Cerca una stringa localizzata simile a 🖋️ Here is the edited file!.
+        /// </summary>
+        internal static string edited_file {
+            get {
+                return ResourceManager.GetString("edited_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Cerca una stringa localizzata simile a UserDataBackup_{0}_Edited.jwlibrary.
+        /// </summary>
+        internal static string edited_filename {
+            get {
+                return ResourceManager.GetString("edited_filename", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Cerca una stringa localizzata simile a 📥 Editing file… 🖋️.
+        /// </summary>
+        internal static string editing_file {
+            get {
+                return ResourceManager.GetString("editing_file", resourceCulture);
             }
         }
         
@@ -430,7 +484,7 @@ namespace JWLMergeBot.Properties {
         }
         
         /// <summary>
-        ///   Cerca una stringa localizzata simile a 📥 I&apos;ve got the file 🔗 Now I merge it with the file in my memory… .
+        ///   Cerca una stringa localizzata simile a 📥 I&apos;ve got the file 🔗 Now I merge it with the file in my memory….
         /// </summary>
         internal static string received_file2 {
             get {

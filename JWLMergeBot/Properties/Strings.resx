@@ -156,8 +156,26 @@
   <data name="config_not_found" xml:space="preserve">
     <value>⚙️ Configuration file "config.json" not found</value>
   </data>
+  <data name="delete_favorites" xml:space="preserve">
+    <value>🗑 Delete favorites ⭐</value>
+  </data>
+  <data name="delete_favorites_confirm" xml:space="preserve">
+    <value>⚠️ Do you really want to delete all favorites?</value>
+  </data>
   <data name="delete_file" xml:space="preserve">
     <value>Delete stored file</value>
+  </data>
+  <data name="edited_file" xml:space="preserve">
+    <value>🖋️ Here is the edited file!</value>
+  </data>
+  <data name="edited_filename" xml:space="preserve">
+    <value>UserDataBackup_{0}_Edited.jwlibrary</value>
+  </data>
+  <data name="editing_file" xml:space="preserve">
+    <value>📥 Editing file… 🖋️</value>
+  </data>
+  <data name="edit_stored_file" xml:space="preserve">
+    <value>🖋️ Edit stored file</value>
   </data>
   <data name="file_deleted" xml:space="preserve">
     <value>🗑 Stored file deleted</value>
@@ -241,7 +259,7 @@
     <value>📥 I've got the main file 📨 I will keep it in my memory</value>
   </data>
   <data name="received_file2" xml:space="preserve">
-    <value>📥 I've got the file 🔗 Now I merge it with the file in my memory… </value>
+    <value>📥 I've got the file 🔗 Now I merge it with the file in my memory…</value>
   </data>
   <data name="received_something" xml:space="preserve">
     <value>I received {0} from {1}: {2}</value>

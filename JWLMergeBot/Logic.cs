@@ -17,6 +17,8 @@ using JWLMerge.BackupFileServices.Exceptions;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using JWLMergeBot.Models;
+using DocumentFormat.OpenXml.Drawing.Charts;
+using JWLMergeBot.Helpers;
 
 namespace JWLMergeBot
 {
@@ -148,6 +150,21 @@ namespace JWLMergeBot
                 {
                     // Merge files
                     BackupFile backup = backupFileService.Merge(new List<BackupFile>() { MainJWLibraryFile, TempJWLibraryFile });
+                    
+                    // Set the greatest Modification date
+                    if (
+                        DateTime.TryParseExact(MainJWLibraryFile.Manifest.UserDataBackup.LastModifiedDate, ManifestDateTimeFormat, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out DateTime MainJWLibraryFileLastModifiedDate) &&
+                        DateTime.TryParseExact(TempJWLibraryFile.Manifest.UserDataBackup.LastModifiedDate, ManifestDateTimeFormat, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out DateTime TempJWLibraryFileLastModifiedDate)
+                        )
+                    {
+                        if (MainJWLibraryFileLastModifiedDate > TempJWLibraryFileLastModifiedDate) 
+                            backup.Manifest.UserDataBackup.LastModifiedDate = MainJWLibraryFile.Manifest.UserDataBackup.LastModifiedDate;
+                        else
+                            backup.Manifest.UserDataBackup.LastModifiedDate = TempJWLibraryFile.Manifest.UserDataBackup.LastModifiedDate;
+                    }
+                    MainJWLibraryFile.Manifest.CreationDate = DateTime.Now.ToString(ManifestDateTimeFormat);
+
+                    // Write the merged database
                     backupFileService.WriteNewDatabase(backup, FileHandling.GetFilePath(FileType.Merged, message.Chat.Id), FileHandling.GetFilePath(FileType.Main, message.Chat.Id));
 
                     // Now the merged file become the main stored file
@@ -274,35 +291,36 @@ namespace JWLMergeBot
                     break;
 
                 case Command.FileInfo:
-                    // Check if file exists
-                    if (!FileHandling.FileExists(FileType.Main, message.Chat.Id))
-                    {
-                        await Worker.botClient.SendTextMessageAsync(message.Chat.Id, Strings.file_not_exists);
-                        return;
-                    }
+                    { 
+                        // Check if file exists
+                        if (!FileHandling.FileExists(FileType.Main, message.Chat.Id))
+                        {
+                            await Worker.botClient.SendTextMessageAsync(message.Chat.Id, Strings.file_not_exists);
+                            return;
+                        }
 
-                    // Init JWLMerge
-                    IBackupFileService backupFileService = new BackupFileService();
+                        // Load stored file
+                        IBackupFileService backupFileService = new BackupFileService();
+                        BackupFile MainJWLibraryFile = null;
+                        try
+                        {
+                            MainJWLibraryFile = backupFileService.Load(FileHandling.GetFilePath(FileType.Main, message.Chat.Id));
+                        }
+                        catch (Exception exception)
+                        {
+                            // Feedback
+                            await Worker.botClient.SendTextMessageAsync(message.Chat.Id, string.Format(Strings.file_error, exception.Message));
+                            return;
+                        }
 
-                    BackupFile MainJWLibraryFile = null;
-                    try
-                    {
-                        MainJWLibraryFile = backupFileService.Load(FileHandling.GetFilePath(FileType.Main, message.Chat.Id));
+                        // Get stored file infos
+                        await Worker.botClient.SendTextMessageAsync(
+                                chatId: message.Chat.Id,
+                                text: GetFileInfoString(MainJWLibraryFile, message.Chat.Id),
+                                replyMarkup: new InlineKeyboardMarkup(new[] {
+                                     InlineKeyboardButton.WithCallbackData(Strings.delete_file,Command.Delete)
+                                }));
                     }
-                    catch (Exception exception)
-                    {
-                        // Feedback
-                        await Worker.botClient.SendTextMessageAsync(message.Chat.Id, string.Format(Strings.file_error, exception.Message));
-                        return;
-                    }
-
-                    // Get stored file infos
-                    await Worker.botClient.SendTextMessageAsync(
-                            chatId: message.Chat.Id,
-                            text: GetFileInfoString(MainJWLibraryFile, message.Chat.Id),
-                            replyMarkup: new InlineKeyboardMarkup(new[] {
-                                 InlineKeyboardButton.WithCallbackData(Strings.delete_file,Command.Delete)
-                            }));
                     break;
 
                 case Command.BotInfo:
@@ -349,8 +367,93 @@ namespace JWLMergeBot
                         await Worker.botClient.SendTextMessageAsync(message.Chat, "Not implemented yet...");
                     break;
 
+                case Command.EditFile:
+                    // Check if any file is stored
+                    if (!FileHandling.FileExists(FileType.Main, message.Chat.Id))
+                    {
+                        await Worker.botClient.SendTextMessageAsync(message.Chat.Id, Strings.file_not_exists);
+                        return;
+                    }
+
+                    // Set edit file buttons
+                    InlineKeyboardMarkup editFileKeyboardMarkup = new InlineKeyboardMarkup(new[] {
+                             new[] { InlineKeyboardButton.WithCallbackData(Strings.delete_favorites, Command.DeleteFavorites) },
+                        });
+
+                    // Insert or update the menu
+                    InsertUpdateMenu(Strings.edit_stored_file, message, fromCallback, editFileKeyboardMarkup);
+
+                    break;
+
+                case Command.DeleteFavorites:
+                    // Prompt the user to confirm
+                    InsertUpdateMenu(Strings.delete_favorites_confirm, message, fromCallback, new InlineKeyboardMarkup(
+                    new[] {
+                                new[] { InlineKeyboardButton.WithCallbackData(Strings.yes, Command.DeleteFavoritesConfirmed) },
+                                new[] { InlineKeyboardButton.WithCallbackData(Strings.no, Command.EditFile) }
+                        }));
+                    break;
+
+                case Command.DeleteFavoritesConfirmed:
+                    {
+                        // Check if any file is stored
+                        if (!FileHandling.FileExists(FileType.Main, message.Chat.Id))
+                        {
+                            await Worker.botClient.SendTextMessageAsync(message.Chat.Id, Strings.file_not_exists);
+                            return;
+                        }
+
+                        // Feedback
+                        InsertUpdateMenu(Strings.editing_file, message, fromCallback, null);
+
+                        // Load stored file
+                        IBackupFileService backupFileService = new BackupFileService();
+                        BackupFile MainJWLibraryFile = null;
+                        try
+                        {
+                            MainJWLibraryFile = backupFileService.Load(FileHandling.GetFilePath(FileType.Main, message.Chat.Id));
+                        }
+                        catch (Exception exception)
+                        {
+                            // Feedback
+                            await Worker.botClient.SendTextMessageAsync(message.Chat.Id, string.Format(Strings.file_error, exception.Message));
+                            return;
+                        }
+
+                        // Delete favorites
+                        MainJWLibraryFile.Database.TagMaps.RemoveAll(tagmap => tagmap.TagId == 1);
+
+                        // Update last modified date
+                        MainJWLibraryFile.Manifest.UserDataBackup.LastModifiedDate = DateTime.Now.ToString(ManifestDateTimeFormat);
+                        MainJWLibraryFile.Manifest.CreationDate = DateTime.Now.ToString(ManifestDateTimeFormat);
+
+                        // Write the merged database
+                        backupFileService.WriteNewDatabase(MainJWLibraryFile, FileHandling.GetFilePath(FileType.Temp, message.Chat.Id), FileHandling.GetFilePath(FileType.Main, message.Chat.Id));
+
+                        // Now the modified file become the main stored file
+                        FileHandling.ChangeFileType(FileType.Temp, FileType.Main, message.Chat.Id);
+
+                        // Get the user settings
+                        ChatConfig chatConfig = ChatConfig.Load(message.Chat.Id);
+
+                        // Send edited file
+                        using (FileStream fs = System.IO.File.OpenRead(FileHandling.GetFilePath(FileType.Main, message.Chat.Id)))
+                        {
+                            InputOnlineFile inputOnlineFile = new InputOnlineFile(fs, string.Format(Strings.edited_filename, DateTime.Now.ToString("s")));
+                            await Worker.botClient.SendDocumentAsync(
+                                    chatId: message.Chat.Id,
+                                    document: inputOnlineFile,
+                                    caption: Strings.edited_file + "\n\n" + GetFileInfoString(MainJWLibraryFile, message.Chat.Id),
+                                    replyMarkup: chatConfig.AutoDeleteFile ? null : new InlineKeyboardMarkup(new[] {
+                                        InlineKeyboardButton.WithCallbackData(Strings.delete_file, Command.Delete)
+                                    })
+                                    );
+                        }
+                    }
+                    break;
+
                 case Command.Settings:
-                    // Change settings
+                    // Set settings buttons
                     InlineKeyboardMarkup settingsKeyboardMarkup = new InlineKeyboardMarkup(new[] {
                              new[] { InlineKeyboardButton.WithCallbackData(Strings.change_language_detail, Command.SetLang)},
                              ChatConfig.Load(message.Chat.Id).AutoDeleteFile?
@@ -358,27 +461,8 @@ namespace JWLMergeBot
                              new[] { InlineKeyboardButton.WithCallbackData(string.Format(Strings.auto_delete, Strings.no),Command.AutodeleteOn) }
                         });
 
-                    if (fromCallback)
-                    {
-                        await Worker.botClient.EditMessageTextAsync(
-                            chatId: message.Chat.Id,
-                            messageId: message.MessageId,
-                            text: Strings.change_settings
-                        );
-                        await Worker.botClient.EditMessageReplyMarkupAsync(
-                                chatId: message.Chat.Id,
-                                messageId: message.MessageId,
-                                replyMarkup: settingsKeyboardMarkup
-                                );
-                    }
-                    else
-                    {
-                        await Worker.botClient.SendTextMessageAsync(
-                            chatId: message.Chat.Id,
-                            text: Strings.change_settings,
-                            replyMarkup: settingsKeyboardMarkup
-                            );
-                    }
+                    // Insert or update the menu
+                    InsertUpdateMenu(Strings.change_settings, message, fromCallback, settingsKeyboardMarkup);
 
                     break;
 
@@ -515,9 +599,40 @@ namespace JWLMergeBot
             }
         }
 
+        private static String ManifestDateTimeFormat = "yyyy-MM-ddTHH:mm:sszzz";
+
         private static String GetFileInfoString(BackupFile JWLibraryFile, long chatId)
         {
             return string.Format(Strings.file_info_details, FileHandling.GetReadableFilesize(FileType.Main, chatId), JWLibraryFile.Database.Notes.Count, JWLibraryFile.Database.Bookmarks.Count, JWLibraryFile.Database.UserMarks.Count, JWLibraryFile.Database.Tags.Count).Replace("\\n", "\n");
         }
+
+        private static async void InsertUpdateMenu(String title, Message message, bool fromCallback, InlineKeyboardMarkup keyboardMarkup)
+        {
+            // If the command came from a callback, it means that the user press the "back" button. So edit the message
+            if (fromCallback)
+            {
+                await Worker.botClient.EditMessageTextAsync(
+                    chatId: message.Chat.Id,
+                    messageId: message.MessageId,
+                    text: title
+                );
+                if(keyboardMarkup != null)
+                    await Worker.botClient.EditMessageReplyMarkupAsync(
+                            chatId: message.Chat.Id,
+                            messageId: message.MessageId,
+                            replyMarkup: keyboardMarkup
+                            );
+            }
+            else
+            {
+                // Otherwise, send a new message
+                await Worker.botClient.SendTextMessageAsync(
+                    chatId: message.Chat.Id,
+                    text: title,
+                    replyMarkup: keyboardMarkup
+                    );
+            }
+        }
+
     }
 }
