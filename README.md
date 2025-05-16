@@ -61,6 +61,6 @@ If you don't want to send your backup to the JWLMergeBot server, you can set up 
 		chmod +x compile-interop-assembly-release.sh
 		./compile-interop-assembly-release.sh
 		```
-	* Copy the **libSQLite<span>.Interop.so** and **libSQLite<span>.Interop.so** files in your release folder
+	* Copy the **libSQLite.Interop.so** and **SQLite.Interop.dll** files in your release folder
 * Put the _bot token_ in the **config.json** file (it must be located in the same directory of the executable)
 * Launch the bot or create a service with [`systemd`](https://devblogs.microsoft.com/dotnet/net-core-and-systemd/)
