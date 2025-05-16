@@ -5,7 +5,7 @@
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<Nullable>Enable</Nullable>
 		<AnalysisLevel>latest-recommended</AnalysisLevel>
-		<Platforms>AnyCPU</Platforms>
+		<Platforms>AnyCPU;ARM64</Platforms>
 		<NeutralLanguage>en-GB</NeutralLanguage>
 	</PropertyGroup>
 
