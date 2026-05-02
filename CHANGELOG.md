@@ -1,3 +1,7 @@
+## [1.9.0.18] - 2026-05-02
+
+* Support for the v16 db schema
+
 ## [1.8.1.17] - 2025-01-18
 
 * Error handling while editing files
