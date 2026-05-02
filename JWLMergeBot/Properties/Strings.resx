@@ -277,7 +277,7 @@
     <value>Stored files: {0}\nUsers:\n{1}</value>
   </data>
   <data name="wrong_database_version_higher" xml:space="preserve">
-    <value>❗️The version of the backup you sent ({0}) is not the one I support ({1}). Maybe I will be updated to support this new version.</value>
+    <value>❗️The version of the backup you sent ({0}) is not the one I support ({1}). Probably I will be updated soon to support this new version.</value>
   </data>
   <data name="wrong_database_version_lower" xml:space="preserve">
     <value>❗️The version of the backup you sent ({0}) is not the one I support ({1}). Please, update JW Library and send me again the file.</value>

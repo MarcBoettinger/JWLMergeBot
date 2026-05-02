@@ -538,7 +538,7 @@ namespace JWLMergeBot.Properties {
         }
         
         /// <summary>
-        ///   Cerca una stringa localizzata simile a ❗️The version of the backup you sent ({0}) is not the one I support ({1}). Maybe I will be updated to support this new version..
+        ///   Cerca una stringa localizzata simile a ❗️The version of the backup you sent ({0}) is not the one I support ({1}). Probably I will be updated soon to support this new version..
         /// </summary>
         internal static string wrong_database_version_higher {
             get {
