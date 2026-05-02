@@ -277,7 +277,7 @@
     <value>File memorizzati: {0}\nUtenti:\n{1}</value>
   </data>
   <data name="wrong_database_version_higher" xml:space="preserve">
-    <value>❗️La versione del backup che hai mandato ({0}) non è quella che supporto ({1}). Forse sarò aggiornato per supportare questa nuova versione.</value>
+    <value>❗️La versione del backup che hai mandato ({0}) non è quella che supporto ({1}). Probabilmente sarò aggiornato a breve per supportare questa nuova versione.</value>
   </data>
   <data name="wrong_database_version_lower" xml:space="preserve">
     <value>❗️La versione del backup che hai mandato ({0}) non è quella che supporto ({1}). Aggiorna JW Library e mandami di nuovo il file.</value>

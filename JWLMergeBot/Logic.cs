@@ -412,42 +412,42 @@ namespace JWLMergeBot
                         try
                         {
                             MainJWLibraryFile = backupFileService.Load(FileHandling.GetFilePath(FileType.Main, message.Chat.Id));
+
+                            // Delete favorites
+                            MainJWLibraryFile.Database.TagMaps.RemoveAll(tagmap => tagmap.TagId == 1);
+
+                            // Update last modified date
+                            MainJWLibraryFile.Manifest.UserDataBackup.LastModifiedDate = DateTime.Now.ToString(ManifestDateTimeFormat);
+                            MainJWLibraryFile.Manifest.CreationDate = DateTime.Now.ToString(ManifestDateTimeFormat);
+
+                            // Write the merged database
+                            backupFileService.WriteNewDatabase(MainJWLibraryFile, FileHandling.GetFilePath(FileType.Temp, message.Chat.Id), FileHandling.GetFilePath(FileType.Main, message.Chat.Id));
+
+                            // Now the modified file become the main stored file
+                            FileHandling.ChangeFileType(FileType.Temp, FileType.Main, message.Chat.Id);
+
+                            // Get the user settings
+                            ChatConfig chatConfig = ChatConfig.Load(message.Chat.Id);
+
+                            // Send edited file
+                            using (FileStream fs = System.IO.File.OpenRead(FileHandling.GetFilePath(FileType.Main, message.Chat.Id)))
+                            {
+                                InputOnlineFile inputOnlineFile = new InputOnlineFile(fs, string.Format(Strings.edited_filename, DateTime.Now.ToString("s")));
+                                await Worker.botClient.SendDocumentAsync(
+                                        chatId: message.Chat.Id,
+                                        document: inputOnlineFile,
+                                        caption: Strings.edited_file + "\n\n" + GetFileInfoString(MainJWLibraryFile, message.Chat.Id),
+                                        replyMarkup: chatConfig.AutoDeleteFile ? null : new InlineKeyboardMarkup(new[] {
+                                        InlineKeyboardButton.WithCallbackData(Strings.delete_file, Command.Delete)
+                                        })
+                                        );
+                            }
                         }
                         catch (Exception exception)
                         {
                             // Feedback
                             await Worker.botClient.SendTextMessageAsync(message.Chat.Id, string.Format(Strings.file_error, exception.Message));
                             return;
-                        }
-
-                        // Delete favorites
-                        MainJWLibraryFile.Database.TagMaps.RemoveAll(tagmap => tagmap.TagId == 1);
-
-                        // Update last modified date
-                        MainJWLibraryFile.Manifest.UserDataBackup.LastModifiedDate = DateTime.Now.ToString(ManifestDateTimeFormat);
-                        MainJWLibraryFile.Manifest.CreationDate = DateTime.Now.ToString(ManifestDateTimeFormat);
-
-                        // Write the merged database
-                        backupFileService.WriteNewDatabase(MainJWLibraryFile, FileHandling.GetFilePath(FileType.Temp, message.Chat.Id), FileHandling.GetFilePath(FileType.Main, message.Chat.Id));
-
-                        // Now the modified file become the main stored file
-                        FileHandling.ChangeFileType(FileType.Temp, FileType.Main, message.Chat.Id);
-
-                        // Get the user settings
-                        ChatConfig chatConfig = ChatConfig.Load(message.Chat.Id);
-
-                        // Send edited file
-                        using (FileStream fs = System.IO.File.OpenRead(FileHandling.GetFilePath(FileType.Main, message.Chat.Id)))
-                        {
-                            InputOnlineFile inputOnlineFile = new InputOnlineFile(fs, string.Format(Strings.edited_filename, DateTime.Now.ToString("s")));
-                            await Worker.botClient.SendDocumentAsync(
-                                    chatId: message.Chat.Id,
-                                    document: inputOnlineFile,
-                                    caption: Strings.edited_file + "\n\n" + GetFileInfoString(MainJWLibraryFile, message.Chat.Id),
-                                    replyMarkup: chatConfig.AutoDeleteFile ? null : new InlineKeyboardMarkup(new[] {
-                                        InlineKeyboardButton.WithCallbackData(Strings.delete_file, Command.Delete)
-                                    })
-                                    );
                         }
                     }
                     break;

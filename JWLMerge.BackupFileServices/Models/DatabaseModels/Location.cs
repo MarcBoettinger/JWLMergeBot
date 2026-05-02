@@ -59,6 +59,16 @@ public class Location
     /// </summary>
     public string? Title { get; set; }
 
+    /// <summary>
+    /// The specialty of the location (nullable).
+    /// </summary>
+    public string? Specialty { get; set; }
+
+    /// <summary>
+    /// The edition (nullable).
+    /// </summary>
+    public string? Edition { get; set; }
+
     public Location Clone()
     {
         return (Location)MemberwiseClone();
