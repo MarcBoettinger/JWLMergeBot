@@ -113,11 +113,6 @@ internal sealed class Cleaner
             result.Add(inputFld.LocationId);
         }
 
-        foreach (var map in _database.PlaylistItemLocationMaps)
-        {
-            result.Add(map.LocationId);
-        }
-
         Log.Logger.Debug($"Found {result.Count} location Ids in use");
             
         return result;

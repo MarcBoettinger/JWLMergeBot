@@ -26,16 +26,6 @@ public class Database
     private Lazy<Dictionary<string, TagMap>> _tagMapLocationIndex = null!;
     private Lazy<Dictionary<int, List<BlockRange>>> _blockRangesUserMarkIdIndex = null!;
     private Lazy<Dictionary<string, Bookmark>> _bookmarksIndex = null!;
-    private Lazy<Dictionary<int, IndependentMedia>> _independentMediaIdIndex = null!;
-    private Lazy<Dictionary<string, IndependentMedia>> _independentMediaFilePathIndex = null!;
-    private Lazy<Dictionary<int, PlaylistItem>> _playlistItemsIdIndex = null!;
-    private Lazy<Dictionary<string, PlaylistItem>> _playlistItemsValueIndex = null!;
-    private Lazy<Dictionary<string, PlaylistItemIndependentMediaMap>> _playlistItemIndependentMediaMapsValueIndex = null!;
-    private Lazy<Dictionary<string, PlaylistItemLocationMap>> _playlistItemLocationMapsValueIndex = null!;
-    private Lazy<Dictionary<int, PlaylistItemMarker>> _playlistItemMarkersIdIndex = null!;
-    private Lazy<Dictionary<int, List<PlaylistItemMarkerBibleVerseMap>>> _playlistItemMarkerBibleVerseMapIndex = null!;
-    private Lazy<Dictionary<int, List<PlaylistItemMarkerParagraphMap>>> _playlistItemMarkerParagraphMapIndex = null!;
-    private Lazy<Dictionary<string, TagMap>> _tagMapPlaylistItemIndex = null!;
 
     public Database()
     {
@@ -60,20 +50,6 @@ public class Database
 
     public List<UserMark> UserMarks { get; } = new();
 
-    public List<IndependentMedia> IndependentMedias { get; } = new();
-
-    public List<PlaylistItem> PlaylistItems { get; } = new();
-
-    public List<PlaylistItemIndependentMediaMap> PlaylistItemIndependentMediaMaps { get; } = new();
-
-    public List<PlaylistItemLocationMap> PlaylistItemLocationMaps { get; } = new();
-
-    public List<PlaylistItemMarker> PlaylistItemMarkers { get; } = new();
-
-    public List<PlaylistItemMarkerBibleVerseMap> PlaylistItemMarkerBibleVerseMaps { get; } = new();
-
-    public List<PlaylistItemMarkerParagraphMap> PlaylistItemMarkerParagraphMaps { get; } = new();
-
     public static string GetDateTimeUtcAsDbString(DateTime dateTime)
     {
         return $"{dateTime:s}Z";
@@ -90,13 +66,6 @@ public class Database
         BlockRanges.Clear();
         Bookmarks.Clear();
         UserMarks.Clear();
-        IndependentMedias.Clear();
-        PlaylistItems.Clear();
-        PlaylistItemIndependentMediaMaps.Clear();
-        PlaylistItemLocationMaps.Clear();
-        PlaylistItemMarkers.Clear();
-        PlaylistItemMarkerBibleVerseMaps.Clear();
-        PlaylistItemMarkerParagraphMaps.Clear();
     }
 
     public void CheckValidity()
@@ -246,38 +215,6 @@ public class Database
         }
     }
 
-    public void AddPlaylistItemIndependentMediaMapAndUpdateIndex(PlaylistItemIndependentMediaMap value)
-    {
-        if (value == null)
-        {
-            throw new ArgumentNullException(nameof(value));
-        }
-
-        PlaylistItemIndependentMediaMaps.Add(value);
-
-        if (_playlistItemIndependentMediaMapsValueIndex.IsValueCreated)
-        {
-            var key = GetPlaylistItemIndependentMediaMapKey(value.PlaylistItemId, value.IndependentMediaId);
-            _playlistItemIndependentMediaMapsValueIndex.Value.TryAdd(key, value);
-        }
-    }
-
-    public void AddPlaylistItemLocationMapAndUpdateIndex(PlaylistItemLocationMap value)
-    {
-        if (value == null)
-        {
-            throw new ArgumentNullException(nameof(value));
-        }
-
-        PlaylistItemLocationMaps.Add(value);
-
-        if (_playlistItemLocationMapsValueIndex.IsValueCreated)
-        {
-            var key = GetPlaylistItemLocationMapKey(value.PlaylistItemId, value.LocationId);
-            _playlistItemLocationMapsValueIndex.Value.TryAdd(key, value);
-        }
-    }
-
     public Note? FindNote(string noteGuid)
     {
         if (!Guid.TryParse(noteGuid, out var g))
@@ -380,59 +317,6 @@ public class Database
     {
         string key = GetBookmarkKey(locationId, publicationLocationId);
         return _bookmarksIndex.Value.TryGetValue(key, out var bookmark) ? bookmark : null;
-    }
-
-    public IndependentMedia? FindIndependentMedia(int independentMediaId)
-    {
-        return _independentMediaIdIndex.Value.TryGetValue(independentMediaId, out var media) ? media : null;
-    }
-
-    public IndependentMedia? FindIndependentMediaByFilePath(string filePath)
-    {
-        return _independentMediaFilePathIndex.Value.TryGetValue(filePath, out var media) ? media : null;
-    }
-
-    public PlaylistItem? FindPlaylistItem(int playlistItemId)
-    {
-        return _playlistItemsIdIndex.Value.TryGetValue(playlistItemId, out var item) ? item : null;
-    }
-
-    public PlaylistItem? FindPlaylistItemByValues(PlaylistItem playlistItem)
-    {
-        var key = GetPlaylistItemByValueKey(playlistItem);
-        return _playlistItemsValueIndex.Value.TryGetValue(key, out var item) ? item : null;
-    }
-
-    public PlaylistItemIndependentMediaMap? FindPlaylistItemIndependentMediaMap(int playlistItemId, int independentMediaId)
-    {
-        var key = GetPlaylistItemIndependentMediaMapKey(playlistItemId, independentMediaId);
-        return _playlistItemIndependentMediaMapsValueIndex.Value.TryGetValue(key, out var map) ? map : null;
-    }
-
-    public PlaylistItemLocationMap? FindPlaylistItemLocationMap(int playlistItemId, int locationId)
-    {
-        var key = GetPlaylistItemLocationMapKey(playlistItemId, locationId);
-        return _playlistItemLocationMapsValueIndex.Value.TryGetValue(key, out var map) ? map : null;
-    }
-
-    public PlaylistItemMarker? FindPlaylistItemMarker(int playlistItemMarkerId)
-    {
-        return _playlistItemMarkersIdIndex.Value.TryGetValue(playlistItemMarkerId, out var marker) ? marker : null;
-    }
-
-    public IReadOnlyCollection<PlaylistItemMarkerBibleVerseMap>? FindPlaylistItemMarkerBibleVerseMaps(int playlistItemMarkerId)
-    {
-        return _playlistItemMarkerBibleVerseMapIndex.Value.TryGetValue(playlistItemMarkerId, out var maps) ? maps : null;
-    }
-
-    public IReadOnlyCollection<PlaylistItemMarkerParagraphMap>? FindPlaylistItemMarkerParagraphMaps(int playlistItemMarkerId)
-    {
-        return _playlistItemMarkerParagraphMapIndex.Value.TryGetValue(playlistItemMarkerId, out var maps) ? maps : null;
-    }
-
-    public TagMap? FindTagMapForPlaylistItem(int tagId, int playlistItemId)
-    {
-        return _tagMapPlaylistItemIndex.Value.TryGetValue(GetTagMapPlaylistItemKey(tagId, playlistItemId), out var tag) ? tag : null;
     }
 
     public int GetNextBookmarkSlot(int publicationLocationId)
@@ -606,26 +490,6 @@ public class Database
         return $"{bibleBookNumber}-{chapterNumber}-{bibleKeySymbol ?? string.Empty}";
     }
 
-    private static string GetPlaylistItemByValueKey(PlaylistItem playlistItem)
-    {
-        return $"{playlistItem.Label}|{playlistItem.StartTrimOffsetTicks ?? -1}|{playlistItem.EndTrimOffsetTicks ?? -1}";
-    }
-
-    private static string GetPlaylistItemIndependentMediaMapKey(int playlistItemId, int independentMediaId)
-    {
-        return $"{playlistItemId}-{independentMediaId}";
-    }
-
-    private static string GetPlaylistItemLocationMapKey(int playlistItemId, int locationId)
-    {
-        return $"{playlistItemId}-{locationId}";
-    }
-
-    private static string GetTagMapPlaylistItemKey(int tagId, int playlistItemId)
-    {
-        return $"{tagId}-{playlistItemId}";
-    }
-
     private Dictionary<string, Bookmark> BookmarkIndexValueFactory()
     {
         var result = new Dictionary<string, Bookmark>();
@@ -691,117 +555,6 @@ public class Database
         return result;
     }
 
-    private Dictionary<int, IndependentMedia> IndependentMediaIdIndexValueFactory()
-    {
-        return IndependentMedias.ToDictionary(m => m.IndependentMediaId);
-    }
-
-    private Dictionary<string, IndependentMedia> IndependentMediaFilePathIndexValueFactory()
-    {
-        return IndependentMedias.ToDictionary(m => m.FilePath);
-    }
-
-    private Dictionary<int, PlaylistItem> PlaylistItemsIdIndexValueFactory()
-    {
-        return PlaylistItems.ToDictionary(p => p.PlaylistItemId);
-    }
-
-    private Dictionary<string, PlaylistItem> PlaylistItemsValueIndexFactory()
-    {
-        var result = new Dictionary<string, PlaylistItem>();
-
-        foreach (var item in PlaylistItems)
-        {
-            var key = GetPlaylistItemByValueKey(item);
-            result.TryAdd(key, item);
-        }
-
-        return result;
-    }
-
-    private Dictionary<string, PlaylistItemIndependentMediaMap> PlaylistItemIndependentMediaMapsValueIndexFactory()
-    {
-        var result = new Dictionary<string, PlaylistItemIndependentMediaMap>();
-
-        foreach (var map in PlaylistItemIndependentMediaMaps)
-        {
-            var key = GetPlaylistItemIndependentMediaMapKey(map.PlaylistItemId, map.IndependentMediaId);
-            result.TryAdd(key, map);
-        }
-
-        return result;
-    }
-
-    private Dictionary<string, PlaylistItemLocationMap> PlaylistItemLocationMapsValueIndexFactory()
-    {
-        var result = new Dictionary<string, PlaylistItemLocationMap>();
-
-        foreach (var map in PlaylistItemLocationMaps)
-        {
-            var key = GetPlaylistItemLocationMapKey(map.PlaylistItemId, map.LocationId);
-            result.TryAdd(key, map);
-        }
-
-        return result;
-    }
-
-    private Dictionary<int, PlaylistItemMarker> PlaylistItemMarkersIdIndexValueFactory()
-    {
-        return PlaylistItemMarkers.ToDictionary(m => m.PlaylistItemMarkerId);
-    }
-
-    private Dictionary<int, List<PlaylistItemMarkerBibleVerseMap>> PlaylistItemMarkerBibleVerseMapIndexValueFactory()
-    {
-        var result = new Dictionary<int, List<PlaylistItemMarkerBibleVerseMap>>();
-
-        foreach (var map in PlaylistItemMarkerBibleVerseMaps)
-        {
-            if (!result.TryGetValue(map.PlaylistItemMarkerId, out var list))
-            {
-                list = new List<PlaylistItemMarkerBibleVerseMap>();
-                result.Add(map.PlaylistItemMarkerId, list);
-            }
-
-            list.Add(map);
-        }
-
-        return result;
-    }
-
-    private Dictionary<int, List<PlaylistItemMarkerParagraphMap>> PlaylistItemMarkerParagraphMapIndexValueFactory()
-    {
-        var result = new Dictionary<int, List<PlaylistItemMarkerParagraphMap>>();
-
-        foreach (var map in PlaylistItemMarkerParagraphMaps)
-        {
-            if (!result.TryGetValue(map.PlaylistItemMarkerId, out var list))
-            {
-                list = new List<PlaylistItemMarkerParagraphMap>();
-                result.Add(map.PlaylistItemMarkerId, list);
-            }
-
-            list.Add(map);
-        }
-
-        return result;
-    }
-
-    private Dictionary<string, TagMap> TagMapPlaylistItemIndexValueFactory()
-    {
-        var result = new Dictionary<string, TagMap>();
-
-        foreach (var tagMap in TagMaps)
-        {
-            if (tagMap.PlaylistItemId != null)
-            {
-                var key = GetTagMapPlaylistItemKey(tagMap.TagId, tagMap.PlaylistItemId.Value);
-                result.TryAdd(key, tagMap);
-            }
-        }
-
-        return result;
-    }
-
     private void ReinitializeIndexes()
     {
         _notesGuidIndex = new Lazy<Dictionary<Guid, Note>>(NoteIndexValueFactory);
@@ -820,16 +573,6 @@ public class Database
         _tagMapLocationIndex = new Lazy<Dictionary<string, TagMap>>(TagMapLocationIndexValueFactory);
         _blockRangesUserMarkIdIndex = new Lazy<Dictionary<int, List<BlockRange>>>(BlockRangeIndexValueFactory);
         _bookmarksIndex = new Lazy<Dictionary<string, Bookmark>>(BookmarkIndexValueFactory);
-        _independentMediaIdIndex = new Lazy<Dictionary<int, IndependentMedia>>(IndependentMediaIdIndexValueFactory);
-        _independentMediaFilePathIndex = new Lazy<Dictionary<string, IndependentMedia>>(IndependentMediaFilePathIndexValueFactory);
-        _playlistItemsIdIndex = new Lazy<Dictionary<int, PlaylistItem>>(PlaylistItemsIdIndexValueFactory);
-        _playlistItemsValueIndex = new Lazy<Dictionary<string, PlaylistItem>>(PlaylistItemsValueIndexFactory);
-        _playlistItemIndependentMediaMapsValueIndex = new Lazy<Dictionary<string, PlaylistItemIndependentMediaMap>>(PlaylistItemIndependentMediaMapsValueIndexFactory);
-        _playlistItemLocationMapsValueIndex = new Lazy<Dictionary<string, PlaylistItemLocationMap>>(PlaylistItemLocationMapsValueIndexFactory);
-        _playlistItemMarkersIdIndex = new Lazy<Dictionary<int, PlaylistItemMarker>>(PlaylistItemMarkersIdIndexValueFactory);
-        _playlistItemMarkerBibleVerseMapIndex = new Lazy<Dictionary<int, List<PlaylistItemMarkerBibleVerseMap>>>(PlaylistItemMarkerBibleVerseMapIndexValueFactory);
-        _playlistItemMarkerParagraphMapIndex = new Lazy<Dictionary<int, List<PlaylistItemMarkerParagraphMap>>>(PlaylistItemMarkerParagraphMapIndexValueFactory);
-        _tagMapPlaylistItemIndex = new Lazy<Dictionary<string, TagMap>>(TagMapPlaylistItemIndexValueFactory);
     }
 
     private int FixupLocationValidity()
@@ -841,8 +584,7 @@ public class Database
         // Some Locations may have been stored in the db before this constraint
         // was added, so identify them here and remove the duplicate entries.
         // Note that null is treated as a unique value in SQLite
-        var keys = new Dictionary<string, int>();
-        var locationIdRemap = new Dictionary<int, int>();
+        var keys = new HashSet<string>();
 
         for (var n = Locations.Count - 1; n >= 0; --n)
         {
@@ -855,29 +597,17 @@ public class Database
 
             var key = $"{loc.KeySymbol}|{loc.IssueTagNumber}|{loc.MepsLanguage}|{loc.DocumentId.Value}|{loc.Track.Value}|{loc.Type}";
 
-            if (keys.TryGetValue(key, out var retainedLocationId))
+            if (keys.Contains(key))
             {
                 // found a duplicate that will cause a constraint exception.
                 ++fixupCount;
-                locationIdRemap[loc.LocationId] = retainedLocationId;
                 Locations.RemoveAt(n);
 
                 Log.Logger.Error($"Removed duplicate location {loc.LocationId}");
             }
             else
             {
-                keys.Add(key, loc.LocationId);
-            }
-        }
-
-        if (locationIdRemap.Count > 0)
-        {
-            foreach (var map in PlaylistItemLocationMaps)
-            {
-                if (locationIdRemap.TryGetValue(map.LocationId, out var newLocationId))
-                {
-                    map.LocationId = newLocationId;
-                }
+                keys.Add(key);
             }
         }
 

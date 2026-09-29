@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.IO;
 using System.Reflection;
@@ -166,7 +165,7 @@ namespace JWLMergeBot
                     MainJWLibraryFile.Manifest.CreationDate = DateTime.Now.ToString(ManifestDateTimeFormat);
 
                     // Write the merged database
-                    backupFileService.WriteNewDatabase(backup, FileHandling.GetFilePath(FileType.Merged, message.Chat.Id), FileHandling.GetFilePath(FileType.Main, message.Chat.Id), new List<string> { MainJWLibraryFile.FilePath, TempJWLibraryFile.FilePath });
+                    backupFileService.WriteNewDatabase(backup, FileHandling.GetFilePath(FileType.Merged, message.Chat.Id), FileHandling.GetFilePath(FileType.Main, message.Chat.Id));
 
                     // Now the merged file become the main stored file
                     FileHandling.ChangeFileType(FileType.Merged, FileType.Main, message.Chat.Id);
@@ -422,7 +421,7 @@ namespace JWLMergeBot
                             MainJWLibraryFile.Manifest.CreationDate = DateTime.Now.ToString(ManifestDateTimeFormat);
 
                             // Write the merged database
-                            backupFileService.WriteNewDatabase(MainJWLibraryFile, FileHandling.GetFilePath(FileType.Temp, message.Chat.Id), FileHandling.GetFilePath(FileType.Main, message.Chat.Id), new List<string> { MainJWLibraryFile.FilePath });
+                            backupFileService.WriteNewDatabase(MainJWLibraryFile, FileHandling.GetFilePath(FileType.Temp, message.Chat.Id), FileHandling.GetFilePath(FileType.Main, message.Chat.Id));
 
                             // Now the modified file become the main stored file
                             FileHandling.ChangeFileType(FileType.Temp, FileType.Main, message.Chat.Id);
@@ -604,7 +603,7 @@ namespace JWLMergeBot
 
         private static String GetFileInfoString(BackupFile JWLibraryFile, long chatId)
         {
-            return string.Format(Strings.file_info_details, FileHandling.GetReadableFilesize(FileType.Main, chatId), JWLibraryFile.Database.Notes.Count, JWLibraryFile.Database.Bookmarks.Count, JWLibraryFile.Database.UserMarks.Count, JWLibraryFile.Database.Tags.Count, JWLibraryFile.Database.Tags.Count(t => t.Type == 2)).Replace("\\n", "\n");
+            return string.Format(Strings.file_info_details, FileHandling.GetReadableFilesize(FileType.Main, chatId), JWLibraryFile.Database.Notes.Count, JWLibraryFile.Database.Bookmarks.Count, JWLibraryFile.Database.UserMarks.Count, JWLibraryFile.Database.Tags.Count).Replace("\\n", "\n");
         }
 
         private static async void InsertUpdateMenu(String title, Message message, bool fromCallback, InlineKeyboardMarkup keyboardMarkup)

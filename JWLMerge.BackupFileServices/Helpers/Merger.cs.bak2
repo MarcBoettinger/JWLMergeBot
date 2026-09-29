@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using JWLMerge.BackupFileServices.Events;
 using JWLMerge.BackupFileServices.Models.DatabaseModels;
@@ -204,16 +203,17 @@ internal sealed class Merger
 
         foreach (var sourceTagMap in source.TagMaps)
         {
+            if (sourceTagMap.PlaylistItemId != null)
+            {
+                // we ignore playlist during merge
+                continue;
+            }
+
             var tagId = _translatedTagIds.GetTranslatedId(sourceTagMap.TagId);
             var id = 0;
             TagMap? existingTagMap = null;
-
-            if (sourceTagMap.PlaylistItemId != null)
-            {
-                id = _translatedPlaylistItemIds.GetTranslatedId(sourceTagMap.PlaylistItemId.Value);
-                existingTagMap = id == 0 ? null : destination.FindTagMapForPlaylistItem(tagId, id);
-            }
-            else if (sourceTagMap.LocationId != null)
+                
+            if (sourceTagMap.LocationId != null)
             {
                 // a tag on a location.
                 id = _translatedLocationIds.GetTranslatedId(sourceTagMap.LocationId.Value);
@@ -277,6 +277,9 @@ internal sealed class Merger
                 InsertTag(tag, destination);
             }
         }
+
+        // Remove all playlist tags #patch13 
+        destination.Tags.RemoveAll(t => t.Type == 2);
     }
 
     private void MergeUserMarks(Database source, Database destination)
@@ -353,6 +356,12 @@ internal sealed class Merger
 
     private void InsertTagMap(TagMap tagMap, Database destination)
     {
+        if (tagMap.PlaylistItemId != null)
+        {
+            // we ignore playlists during merge.
+            return;
+        }
+
         TagMap newTagMap = tagMap.Clone();
         newTagMap.TagMapId = ++_maxTagMapId;
         newTagMap.TagId = _translatedTagIds.GetTranslatedId(tagMap.TagId);
@@ -369,12 +378,8 @@ internal sealed class Merger
         {
             newTagMap.NoteId = _translatedNoteIds.GetTranslatedId(tagMap.NoteId.Value);
         }
-        else if (tagMap.PlaylistItemId != null)
-        {
-            newTagMap.PlaylistItemId = _translatedPlaylistItemIds.GetTranslatedId(tagMap.PlaylistItemId.Value);
-        }
 
-        if (newTagMap.LocationId != null || newTagMap.NoteId != null || newTagMap.PlaylistItemId != null)
+        if (newTagMap.LocationId != null || newTagMap.NoteId != null)
         {
             destination.TagMaps.Add(newTagMap);
         }
@@ -477,181 +482,6 @@ internal sealed class Merger
         destination.Title = source.Title;
         destination.Content = source.Content;
         destination.LastModified = source.LastModified;
-    }
-
-    private void MergeIndependentMedia(Database source, Database destination)
-    {
-        ProgressMessage(" Independent media");
-
-        foreach (var media in source.IndependentMedias)
-        {
-            var existing = destination.FindIndependentMediaByFilePath(media.FilePath);
-            if (existing != null)
-            {
-                _translatedIndependentMediaIds.Add(media.IndependentMediaId, existing.IndependentMediaId);
-            }
-            else
-            {
-                InsertIndependentMedia(media, destination);
-            }
-        }
-    }
-
-    private void InsertIndependentMedia(IndependentMedia media, Database destination)
-    {
-        IndependentMedia newMedia = media.Clone();
-        newMedia.IndependentMediaId = ++_maxIndependentMediaId;
-        destination.IndependentMedias.Add(newMedia);
-
-        _translatedIndependentMediaIds.Add(media.IndependentMediaId, newMedia.IndependentMediaId);
-    }
-
-    private void MergePlaylistItems(Database source, Database destination)
-    {
-        ProgressMessage(" Playlist items");
-
-        foreach (var item in source.PlaylistItems)
-        {
-            var existing = destination.FindPlaylistItemByValues(item);
-            if (existing != null)
-            {
-                _translatedPlaylistItemIds.Add(item.PlaylistItemId, existing.PlaylistItemId);
-            }
-            else
-            {
-                InsertPlaylistItem(item, destination);
-            }
-        }
-    }
-
-    private void InsertPlaylistItem(PlaylistItem item, Database destination)
-    {
-        PlaylistItem newItem = item.Clone();
-        newItem.PlaylistItemId = ++_maxPlaylistItemId;
-        destination.PlaylistItems.Add(newItem);
-
-        _translatedPlaylistItemIds.Add(item.PlaylistItemId, newItem.PlaylistItemId);
-    }
-
-    private void MergePlaylistItemIndependentMediaMaps(Database source, Database destination)
-    {
-        ProgressMessage(" Playlist item media maps");
-
-        foreach (var map in source.PlaylistItemIndependentMediaMaps)
-        {
-            var playlistItemId = _translatedPlaylistItemIds.GetTranslatedId(map.PlaylistItemId);
-            var independentMediaId = _translatedIndependentMediaIds.GetTranslatedId(map.IndependentMediaId);
-
-            if (playlistItemId == 0 || independentMediaId == 0)
-            {
-                continue;
-            }
-
-            if (destination.FindPlaylistItemIndependentMediaMap(playlistItemId, independentMediaId) == null)
-            {
-                var newMap = map.Clone();
-                newMap.PlaylistItemId = playlistItemId;
-                newMap.IndependentMediaId = independentMediaId;
-                destination.AddPlaylistItemIndependentMediaMapAndUpdateIndex(newMap);
-            }
-        }
-    }
-
-    private void MergePlaylistItemLocationMaps(Database source, Database destination)
-    {
-        ProgressMessage(" Playlist item location maps");
-
-        foreach (var map in source.PlaylistItemLocationMaps)
-        {
-            var playlistItemId = _translatedPlaylistItemIds.GetTranslatedId(map.PlaylistItemId);
-            if (playlistItemId == 0)
-            {
-                continue;
-            }
-
-            var location = source.FindLocation(map.LocationId);
-            if (location == null)
-            {
-                continue;
-            }
-
-            InsertLocation(location, destination);
-            var locationId = _translatedLocationIds.GetTranslatedId(map.LocationId);
-            if (locationId == 0)
-            {
-                continue;
-            }
-
-            if (destination.FindPlaylistItemLocationMap(playlistItemId, locationId) == null)
-            {
-                var newMap = map.Clone();
-                newMap.PlaylistItemId = playlistItemId;
-                newMap.LocationId = locationId;
-                destination.AddPlaylistItemLocationMapAndUpdateIndex(newMap);
-            }
-        }
-    }
-
-    private void MergePlaylistItemMarkers(Database source, Database destination)
-    {
-        ProgressMessage(" Playlist item markers");
-
-        foreach (var marker in source.PlaylistItemMarkers)
-        {
-            var playlistItemId = _translatedPlaylistItemIds.GetTranslatedId(marker.PlaylistItemId);
-            if (playlistItemId == 0)
-            {
-                continue;
-            }
-
-            InsertPlaylistItemMarker(marker, playlistItemId, destination);
-        }
-    }
-
-    private void InsertPlaylistItemMarker(PlaylistItemMarker marker, int playlistItemId, Database destination)
-    {
-        PlaylistItemMarker newMarker = marker.Clone();
-        newMarker.PlaylistItemMarkerId = ++_maxPlaylistItemMarkerId;
-        newMarker.PlaylistItemId = playlistItemId;
-
-        destination.PlaylistItemMarkers.Add(newMarker);
-        _translatedPlaylistItemMarkerIds.Add(marker.PlaylistItemMarkerId, newMarker.PlaylistItemMarkerId);
-    }
-
-    private void MergePlaylistItemMarkerBibleVerseMaps(Database source, Database destination)
-    {
-        ProgressMessage(" Playlist item marker Bible verse maps");
-
-        foreach (var map in source.PlaylistItemMarkerBibleVerseMaps)
-        {
-            var markerId = _translatedPlaylistItemMarkerIds.GetTranslatedId(map.PlaylistItemMarkerId);
-            if (markerId == 0)
-            {
-                continue;
-            }
-
-            var newMap = map.Clone();
-            newMap.PlaylistItemMarkerId = markerId;
-            destination.PlaylistItemMarkerBibleVerseMaps.Add(newMap);
-        }
-    }
-
-    private void MergePlaylistItemMarkerParagraphMaps(Database source, Database destination)
-    {
-        ProgressMessage(" Playlist item marker paragraph maps");
-
-        foreach (var map in source.PlaylistItemMarkerParagraphMaps)
-        {
-            var markerId = _translatedPlaylistItemMarkerIds.GetTranslatedId(map.PlaylistItemMarkerId);
-            if (markerId == 0)
-            {
-                continue;
-            }
-
-            var newMap = map.Clone();
-            newMap.PlaylistItemMarkerId = markerId;
-            destination.PlaylistItemMarkerParagraphMaps.Add(newMap);
-        }
     }
 
     private void OnProgressEvent(string message)

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.IO;
 using System.Reflection;
@@ -604,7 +603,7 @@ namespace JWLMergeBot
 
         private static String GetFileInfoString(BackupFile JWLibraryFile, long chatId)
         {
-            return string.Format(Strings.file_info_details, FileHandling.GetReadableFilesize(FileType.Main, chatId), JWLibraryFile.Database.Notes.Count, JWLibraryFile.Database.Bookmarks.Count, JWLibraryFile.Database.UserMarks.Count, JWLibraryFile.Database.Tags.Count, JWLibraryFile.Database.Tags.Count(t => t.Type == 2)).Replace("\\n", "\n");
+            return string.Format(Strings.file_info_details, FileHandling.GetReadableFilesize(FileType.Main, chatId), JWLibraryFile.Database.Notes.Count, JWLibraryFile.Database.Bookmarks.Count, JWLibraryFile.Database.UserMarks.Count, JWLibraryFile.Database.Tags.Count).Replace("\\n", "\n");
         }
 
         private static async void InsertUpdateMenu(String title, Message message, bool fromCallback, InlineKeyboardMarkup keyboardMarkup)

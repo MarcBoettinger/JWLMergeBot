@@ -45,8 +45,6 @@ internal sealed class DataAccessLayer
         using var connection = CreateConnection();
 
         PopulateTable(connection, dataToUse.Locations);
-        PopulateTable(connection, dataToUse.IndependentMedias);
-        PopulateTable(connection, dataToUse.PlaylistItems);
         PopulateTable(connection, dataToUse.UserMarks);
         PopulateTable(connection, dataToUse.Tags);
         PopulateTable(connection, dataToUse.Notes);
@@ -54,11 +52,6 @@ internal sealed class DataAccessLayer
         PopulateTable(connection, dataToUse.InputFields);
         PopulateTable(connection, dataToUse.Bookmarks);
         PopulateTable(connection, dataToUse.BlockRanges);
-        PopulateTable(connection, dataToUse.PlaylistItemIndependentMediaMaps);
-        PopulateTable(connection, dataToUse.PlaylistItemLocationMaps);
-        PopulateTable(connection, dataToUse.PlaylistItemMarkers);
-        PopulateTable(connection, dataToUse.PlaylistItemMarkerBibleVerseMaps);
-        PopulateTable(connection, dataToUse.PlaylistItemMarkerParagraphMaps);
     }
 
     /// <summary>
@@ -82,13 +75,6 @@ internal sealed class DataAccessLayer
         result.Bookmarks.AddRange(ReadAllRows(connection, ReadBookmark));
         result.UserMarks.AddRange(ReadAllRows(connection, ReadUserMark));
         result.InputFields.AddRange(ReadAllRows(connection, ReadInputField));
-        result.IndependentMedias.AddRange(ReadAllRows(connection, ReadIndependentMedia));
-        result.PlaylistItems.AddRange(ReadAllRows(connection, ReadPlaylistItem));
-        result.PlaylistItemIndependentMediaMaps.AddRange(ReadAllRows(connection, ReadPlaylistItemIndependentMediaMap));
-        result.PlaylistItemLocationMaps.AddRange(ReadAllRows(connection, ReadPlaylistItemLocationMap));
-        result.PlaylistItemMarkers.AddRange(ReadAllRows(connection, ReadPlaylistItemMarker));
-        result.PlaylistItemMarkerBibleVerseMaps.AddRange(ReadAllRows(connection, ReadPlaylistItemMarkerBibleVerseMap));
-        result.PlaylistItemMarkerParagraphMaps.AddRange(ReadAllRows(connection, ReadPlaylistItemMarkerParagraphMap));
 
         // ensure bookmarks appear in similar order to original.
         result.Bookmarks.Sort((bookmark1, bookmark2) => bookmark1.Slot.CompareTo(bookmark2.Slot));
@@ -141,17 +127,6 @@ internal sealed class DataAccessLayer
     {
         var value = reader[columnName];
         return value == DBNull.Value ? null : Convert.ToInt32(value, CultureInfo.InvariantCulture);
-    }
-
-    private static long ReadInt64(SqliteDataReader reader, string columnName)
-    {
-        return Convert.ToInt64(reader[columnName], CultureInfo.InvariantCulture);
-    }
-
-    private static long? ReadNullableInt64(SqliteDataReader reader, string columnName)
-    {
-        var value = reader[columnName];
-        return value == DBNull.Value ? null : Convert.ToInt64(value, CultureInfo.InvariantCulture);
     }
 
     private static SqliteConnection CreateConnection(string filePath)
@@ -389,86 +364,6 @@ internal sealed class DataAccessLayer
             LocationId = ReadInt(reader, "LocationId"),
             TextTag = ReadString(reader, "TextTag"),
             Value = ReadString(reader, "Value"),
-        };
-    }
-
-    private IndependentMedia ReadIndependentMedia(SqliteDataReader reader)
-    {
-        return new IndependentMedia
-        {
-            IndependentMediaId = ReadInt(reader, "IndependentMediaId"),
-            OriginalFilename = ReadString(reader, "OriginalFilename"),
-            FilePath = ReadString(reader, "FilePath"),
-            MimeType = ReadString(reader, "MimeType"),
-            Hash = ReadString(reader, "Hash"),
-        };
-    }
-
-    private PlaylistItem ReadPlaylistItem(SqliteDataReader reader)
-    {
-        return new PlaylistItem
-        {
-            PlaylistItemId = ReadInt(reader, "PlaylistItemId"),
-            Label = ReadString(reader, "Label"),
-            StartTrimOffsetTicks = ReadNullableInt(reader, "StartTrimOffsetTicks"),
-            EndTrimOffsetTicks = ReadNullableInt(reader, "EndTrimOffsetTicks"),
-            Accuracy = ReadInt(reader, "Accuracy"),
-            EndAction = ReadInt(reader, "EndAction"),
-            ThumbnailFilePath = ReadNullableString(reader, "ThumbnailFilePath"),
-        };
-    }
-
-    private PlaylistItemIndependentMediaMap ReadPlaylistItemIndependentMediaMap(SqliteDataReader reader)
-    {
-        return new PlaylistItemIndependentMediaMap
-        {
-            PlaylistItemId = ReadInt(reader, "PlaylistItemId"),
-            IndependentMediaId = ReadInt(reader, "IndependentMediaId"),
-            DurationTicks = ReadInt64(reader, "DurationTicks"),
-        };
-    }
-
-    private PlaylistItemLocationMap ReadPlaylistItemLocationMap(SqliteDataReader reader)
-    {
-        return new PlaylistItemLocationMap
-        {
-            PlaylistItemId = ReadInt(reader, "PlaylistItemId"),
-            LocationId = ReadInt(reader, "LocationId"),
-            MajorMultimediaType = ReadInt(reader, "MajorMultimediaType"),
-            BaseDurationTicks = ReadNullableInt64(reader, "BaseDurationTicks"),
-        };
-    }
-
-    private PlaylistItemMarker ReadPlaylistItemMarker(SqliteDataReader reader)
-    {
-        return new PlaylistItemMarker
-        {
-            PlaylistItemMarkerId = ReadInt(reader, "PlaylistItemMarkerId"),
-            PlaylistItemId = ReadInt(reader, "PlaylistItemId"),
-            Label = ReadString(reader, "Label"),
-            StartTimeTicks = ReadInt(reader, "StartTimeTicks"),
-            DurationTicks = ReadInt(reader, "DurationTicks"),
-            EndTransitionDurationTicks = ReadInt(reader, "EndTransitionDurationTicks"),
-        };
-    }
-
-    private PlaylistItemMarkerBibleVerseMap ReadPlaylistItemMarkerBibleVerseMap(SqliteDataReader reader)
-    {
-        return new PlaylistItemMarkerBibleVerseMap
-        {
-            PlaylistItemMarkerId = ReadInt(reader, "PlaylistItemMarkerId"),
-            VerseId = ReadInt(reader, "VerseId"),
-        };
-    }
-
-    private PlaylistItemMarkerParagraphMap ReadPlaylistItemMarkerParagraphMap(SqliteDataReader reader)
-    {
-        return new PlaylistItemMarkerParagraphMap
-        {
-            PlaylistItemMarkerId = ReadInt(reader, "PlaylistItemMarkerId"),
-            MepsDocumentId = ReadInt(reader, "MepsDocumentId"),
-            ParagraphIndex = ReadInt(reader, "ParagraphIndex"),
-            MarkerIndexWithinParagraph = ReadInt(reader, "MarkerIndexWithinParagraph"),
         };
     }
 

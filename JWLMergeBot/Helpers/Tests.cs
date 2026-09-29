@@ -17,7 +17,7 @@ namespace JWLMergeBot
                 "C:\\Users\\Hyperion\\Desktop\\nwsty_5_bookmarks.jwlibrary"
             };
             BackupFile backup = backupFileService.Merge(list);
-            backupFileService.WriteNewDatabase(backup, $"C:\\Users\\Hyperion\\Desktop\\{DateTime.Now.ToString("yyyy-MM-dd HH mm ss")}_Merged.jwlibrary", list[0]);
+            backupFileService.WriteNewDatabase(backup, $"C:\\Users\\Hyperion\\Desktop\\{DateTime.Now.ToString("yyyy-MM-dd HH mm ss")}_Merged.jwlibrary", list[0], list);
         }
     }
 }

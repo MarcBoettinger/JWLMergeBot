@@ -841,8 +841,7 @@ public class Database
         // Some Locations may have been stored in the db before this constraint
         // was added, so identify them here and remove the duplicate entries.
         // Note that null is treated as a unique value in SQLite
-        var keys = new Dictionary<string, int>();
-        var locationIdRemap = new Dictionary<int, int>();
+        var keys = new HashSet<string>();
 
         for (var n = Locations.Count - 1; n >= 0; --n)
         {
@@ -855,29 +854,17 @@ public class Database
 
             var key = $"{loc.KeySymbol}|{loc.IssueTagNumber}|{loc.MepsLanguage}|{loc.DocumentId.Value}|{loc.Track.Value}|{loc.Type}";
 
-            if (keys.TryGetValue(key, out var retainedLocationId))
+            if (keys.Contains(key))
             {
                 // found a duplicate that will cause a constraint exception.
                 ++fixupCount;
-                locationIdRemap[loc.LocationId] = retainedLocationId;
                 Locations.RemoveAt(n);
 
                 Log.Logger.Error($"Removed duplicate location {loc.LocationId}");
             }
             else
             {
-                keys.Add(key, loc.LocationId);
-            }
-        }
-
-        if (locationIdRemap.Count > 0)
-        {
-            foreach (var map in PlaylistItemLocationMaps)
-            {
-                if (locationIdRemap.TryGetValue(map.LocationId, out var newLocationId))
-                {
-                    map.LocationId = newLocationId;
-                }
+                keys.Add(key);
             }
         }
 

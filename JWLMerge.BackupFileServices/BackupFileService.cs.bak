@@ -246,19 +246,17 @@ public sealed class BackupFileService : IBackupFileService
     public void WriteNewDatabaseWithClean(
         BackupFile backup,
         string newDatabaseFilePath,
-        string originalJwlibraryFilePathForSchema,
-        IEnumerable<string> sourceJwlibraryFilePaths)
+        string originalJwlibraryFilePathForSchema)
     {
         Clean(backup);
-        WriteNewDatabase(backup, newDatabaseFilePath, originalJwlibraryFilePathForSchema, sourceJwlibraryFilePaths);
+        WriteNewDatabase(backup, newDatabaseFilePath, originalJwlibraryFilePathForSchema);
     }
 
     /// <inheritdoc />
     public void WriteNewDatabase(
-        BackupFile backup,
-        string newDatabaseFilePath,
-        string originalJwlibraryFilePathForSchema,
-        IEnumerable<string> sourceJwlibraryFilePaths)
+        BackupFile backup, 
+        string newDatabaseFilePath, 
+        string originalJwlibraryFilePathForSchema)
     {
         if (backup == null)
         {
@@ -295,7 +293,6 @@ public sealed class BackupFileService : IBackupFileService
                 }
                     
                 AddDatabaseEntryToArchive(archive, backup.Database, tmpDatabaseFileName);
-                AddMediaToArchive(archive, sourceJwlibraryFilePaths, backup.Database.IndependentMedias);
             }
             finally
             {
@@ -843,56 +840,6 @@ public sealed class BackupFileService : IBackupFileService
         finally
         {
             File.Delete(tmpDatabaseFile);
-        }
-    }
-
-    private void AddMediaToArchive(ZipArchive archive, IEnumerable<string> sourceJwlibraryFilePaths, IEnumerable<IndependentMedia> independentMedias)
-    {
-        var mediaFileNames = independentMedias.Select(m => m.FilePath).ToHashSet(StringComparer.OrdinalIgnoreCase);
-        if (mediaFileNames.Count == 0)
-        {
-            return;
-        }
-
-        ProgressMessage("Adding media files to archive");
-
-        var copied = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-        foreach (var sourcePath in sourceJwlibraryFilePaths)
-        {
-            if (copied.Count == mediaFileNames.Count)
-            {
-                break;
-            }
-
-            if (string.IsNullOrEmpty(sourcePath) || !File.Exists(sourcePath))
-            {
-                continue;
-            }
-
-            using var sourceArchive = new ZipArchive(File.OpenRead(sourcePath), ZipArchiveMode.Read);
-            foreach (var entry in sourceArchive.Entries)
-            {
-                if (copied.Contains(entry.Name) || !mediaFileNames.Contains(entry.Name))
-                {
-                    continue;
-                }
-
-                var newEntry = archive.CreateEntry(entry.Name);
-                using (var entryStream = entry.Open())
-                using (var newEntryStream = newEntry.Open())
-                {
-                    entryStream.CopyTo(newEntryStream);
-                }
-
-                copied.Add(entry.Name);
-            }
-        }
-
-        var missing = mediaFileNames.Except(copied).ToList();
-        if (missing.Count > 0)
-        {
-            Log.Logger.Warning("Could not find {count} independent media file(s) in any source backup: {files}", missing.Count, string.Join(", ", missing));
         }
     }
 

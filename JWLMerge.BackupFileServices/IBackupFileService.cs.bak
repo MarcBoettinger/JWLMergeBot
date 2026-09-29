@@ -130,12 +130,10 @@ public interface IBackupFileService
     /// <param name="backup">The backup data.</param>
     /// <param name="newDatabaseFilePath">The new database file path.</param>
     /// <param name="originalJwlibraryFilePathForSchema">The original jwlibrary file path on which to base the new schema.</param>
-    /// <param name="sourceJwlibraryFilePaths">The original jwlibrary file paths, used to copy across any referenced media files (e.g. playlist thumbnails/video).</param>
     void WriteNewDatabaseWithClean(
         BackupFile backup,
         string newDatabaseFilePath,
-        string originalJwlibraryFilePathForSchema,
-        IEnumerable<string> sourceJwlibraryFilePaths);
+        string originalJwlibraryFilePathForSchema);
 
     /// <summary>
     /// Writes the specified backup to a "jwlibrary" file.
@@ -143,12 +141,10 @@ public interface IBackupFileService
     /// <param name="backup">The backup data.</param>
     /// <param name="newDatabaseFilePath">The new database file path.</param>
     /// <param name="originalJwlibraryFilePathForSchema">The original jwlibrary file path on which to base the new schema.</param>
-    /// <param name="sourceJwlibraryFilePaths">The original jwlibrary file paths, used to copy across any referenced media files (e.g. playlist thumbnails/video).</param>
     void WriteNewDatabase(
-        BackupFile backup,
+        BackupFile backup, 
         string newDatabaseFilePath,
-        string originalJwlibraryFilePathForSchema,
-        IEnumerable<string> sourceJwlibraryFilePaths);
+        string originalJwlibraryFilePathForSchema);
 
     /// <summary>
     /// Removes all the tags from the specified database.

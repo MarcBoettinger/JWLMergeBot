@@ -74,7 +74,10 @@ internal sealed class Merger
     {
         ClearTranslators();
 
+        File.AppendAllText("/tmp/diag.txt", $"{DateTime.Now} DIAG: BEFORE fixup, source has 1750={source.Locations.Any(l => l.LocationId == 1750)} 1751={source.Locations.Any(l => l.LocationId == 1751)}\n");
+        File.AppendAllText("/tmp/diag.txt", $"{DateTime.Now} DIAG: source.Locations.Count={source.Locations.Count} max LocationId={(source.Locations.Count > 0 ? source.Locations.Max(l => l.LocationId) : -1)}\n");
         source.FixupAnomalies();
+        File.AppendAllText("/tmp/diag.txt", $"{DateTime.Now} DIAG: AFTER fixup, source has 1750={source.Locations.Any(l => l.LocationId == 1750)} 1751={source.Locations.Any(l => l.LocationId == 1751)}\n");
             
         MergeUserMarks(source, destination);
         MergeNotes(source, destination);
@@ -560,16 +563,19 @@ internal sealed class Merger
     private void MergePlaylistItemLocationMaps(Database source, Database destination)
     {
         ProgressMessage(" Playlist item location maps");
+        File.AppendAllText("/tmp/diag.txt", $"{DateTime.Now} DIAG: source has {source.PlaylistItemLocationMaps.Count} PlaylistItemLocationMaps\n");
 
         foreach (var map in source.PlaylistItemLocationMaps)
         {
             var playlistItemId = _translatedPlaylistItemIds.GetTranslatedId(map.PlaylistItemId);
+            File.AppendAllText("/tmp/diag.txt", $"{DateTime.Now} DIAG: map.PlaylistItemId={map.PlaylistItemId} translated playlistItemId={playlistItemId}\n");
             if (playlistItemId == 0)
             {
                 continue;
             }
 
             var location = source.FindLocation(map.LocationId);
+            File.AppendAllText("/tmp/diag.txt", $"{DateTime.Now} DIAG: map.LocationId={map.LocationId} source.FindLocation found={location != null}\n");
             if (location == null)
             {
                 continue;
@@ -577,11 +583,13 @@ internal sealed class Merger
 
             InsertLocation(location, destination);
             var locationId = _translatedLocationIds.GetTranslatedId(map.LocationId);
+            File.AppendAllText("/tmp/diag.txt", $"{DateTime.Now} DIAG: translated locationId={locationId}\n");
             if (locationId == 0)
             {
                 continue;
             }
 
+            File.AppendAllText("/tmp/diag.txt", $"{DateTime.Now} DIAG: existing map lookup for playlistItemId={playlistItemId} locationId={locationId}\n");
             if (destination.FindPlaylistItemLocationMap(playlistItemId, locationId) == null)
             {
                 var newMap = map.Clone();
