@@ -17,12 +17,12 @@ The bot is based on [this project](https://github.com/AntonyCorbett/JWLMerge) of
 *JW Library* is a registered trademark of _Watch Tower Bible and Tract Society of Pennsylvania_.
 
 ## Usage
-* Start a Telegram chat with [@JWLMergeBot](https://t.me/JWLMergeBot)
+* Start a Telegram chat with [@JWLibraryMergeBot](https://t.me/JWLibraryMergeBot)
 * Send the first .jwlibrary file
 * Send the second .jwlibrary file
 * Get the merged .jwlibrary file and restore it with _JW Library_
 
-## Limitations
+## No Limitations any more!
 
 The bot has been upated to **support the playlists merge**.\
 If you send a backup with a playlist, the merged file will contain the playlists.
