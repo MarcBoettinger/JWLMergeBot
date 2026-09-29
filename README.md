@@ -24,8 +24,8 @@ The bot is based on [this project](https://github.com/AntonyCorbett/JWLMerge) of
 
 ## Limitations
 
-Currently, the bot **doesn't support the playlists merge**.\
-If you send a backup with a playlist, the merged file will not contains the playlists anymore.
+The bot has been upated to **support the playlists merge**.\
+If you send a backup with a playlist, the merged file will contain the playlists.
 
 ## Disclaimer
 The bot needs to process your backup files to works.\
