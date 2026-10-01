@@ -1,0 +1,513 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="auto_delete" xml:space="preserve">
+    <value>🗑 Datei nach dem Senden löschen: {0}</value>
+  </data>
+  <data name="back" xml:space="preserve">
+    <value>Zurück</value>
+  </data>
+  <data name="bot_disconnected" xml:space="preserve">
+    <value>Die Verbindung zum Bot wurde unterbrochen und wird nach Möglichkeit wiederhergestellt</value>
+  </data>
+  <data name="bot_info" xml:space="preserve">
+    <value>Bot-Info</value>
+  </data>
+  <data name="bot_info_details" xml:space="preserve">
+    <value>JWLMergeBot Version: {0}\nBasiert auf JWLMerge von Antony Corbett und dem ursprünglichen JWLMergeBot von Alessandro Lucchet.\nRepository und Infos: https://github.com/MarcBoettinger/JWLMergeBot</value>
+  </data>
+  <data name="bot_started" xml:space="preserve">
+    <value>JWLMergeBot v{0} gestartet</value>
+  </data>
+  <data name="busy" xml:space="preserve">
+    <value>❗️ Ich arbeite bereits an einer anderen Datei… Bitte sende immer nur eine Datei auf einmal 😅\nDie Datei {0} wird ignoriert 🙄</value>
+  </data>
+  <data name="cannot_download_file_retry" xml:space="preserve">
+    <value>❌ Die Datei kann nicht heruntergeladen werden. Bitte sende sie später noch einmal</value>
+  </data>
+  <data name="change_language" xml:space="preserve">
+    <value>💬 Sprache ändern</value>
+  </data>
+  <data name="change_language_detail" xml:space="preserve">
+    <value>💬 Sprache ändern: 🇩🇪</value>
+  </data>
+  <data name="change_settings" xml:space="preserve">
+    <value>⚙️ Einstellungen ändern</value>
+  </data>
+  <data name="config_not_found" xml:space="preserve">
+    <value>⚙️ Konfigurationsdatei "config.json" nicht gefunden</value>
+  </data>
+  <data name="delete_favorites" xml:space="preserve">
+    <value>🗑 Favoriten löschen ⭐</value>
+  </data>
+  <data name="delete_favorites_confirm" xml:space="preserve">
+    <value>⚠️ Möchtest du wirklich alle Favoriten löschen?</value>
+  </data>
+  <data name="delete_file" xml:space="preserve">
+    <value>Gespeicherte Datei löschen</value>
+  </data>
+  <data name="edited_file" xml:space="preserve">
+    <value>🖋️ Hier ist die bearbeitete Datei!</value>
+  </data>
+  <data name="editing_file" xml:space="preserve">
+    <value>📥 Datei wird bearbeitet… 🖋️</value>
+  </data>
+  <data name="edit_stored_file" xml:space="preserve">
+    <value>🖋️ Gespeicherte Datei bearbeiten</value>
+  </data>
+  <data name="file_deleted" xml:space="preserve">
+    <value>🗑 Gespeicherte Datei gelöscht</value>
+  </data>
+  <data name="file_error" xml:space="preserve">
+    <value>❗️ Fehler beim Öffnen der Datei: {0}</value>
+  </data>
+  <data name="file_info" xml:space="preserve">
+    <value>Info</value>
+  </data>
+  <data name="file_info_details" xml:space="preserve">
+    <value>ℹ️ Einige Infos zur Datei:\nDateigröße: {0}\nAnzahl Notizen: {1}\nAnzahl Lesezeichen: {2}\nAnzahl Markierungen: {3}\nAnzahl Tags: {4}\nAnzahl Playlists: {5}</value>
+  </data>
+  <data name="file_not_exists" xml:space="preserve">
+    <value>👾 Ich habe keine Datei gespeichert</value>
+  </data>
+  <data name="invalid_message_syntax" xml:space="preserve">
+    <value>❗️Ungültige Nachrichtensyntax</value>
+  </data>
+  <data name="invalid_token" xml:space="preserve">
+    <value>🔑 Ungültiger Token! Bitte prüfe, ob in der Datei "config.json" bei "BotToken" der richtige Wert steht</value>
+  </data>
+  <data name="lang_en" xml:space="preserve">
+    <value>🇬🇧 Englisch</value>
+  </data>
+  <data name="lang_it" xml:space="preserve">
+    <value>🇮🇹 Italienisch</value>
+  </data>
+  <data name="max_filesize" xml:space="preserve">
+    <value>❌ Die Datei muss kleiner als 20 MB sein. Wenn deine Sicherung Playlists enthält, exportiere sie am besten, lösche sie und sende mir die Sicherungsdatei erneut</value>
+  </data>
+  <data name="merged_file" xml:space="preserve">
+    <value>🔗 Hier ist die zusammengeführte Datei!</value>
+  </data>
+  <data name="merged_file_keep" xml:space="preserve">
+    <value>🔗 Hier ist die zusammengeführte Datei! Ich behalte sie gespeichert</value>
+  </data>
+  <data name="messages_not_sent" xml:space="preserve">
+    <value>❌ Nicht gesendete Nachrichten: {0}</value>
+  </data>
+  <data name="messages_sent" xml:space="preserve">
+    <value>✔️ Gesendete Nachrichten: {0}</value>
+  </data>
+  <data name="message_dropped" xml:space="preserve">
+    <value>Eine Nachricht von {0} wurde verworfen, weil der Chat vorübergehend gesperrt ist</value>
+  </data>
+  <data name="message_syntax" xml:space="preserve">
+    <value>ℹ️ Das ist die Syntax des Befehls:\n/sendmessage {\n  "Recipients":"ChatId|WithSettingsInitialized|WithStoredFile",\n  "Text":{\n    "it": "\uD83D\uDCE2 Italian message",\n    "en": "\u2139\uFE0F English message",\n    "de": "\u2139\uFE0F German message"\n  }\n}</value>
+  </data>
+  <data name="message_type_callbackquery" xml:space="preserve">
+    <value>eine Callback-Abfrage</value>
+  </data>
+  <data name="message_type_file" xml:space="preserve">
+    <value>eine Datei</value>
+  </data>
+  <data name="message_type_text" xml:space="preserve">
+    <value>eine Nachricht</value>
+  </data>
+  <data name="message_type_unhandled" xml:space="preserve">
+    <value>ein nicht behandelter Inhalt</value>
+  </data>
+  <data name="no" xml:space="preserve">
+    <value>Nein</value>
+  </data>
+  <data name="nothing_to_delete" xml:space="preserve">
+    <value>👾 Ich habe nachgesehen, aber nichts von dir gespeichert</value>
+  </data>
+  <data name="old_schema_error" xml:space="preserve">
+    <value>❌ Ich kann die zuletzt gesendete Datei nicht mit der gespeicherten Datei zusammenführen. Die letzte Datei wurde mit einer alten Version von JW Library erstellt und muss zuerst aktualisiert werden.\n\nDie Datei in dieser Nachricht ist die alte Datei. Wenn du sie zusammenführen möchtest:\n- Sichere deine aktuellen Daten in JW Library\n- Stelle diese alte Datei in JW Library wieder her\n- Erstelle eine neue Sicherung und sende sie mir\n\nIch habe die gespeicherte Datei durch die neue ersetzt, die du mir geschickt hast</value>
+  </data>
+  <data name="processing_error" xml:space="preserve">
+    <value>❗️ Fehler beim Zusammenführen der Datei: {0}</value>
+  </data>
+  <data name="received_file1" xml:space="preserve">
+    <value>📥 Ich habe die Hauptdatei erhalten 📨 Ich speichere sie</value>
+  </data>
+  <data name="received_file2" xml:space="preserve">
+    <value>📥 Ich habe die Datei erhalten 🔗 Jetzt führe ich sie mit der gespeicherten Datei zusammen…</value>
+  </data>
+  <data name="received_something" xml:space="preserve">
+    <value>Ich habe {0} von {1} erhalten: {2}</value>
+  </data>
+  <data name="settings" xml:space="preserve">
+    <value>Einstellungen</value>
+  </data>
+  <data name="start" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="start_details" xml:space="preserve">
+    <value>Hallo {0}, ich bin @JWLibraryMergeBot 🤖\nMeine Aufgabe ist es, zwei Sicherungsdateien von JW Library zu einer zusammenzuführen 🔗\n\nSo funktioniere ich:\n1. Du sendest mir eine Datei 📩\n2. Ich speichere sie 📨\n3. Du sendest mir eine weitere Datei 📩\n4. Ich führe sie mit der ersten zusammen und schicke dir die zusammengeführte Datei zurück 🔗\n\nWenn du mir eine Datei schickst, bist du natürlich damit einverstanden, dass ich sie speichere 📝\nWie sollte ich sie sonst zusammenführen? 🤪\nDu kannst sie aber jederzeit mit dem Befehl /delete löschen 🗑\n\nNeueste Änderung: Ich unterstütze Playlists! ❗️\n\n Wenn dir der Dienst gefällt, denke doch über eine Spende von einem Euro per PayPal an marc.boettinger@gmx.de nach \n\n Viel Spaß! 🤖</value>
+  </data>
+  <data name="stat" xml:space="preserve">
+    <value>Gespeicherte Dateien: {0}\nBenutzer:\n{1}</value>
+  </data>
+  <data name="wrong_database_version_higher" xml:space="preserve">
+    <value>❗️Die Version der gesendeten Sicherung ({0}) ist nicht die von mir unterstützte ({1}). Wahrscheinlich werde ich bald aktualisiert, um diese neue Version zu unterstützen.</value>
+  </data>
+  <data name="wrong_database_version_lower" xml:space="preserve">
+    <value>❗️Die Version der gesendeten Sicherung ({0}) ist nicht die von mir unterstützte ({1}). Bitte aktualisiere JW Library und sende mir die Datei erneut.</value>
+  </data>
+  <data name="wrong_filetype" xml:space="preserve">
+    <value>❌ Ich kann nur JW Library-Sicherungsdateien (*.jwlibrary) verarbeiten</value>
+  </data>
+  <data name="yes" xml:space="preserve">
+    <value>Ja</value>
+  </data>
+  <data name="health_button" xml:space="preserve">
+    <value>🩺 Gesundheitscheck</value>
+  </data>
+  <data name="health_no_file" xml:space="preserve">
+    <value>👾 Ich habe keine Datei gespeichert. Sende mir zuerst deine Sicherung und führe dann /health aus</value>
+  </data>
+  <data name="health_summary" xml:space="preserve">
+    <value>🩺 Gesundheitscheck der Bibliothek\n{0} Notizen · {1} Markierungen · {2} Lesezeichen · {3} Tags</value>
+  </data>
+  <data name="health_ok" xml:space="preserve">
+    <value>✅ Deine Bibliothek ist in gutem Zustand. Nichts zu reparieren!</value>
+  </data>
+  <data name="health_found" xml:space="preserve">
+    <value>Das habe ich gefunden:</value>
+  </data>
+  <data name="health_legend" xml:space="preserve">
+    <value>🔴 kann die Wiederherstellung verhindern · 🟡 Unordnung · ⚪ nur zur Info</value>
+  </data>
+  <data name="health_fix_hint" xml:space="preserve">
+    <value>Tippe auf die Schaltfläche, um die 🔴 und 🟡 Punkte zu reparieren. Bis dahin wird nichts verändert.</value>
+  </data>
+  <data name="health_fix_button" xml:space="preserve">
+    <value>🔧 Meine Datei reparieren</value>
+  </data>
+  <data name="health_fixing" xml:space="preserve">
+    <value>🔧 Deine Datei wird repariert…</value>
+  </data>
+  <data name="health_fixed" xml:space="preserve">
+    <value>✅ Fertig: {0} Element(e) repariert.\nStelle diese Datei in JW Library wieder her. Behalte deine alte Sicherung, bis du das Ergebnis geprüft hast.</value>
+  </data>
+  <data name="health_fix_failed" xml:space="preserve">
+    <value>❌ Ich konnte die Datei nicht sicher reparieren und habe deshalb nichts verändert.\n{0}</value>
+  </data>
+  <data name="health_nothing_to_fix" xml:space="preserve">
+    <value>👍 Nichts zu reparieren.</value>
+  </data>
+  <data name="health_issue_duplicatelocations" xml:space="preserve">
+    <value>Doppelte Veröffentlichungsorte: {0}</value>
+  </data>
+  <data name="health_issue_orphanblockranges" xml:space="preserve">
+    <value>Markierungsbereiche ohne Markierung: {0}</value>
+  </data>
+  <data name="health_issue_duplicateblockranges" xml:space="preserve">
+    <value>Markierungen mit doppelten Bereichen: {0}</value>
+  </data>
+  <data name="health_issue_highlightswithoutlocation" xml:space="preserve">
+    <value>Markierungen, die auf einen fehlenden Ort verweisen: {0}</value>
+  </data>
+  <data name="health_issue_noteswithbrokenlinks" xml:space="preserve">
+    <value>Notizen mit defektem Verweis auf eine Markierung oder einen Ort: {0}</value>
+  </data>
+  <data name="health_issue_bookmarkswithoutlocation" xml:space="preserve">
+    <value>Lesezeichen, die auf einen fehlenden Ort verweisen: {0}</value>
+  </data>
+  <data name="health_issue_inputfieldswithoutlocation" xml:space="preserve">
+    <value>Gespeicherte Eingabefelder ohne Ort: {0}</value>
+  </data>
+  <data name="health_issue_brokentaglinks" xml:space="preserve">
+    <value>Tag-Verknüpfungen, die auf etwas Fehlendes verweisen: {0}</value>
+  </data>
+  <data name="health_issue_duplicatetaglinks" xml:space="preserve">
+    <value>Doppelte Tag-Verknüpfungen: {0}</value>
+  </data>
+  <data name="health_issue_invalidorduplicateguids" xml:space="preserve">
+    <value>Ungültige oder doppelte Notiz-/Markierungs-IDs: {0}</value>
+  </data>
+  <data name="health_issue_emptynotes" xml:space="preserve">
+    <value>Leere Notizen: {0}</value>
+  </data>
+  <data name="health_issue_duplicatenotes" xml:space="preserve">
+    <value>Doppelte Notizen: {0}</value>
+  </data>
+  <data name="health_issue_unusedlocations" xml:space="preserve">
+    <value>Übrig gebliebene, unbenutzte Orte: {0}</value>
+  </data>
+  <data name="health_issue_unusedtags" xml:space="preserve">
+    <value>Tags, die in keiner Notiz verwendet werden (bleiben erhalten): {0}</value>
+  </data>
+  <data name="health_issue_highlightswithoutranges" xml:space="preserve">
+    <value>Markierungen ohne Textbereich (bleiben erhalten): {0}</value>
+  </data>
+  <data name="stats_button" xml:space="preserve">
+    <value>📊 Studienstatistik</value>
+  </data>
+  <data name="stats_title" xml:space="preserve">
+    <value>📊 Deine Studienstatistik</value>
+  </data>
+  <data name="stats_totals" xml:space="preserve">
+    <value>📝 {0} Notizen (~{1} Wörter)\n🖍 {2} Markierungen\n🔖 {3} Lesezeichen\n🏷 {4} Tags</value>
+  </data>
+  <data name="stats_activity" xml:space="preserve">
+    <value>📅 Aktivität (nach Notizdatum)\nErste Notiz: {0}\nLetzte Notiz: {1}\nAktive Tage: {2}\nLängste Serie: {3} Tag(e)\nAktuelle Serie: {4} Tag(e)\nNotizen in den letzten 30 Tagen: {5}\nAktivster Tag: {6}</value>
+  </data>
+  <data name="stats_bible" xml:space="preserve">
+    <value>📖 Bibelabdeckung\n{0}/66 Bücher · {1} Kapitel erfasst</value>
+  </data>
+  <data name="stats_top_books" xml:space="preserve">
+    <value>Am häufigsten studierte Bücher:</value>
+  </data>
+  <data name="stats_top_tags" xml:space="preserve">
+    <value>🏷 Top-Tags</value>
+  </data>
+  <data name="stats_top_pubs" xml:space="preserve">
+    <value>📚 Am häufigsten mit Notizen versehene Veröffentlichungen</value>
+  </data>
+  <data name="stats_colors" xml:space="preserve">
+    <value>🎨 Markierungsfarben</value>
+  </data>
+  <data name="stats_milestones" xml:space="preserve">
+    <value>🏆 Meilensteine</value>
+  </data>
+  <data name="stats_empty" xml:space="preserve">
+    <value>In dieser Datei ist noch nicht genug für eine Statistik. Füge zuerst ein paar Notizen und Markierungen hinzu!</value>
+  </data>
+  <data name="stats_note" xml:space="preserve">
+    <value>ℹ️ Markierungen haben in der Sicherung kein Datum, daher zählen Aktivität und Serien nur Notizen.</value>
+  </data>
+  <data name="stats_ms_notes" xml:space="preserve">
+    <value>{0} Notizen geschrieben</value>
+  </data>
+  <data name="stats_ms_highlights" xml:space="preserve">
+    <value>{0} Markierungen gemacht</value>
+  </data>
+  <data name="stats_ms_streak" xml:space="preserve">
+    <value>{0}-Tage-Studienserie</value>
+  </data>
+  <data name="stats_ms_books" xml:space="preserve">
+    <value>{0} Bibelbücher erkundet</value>
+  </data>
+  <data name="stats_ms_tags" xml:space="preserve">
+    <value>{0} Tags in Verwendung</value>
+  </data>
+  <data name="stats_none" xml:space="preserve">
+    <value>keine</value>
+  </data>
+  <data name="merge_title" xml:space="preserve">
+    <value>🔍 Vorschau der Zusammenführung</value>
+  </data>
+  <data name="merge_intro" xml:space="preserve">
+    <value>Das Zusammenführen der neuen Datei mit deiner gespeicherten würde:</value>
+  </data>
+  <data name="merge_line_notes" xml:space="preserve">
+    <value>➕ {0} neue Notiz(en) hinzufügen</value>
+  </data>
+  <data name="merge_line_highlights" xml:space="preserve">
+    <value>➕ {0} neue Markierung(en) hinzufügen</value>
+  </data>
+  <data name="merge_line_bookmarks" xml:space="preserve">
+    <value>➕ {0} neue(s) Lesezeichen hinzufügen</value>
+  </data>
+  <data name="merge_line_tags" xml:space="preserve">
+    <value>➕ {0} neue(n) Tag(s) hinzufügen</value>
+  </data>
+  <data name="merge_line_playlist" xml:space="preserve">
+    <value>➕ {0} neue(n) Playlist-Eintrag/-Einträge hinzufügen</value>
+  </data>
+  <data name="merge_line_unchanged" xml:space="preserve">
+    <value>= {0} Notiz(en) sind in beiden Dateien identisch</value>
+  </data>
+  <data name="merge_line_conflicts" xml:space="preserve">
+    <value>⚠️ {0} Notiz(en) wurden auf beiden Geräten bearbeitet. Ohne deine Auswahl gewinnt die jüngste Bearbeitung.</value>
+  </data>
+  <data name="merge_line_decided" xml:space="preserve">
+    <value>✍️ Du hast für {0} von {1} entschieden.</value>
+  </data>
+  <data name="merge_footer" xml:space="preserve">
+    <value>Beim Zusammenführen wird nichts gelöscht, und es wird nichts geschrieben, bevor du bestätigst.</value>
+  </data>
+  <data name="merge_nothing_new" xml:space="preserve">
+    <value>👍 Nichts Neues: Deine gespeicherte Datei enthält bereits alles aus dieser Datei, daher habe ich nichts verändert.</value>
+  </data>
+  <data name="merge_btn_go" xml:space="preserve">
+    <value>✅ Zusammenführen</value>
+  </data>
+  <data name="merge_btn_go_now" xml:space="preserve">
+    <value>✅ Jetzt zusammenführen</value>
+  </data>
+  <data name="merge_btn_review" xml:space="preserve">
+    <value>🔍 {0} Konflikt(e) prüfen</value>
+  </data>
+  <data name="merge_btn_cancel" xml:space="preserve">
+    <value>❌ Abbrechen</value>
+  </data>
+  <data name="merge_btn_stored" xml:space="preserve">
+    <value>📦 Gespeicherte behalten</value>
+  </data>
+  <data name="merge_btn_new" xml:space="preserve">
+    <value>🆕 Neue verwenden</value>
+  </data>
+  <data name="merge_btn_overview" xml:space="preserve">
+    <value>📋 Übersicht</value>
+  </data>
+  <data name="merge_conflict_title" xml:space="preserve">
+    <value>⚠️ Konflikt {0}/{1} · {2}</value>
+  </data>
+  <data name="merge_stored_label" xml:space="preserve">
+    <value>📦 Gespeicherte Datei · {0}</value>
+  </data>
+  <data name="merge_new_label" xml:space="preserve">
+    <value>🆕 Neue Datei · {0}</value>
+  </data>
+  <data name="merge_empty" xml:space="preserve">
+    <value>(leer)</value>
+  </data>
+  <data name="merge_default_new" xml:space="preserve">
+    <value>Ohne Auswahl gewinnt die Version der neuen Datei (jünger).</value>
+  </data>
+  <data name="merge_default_stored" xml:space="preserve">
+    <value>Ohne Auswahl gewinnt die gespeicherte Version (jünger oder gleiches Datum).</value>
+  </data>
+  <data name="merge_chosen_stored" xml:space="preserve">
+    <value>Deine Wahl: gespeicherte Version behalten.</value>
+  </data>
+  <data name="merge_chosen_new" xml:space="preserve">
+    <value>Deine Wahl: neue Version verwenden.</value>
+  </data>
+  <data name="merge_cancelled" xml:space="preserve">
+    <value>❌ Zusammenführung abgebrochen. Es wurde nichts verändert.</value>
+  </data>
+  <data name="merge_no_pending" xml:space="preserve">
+    <value>Es wartet keine Zusammenführung auf deine Entscheidung.</value>
+  </data>
+  <data name="merge_running" xml:space="preserve">
+    <value>🔀 Wird zusammengeführt…</value>
+  </data>
+  <data name="merge_pending_error" xml:space="preserve">
+    <value>❌ Ich konnte die wartenden Dateien nicht lesen und habe diese Zusammenführung abgebrochen. Es wurde nichts verändert. Bitte sende die Datei erneut.\n{0}</value>
+  </data>
+  <data name="preview_setting" xml:space="preserve">
+    <value>🔍 Vorschau vor dem Zusammenführen: {0}</value>
+  </data>
+  <data name="lang_de" xml:space="preserve">
+    <value>🇩🇪 Deutsch</value>
+  </data>
+</root>
