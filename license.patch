@@ -1,0 +1,14 @@
+diff --git a/LICENSE b/LICENSE
+index 21fb61f..fbed7f1 100644
+--- a/LICENSE
++++ b/LICENSE
+@@ -1,6 +1,8 @@
+ MIT License
+ 
+-Copyright (c) 2020 Alessandro Lucchet
++Copyright (c) 2018 Antony Corbett (JWLMerge)
++Copyright (c) 2020 Alessandro Lucchet (JWLMergeBot)
++Copyright (c) 2026 Marc Boettinger (additions in this version)
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal

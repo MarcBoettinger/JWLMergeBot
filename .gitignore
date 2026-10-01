@@ -370,3 +370,6 @@ MigrationBackup/
 # Ignore .NET build outputs
 bin/
 obj/
+
+# Bot token and local settings
+config.json

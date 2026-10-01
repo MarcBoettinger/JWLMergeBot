@@ -453,7 +453,7 @@ namespace JWLMergeBot
                         {
                             BackupFile statsFile = new BackupFileService().Load(FileHandling.GetFilePath(FileType.Main, message.Chat.Id));
                             StudyStatsResult stats = new StudyStats().Compute(statsFile, DateTime.UtcNow);
-                            await Worker.botClient.SendTextMessageAsync(message.Chat.Id, BuildStudyStatsText(stats, message.Chat.Id));
+                            await Worker.botClient.SendTextMessageAsync(chatId: message.Chat.Id, text: BuildStudyStatsText(stats, message.Chat.Id), parseMode: Telegram.Bot.Types.Enums.ParseMode.Html);
                         }
                         catch (Exception exception)
                         {
@@ -1129,61 +1129,60 @@ namespace JWLMergeBot
             return sb.ToString();
         }
 
-        private static string Bar(int value, int max, int width = 10)
+        // Telegram HTML needs only these three characters escaped
+        private static string Esc(string text)
         {
-            if (max <= 0 || value <= 0) return "";
-            int filled = Math.Max(1, (int)Math.Round((double)value / max * width));
-            return new string('█', filled);
+            return text.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;");
+        }
+
+        private static string StatsBlock(IEnumerable<NamedCount> items)
+        {
+            return "<pre>" + Esc(TextBars.Table(items.Select(i => new KeyValuePair<string, int>(i.Name, i.Count)))) + "</pre>";
         }
 
         private static string BuildStudyStatsText(StudyStatsResult s, long chatId)
         {
             CultureInfo culture = CultureInfo.GetCultureInfo(ChatConfig.Load(chatId).Language);
             string T(string key) => HealthText(key, chatId);
-            string Date(DateTime? d) => d == null ? "-" : d.Value.ToString("d", culture);
+            string Date(DateTime? d) => d == null ? "-" : d.Value.ToString("d MMM yyyy", culture); // unambiguous: 8 May 2017
+            string N(int n) => n.ToString("N0", culture);
 
             if (s.Notes == 0 && s.Highlights == 0 && s.Bookmarks == 0)
-                return T("stats_empty");
+                return Esc(T("stats_empty"));
 
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine(T("stats_title"));
+            sb.AppendLine("<b>" + Esc(T("stats_title")) + "</b>");
             sb.AppendLine();
-            sb.AppendLine(string.Format(T("stats_totals"), s.Notes, s.NotesWords, s.Highlights, s.Bookmarks, s.Tags));
+            sb.AppendLine(Esc(string.Format(T("stats_totals"), N(s.Notes), N(s.NotesWords), N(s.Highlights), N(s.Bookmarks), N(s.Tags))));
 
             if (s.ActiveDays > 0)
             {
                 string busiest = s.BusiestWeekday == null ? "-" : culture.DateTimeFormat.GetDayName(s.BusiestWeekday.Value);
                 sb.AppendLine();
-                sb.AppendLine(string.Format(T("stats_activity"), Date(s.FirstActivity), Date(s.LastActivity), s.ActiveDays,
-                    s.LongestStreak, s.CurrentStreak, s.NotesLast30Days, busiest));
+                sb.AppendLine(Esc(string.Format(T("stats_activity"), Date(s.FirstActivity), Date(s.LastActivity), N(s.ActiveDays),
+                    s.LongestStreak, s.CurrentStreak, s.NotesLast30Days, busiest)));
             }
 
             sb.AppendLine();
-            sb.AppendLine(string.Format(T("stats_bible"), s.BibleBooksTouched, s.BibleChaptersTouched));
+            sb.AppendLine(Esc(string.Format(T("stats_bible"), s.BibleBooksTouched, N(s.BibleChaptersTouched))));
             if (s.TopBibleBooks.Count > 0)
             {
-                sb.AppendLine(T("stats_top_books"));
-                int max = s.TopBibleBooks.Max(b => b.Count);
-                foreach (NamedCount b in s.TopBibleBooks)
-                    sb.AppendLine($"{b.Name} {Bar(b.Count, max)} {b.Count}");
+                sb.AppendLine(Esc(T("stats_top_books")));
+                sb.AppendLine(StatsBlock(s.TopBibleBooks));
             }
 
             if (s.TopTags.Count > 0)
             {
                 sb.AppendLine();
-                sb.AppendLine(T("stats_top_tags"));
-                int max = s.TopTags.Max(t => t.Count);
-                foreach (NamedCount t in s.TopTags)
-                    sb.AppendLine($"{t.Name} {Bar(t.Count, max)} {t.Count}");
+                sb.AppendLine("<b>" + Esc(T("stats_top_tags")) + "</b>");
+                sb.AppendLine(StatsBlock(s.TopTags));
             }
 
             if (s.TopPublications.Count > 0)
             {
                 sb.AppendLine();
-                sb.AppendLine(T("stats_top_pubs"));
-                int max = s.TopPublications.Max(p => p.Count);
-                foreach (NamedCount p in s.TopPublications)
-                    sb.AppendLine($"{p.Name} {Bar(p.Count, max)} {p.Count}");
+                sb.AppendLine("<b>" + Esc(T("stats_top_pubs")) + "</b>");
+                sb.AppendLine(StatsBlock(s.TopPublications));
             }
 
             if (s.Highlights > 0)
@@ -1192,11 +1191,11 @@ namespace JWLMergeBot
                 StringBuilder colors = new StringBuilder();
                 for (int i = 1; i <= 6; i++)
                     if (s.HighlightColors[i] > 0)
-                        colors.Append($"{colorIcons[i]} {s.HighlightColors[i]}  ");
+                        colors.Append($"{colorIcons[i]} {N(s.HighlightColors[i])}  ");
                 if (colors.Length > 0)
                 {
                     sb.AppendLine();
-                    sb.AppendLine(T("stats_colors"));
+                    sb.AppendLine("<b>" + Esc(T("stats_colors")) + "</b>");
                     sb.AppendLine(colors.ToString().TrimEnd());
                 }
             }
@@ -1204,16 +1203,16 @@ namespace JWLMergeBot
             if (s.Milestones.Count > 0)
             {
                 sb.AppendLine();
-                sb.AppendLine(T("stats_milestones"));
+                sb.AppendLine("<b>" + Esc(T("stats_milestones")) + "</b>");
                 foreach (string m in s.Milestones)
                 {
                     string[] parts = m.Split(':');
-                    sb.AppendLine("🏅 " + string.Format(T("stats_ms_" + parts[0]), parts[1]));
+                    sb.AppendLine("🏅 " + Esc(string.Format(T("stats_ms_" + parts[0]), N(int.Parse(parts[1])))));
                 }
             }
 
             sb.AppendLine();
-            sb.Append(T("stats_note"));
+            sb.Append("<i>" + Esc(T("stats_note")) + "</i>");
             return sb.ToString();
         }
 

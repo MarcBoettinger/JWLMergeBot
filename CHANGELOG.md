@@ -1,5 +1,6 @@
 ## [1.10.0.19] - 2026-09-30
 
+* Study stats: aligned bar columns with finer bars (monospace blocks), unambiguous dates (8 May 2017) and thousands separators
 * Italian texts updated: playlists are supported, correct bot name in the welcome message, playlist count in the file info, typo fixed
 * German added as a language (/settings, then Change language). Broadcast messages fall back to English when they have no text for a chat's language
 * Merge preview: before merging, the bot shows what will be added (notes, highlights, bookmarks, tags, playlist items) and waits for confirmation. Can be switched off in /settings
