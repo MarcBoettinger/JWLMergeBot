@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Threading.Tasks;
 using System.Reflection;
 using Telegram.Bot.Types.InputFiles;
 using Telegram.Bot.Types;
 using Telegram.Bot;
 using JWLMerge.BackupFileServices;
 using JWLMerge.BackupFileServices.Models;
+using JWLMerge.BackupFileServices.Helpers;
 using Telegram.Bot.Types.ReplyMarkups;
 using JWLMergeBot.Properties;
 using static JWLMergeBot.FileHandling;
@@ -16,6 +18,7 @@ using Microsoft.Extensions.Logging;
 using Polly;
 using JWLMerge.BackupFileServices.Exceptions;
 using System.Text.RegularExpressions;
+using System.Globalization;
 using Newtonsoft.Json;
 using JWLMergeBot.Models;
 using DocumentFormat.OpenXml.Drawing.Charts;
@@ -61,11 +64,11 @@ namespace JWLMergeBot
             Telegram.Bot.Types.File TelegramFile = null;
             Policy
                 .Handle<Exception>()
-                .WaitAndRetry(20, index => TimeSpan.FromSeconds(1), 
+                .WaitAndRetry(20, index => TimeSpan.FromSeconds(1),
                 (exception,timeSpan) => {
                     Worker.Logger.LogError(message: exception.Message, exception: exception);
                 }).Execute(() => {
-                    TelegramFile = Worker.botClient.GetFileAsync(message.Document.FileId).Result; 
+                    TelegramFile = Worker.botClient.GetFileAsync(message.Document.FileId).Result;
                 });
             if(TelegramFile == null)
             {
@@ -130,7 +133,7 @@ namespace JWLMergeBot
                 {
                     // If the stored files failed to load, it (probably) means that the supported schema version has changed.
                     Worker.Logger.LogError(message: exception.Message, exception: exception);
-                    
+
                     // Send back the old backup
                     using (FileStream fs = System.IO.File.OpenRead(FileHandling.GetFilePath(FileType.Main, message.Chat.Id)))
                     {
@@ -147,67 +150,47 @@ namespace JWLMergeBot
                     return;
                 }
 
-                try
+                // Preview before merging (if enabled): show what would change and wait for the user's decision
+                if (ChatConfig.Load(message.Chat.Id).PreviewBeforeMerge)
                 {
-                    // Merge files
-                    BackupFile backup = backupFileService.Merge(new List<BackupFile>() { MainJWLibraryFile, TempJWLibraryFile });
-                    
-                    // Set the greatest Modification date
-                    if (
-                        DateTime.TryParseExact(MainJWLibraryFile.Manifest.UserDataBackup.LastModifiedDate, ManifestDateTimeFormat, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out DateTime MainJWLibraryFileLastModifiedDate) &&
-                        DateTime.TryParseExact(TempJWLibraryFile.Manifest.UserDataBackup.LastModifiedDate, ManifestDateTimeFormat, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out DateTime TempJWLibraryFileLastModifiedDate)
-                        )
+                    MergePreviewResult preview = null;
+                    try
                     {
-                        if (MainJWLibraryFileLastModifiedDate > TempJWLibraryFileLastModifiedDate) 
-                            backup.Manifest.UserDataBackup.LastModifiedDate = MainJWLibraryFile.Manifest.UserDataBackup.LastModifiedDate;
-                        else
-                            backup.Manifest.UserDataBackup.LastModifiedDate = TempJWLibraryFile.Manifest.UserDataBackup.LastModifiedDate;
+                        preview = new MergePreview().Compute(MainJWLibraryFile, TempJWLibraryFile);
                     }
-                    MainJWLibraryFile.Manifest.CreationDate = DateTime.Now.ToString(ManifestDateTimeFormat);
-
-                    // Write the merged database
-                    backupFileService.WriteNewDatabase(backup, FileHandling.GetFilePath(FileType.Merged, message.Chat.Id), FileHandling.GetFilePath(FileType.Main, message.Chat.Id), new List<string> { MainJWLibraryFile.FilePath, TempJWLibraryFile.FilePath });
-
-                    // Now the merged file become the main stored file
-                    FileHandling.ChangeFileType(FileType.Merged, FileType.Main, message.Chat.Id);
-
-                    // Get the user settings
-                    ChatConfig chatConfig = ChatConfig.Load(message.Chat.Id);
-
-                    // Send merged file
-                    using (FileStream fs = System.IO.File.OpenRead(FileHandling.GetFilePath(FileType.Main, message.Chat.Id)))
+                    catch (Exception exception)
                     {
-                        InputOnlineFile inputOnlineFile = new InputOnlineFile(fs, string.Format(Strings.merged_filename, DateTime.Now.ToString("s")));
-                        await Worker.botClient.SendDocumentAsync(
-                                chatId: message.Chat.Id,
-                                document: inputOnlineFile,
-                                caption: (chatConfig.AutoDeleteFile ? Strings.merged_file : Strings.merged_file_keep) + "\n\n" + GetFileInfoString(backup, message.Chat.Id),
-                                replyMarkup: chatConfig.AutoDeleteFile ? null : new InlineKeyboardMarkup(new[] {
-                                         InlineKeyboardButton.WithCallbackData(Strings.delete_file, Command.Delete)
-                                })
-                               );
+                        // A failing preview must never block the merge itself: fall back to the classic behaviour
+                        Worker.Logger.LogError(message: exception.Message, exception: exception);
                     }
 
-                    // Check if you have to delete file after send
-                    if (chatConfig.AutoDeleteFile)
-                        OnCommand(message, Command.Delete, false);
+                    if (preview != null)
+                    {
+                        try
+                        {
+                            if (!preview.HasChanges)
+                            {
+                                FileHandling.DeleteFile(FileType.Temp, message.Chat.Id);
+                                await Worker.botClient.SendTextMessageAsync(message.Chat.Id, HealthText("merge_nothing_new", message.Chat.Id));
+                                return;
+                            }
 
-                    // Increase merged files count
-                    chatConfig.MergedFileCount++;
-                    chatConfig.Save(message.Chat.Id);
+                            // Park the new file until the user decides. A newer upload replaces an older waiting one
+                            FileHandling.ClearPending(message.Chat.Id);
+                            FileHandling.ChangeFileType(FileType.Temp, FileType.Pending, message.Chat.Id);
+                            await ShowMergePreview(message, false, preview, new Dictionary<string, bool>());
+                        }
+                        catch (Exception exception)
+                        {
+                            Worker.Logger.LogError(message: exception.Message, exception: exception);
+                            FileHandling.DeleteFile(FileType.Temp, message.Chat.Id);
+                            await Worker.botClient.SendTextMessageAsync(message.Chat.Id, string.Format(Strings.processing_error, exception.Message));
+                        }
+                        return;
+                    }
+                }
 
-                }
-                catch (Exception exception)
-                {
-                    // Delete temp file, since it won't be processed anymore
-                    Worker.Logger.LogError(message:exception.Message, exception: exception);
-                    await Worker.botClient.SendTextMessageAsync(message.Chat.Id, string.Format(Strings.processing_error, exception.Message));
-                }
-                finally
-                {
-                    // At the end, delete temp file
-                    FileHandling.DeleteFile(FileType.Temp, message.Chat.Id);
-                }
+                await MergeAndSend(message, MainJWLibraryFile, TempJWLibraryFile, FileType.Temp, null, null);
             }
             else
             {
@@ -259,7 +242,7 @@ namespace JWLMergeBot
 
                 case Command.Delete:
                     {
-                        // If you deleted the file, remove the buttons 
+                        // If you deleted the file, remove the buttons
                         if (fromCallback)
                         {
                             // Find out which buttons to keep
@@ -292,7 +275,7 @@ namespace JWLMergeBot
                     break;
 
                 case Command.FileInfo:
-                    { 
+                    {
                         // Check if file exists
                         if (!FileHandling.FileExists(FileType.Main, message.Chat.Id))
                         {
@@ -326,7 +309,7 @@ namespace JWLMergeBot
 
                 case Command.BotInfo:
                     // Feedback
-                    await Worker.botClient.SendTextMessageAsync(message.Chat.Id, string.Format(Strings.bot_info_details, Assembly.GetEntryAssembly().GetName().Version.ToString(), Assembly.GetAssembly(typeof(BackupFileService)).GetName().Version.ToString()).Replace("\\n", "\n"));
+                    await Worker.botClient.SendTextMessageAsync(message.Chat.Id, string.Format(Strings.bot_info_details, Assembly.GetEntryAssembly().GetName().Version.ToString()).Replace("\\n", "\n"));
                     break;
 
                 case Command.Stat:
@@ -379,6 +362,8 @@ namespace JWLMergeBot
                     // Set edit file buttons
                     InlineKeyboardMarkup editFileKeyboardMarkup = new InlineKeyboardMarkup(new[] {
                              new[] { InlineKeyboardButton.WithCallbackData(Strings.delete_favorites, Command.DeleteFavorites) },
+                             new[] { InlineKeyboardButton.WithCallbackData(HealthText("health_button", message.Chat.Id), Command.Health) },
+                             new[] { InlineKeyboardButton.WithCallbackData(HealthText("stats_button", message.Chat.Id), Command.StudyStats) },
                         });
 
                     // Insert or update the menu
@@ -453,10 +438,158 @@ namespace JWLMergeBot
                     }
                     break;
 
+                case Command.StudyStats:
+                    {
+                        // Check if any file is stored
+                        if (!FileHandling.FileExists(FileType.Main, message.Chat.Id))
+                        {
+                            await Worker.botClient.SendTextMessageAsync(message.Chat.Id, HealthText("health_no_file", message.Chat.Id).Replace("/health", Command.StudyStats));
+                            return;
+                        }
+
+                        await Worker.botClient.SendChatActionAsync(message.Chat.Id, Telegram.Bot.Types.Enums.ChatAction.Typing);
+
+                        try
+                        {
+                            BackupFile statsFile = new BackupFileService().Load(FileHandling.GetFilePath(FileType.Main, message.Chat.Id));
+                            StudyStatsResult stats = new StudyStats().Compute(statsFile, DateTime.UtcNow);
+                            await Worker.botClient.SendTextMessageAsync(message.Chat.Id, BuildStudyStatsText(stats, message.Chat.Id));
+                        }
+                        catch (Exception exception)
+                        {
+                            Worker.Logger.LogError(message: exception.Message, exception: exception);
+                            await Worker.botClient.SendTextMessageAsync(message.Chat.Id, string.Format(Strings.file_error, exception.Message));
+                        }
+                    }
+                    break;
+
+                case Command.Health:
+                    {
+                        // Check if any file is stored
+                        if (!FileHandling.FileExists(FileType.Main, message.Chat.Id))
+                        {
+                            await Worker.botClient.SendTextMessageAsync(message.Chat.Id, HealthText("health_no_file", message.Chat.Id));
+                            return;
+                        }
+
+                        // Symulate typing
+                        await Worker.botClient.SendChatActionAsync(message.Chat.Id, Telegram.Bot.Types.Enums.ChatAction.Typing);
+
+                        // Load stored file and scan it (read only: nothing is changed here)
+                        HealthReport healthReport;
+                        try
+                        {
+                            BackupFile healthFile = new BackupFileService().Load(FileHandling.GetFilePath(FileType.Main, message.Chat.Id));
+                            healthReport = new LibraryDoctor().Scan(healthFile);
+                        }
+                        catch (Exception exception)
+                        {
+                            Worker.Logger.LogError(message: exception.Message, exception: exception);
+                            await Worker.botClient.SendTextMessageAsync(message.Chat.Id, string.Format(Strings.file_error, exception.Message));
+                            return;
+                        }
+
+                        await Worker.botClient.SendTextMessageAsync(
+                            chatId: message.Chat.Id,
+                            text: BuildHealthReportText(healthReport, message.Chat.Id),
+                            replyMarkup: healthReport.HasFixable ? new InlineKeyboardMarkup(new[] {
+                                new[] { InlineKeyboardButton.WithCallbackData(HealthText("health_fix_button", message.Chat.Id), Command.HealthFix) }
+                            }) : null);
+                    }
+                    break;
+
+                case Command.HealthFix:
+                    {
+                        // Check if any file is stored
+                        if (!FileHandling.FileExists(FileType.Main, message.Chat.Id))
+                        {
+                            await Worker.botClient.SendTextMessageAsync(message.Chat.Id, HealthText("health_no_file", message.Chat.Id));
+                            return;
+                        }
+
+                        // Remove the button, so it can't be pressed twice
+                        if (fromCallback)
+                        {
+                            await Worker.botClient.EditMessageReplyMarkupAsync(
+                                message.Chat.Id,
+                                message.MessageId,
+                                new InlineKeyboardMarkup(new List<InlineKeyboardButton>()));
+                        }
+
+                        // Check if I can handle the file (if a temporary file exist, it means I'm working on it...)
+                        if (FileHandling.IsTempFileBusy(message.Chat.Id))
+                        {
+                            await Worker.botClient.SendTextMessageAsync(message.Chat.Id, string.Format(Strings.busy, Command.HealthFix).Replace("\\n", "\n"));
+                            return;
+                        }
+
+                        await Worker.botClient.SendTextMessageAsync(message.Chat.Id, HealthText("health_fixing", message.Chat.Id));
+                        await Worker.botClient.SendChatActionAsync(message.Chat.Id, Telegram.Bot.Types.Enums.ChatAction.Typing);
+
+                        try
+                        {
+                            IBackupFileService backupFileService = new BackupFileService();
+                            BackupFile MainJWLibraryFile = backupFileService.Load(FileHandling.GetFilePath(FileType.Main, message.Chat.Id));
+
+                            // Repair in memory. If anything is still inconsistent this throws and the stored file stays untouched
+                            int repaired = new LibraryDoctor().Repair(MainJWLibraryFile);
+                            if (repaired == 0)
+                            {
+                                await Worker.botClient.SendTextMessageAsync(message.Chat.Id, HealthText("health_nothing_to_fix", message.Chat.Id));
+                                return;
+                            }
+
+                            // Update last modified date
+                            MainJWLibraryFile.Manifest.UserDataBackup.LastModifiedDate = DateTime.Now.ToString(ManifestDateTimeFormat);
+                            MainJWLibraryFile.Manifest.CreationDate = DateTime.Now.ToString(ManifestDateTimeFormat);
+
+                            // Write the repaired database
+                            backupFileService.WriteNewDatabase(MainJWLibraryFile, FileHandling.GetFilePath(FileType.Temp, message.Chat.Id), FileHandling.GetFilePath(FileType.Main, message.Chat.Id), new List<string> { MainJWLibraryFile.FilePath });
+
+                            // Now the repaired file become the main stored file
+                            FileHandling.ChangeFileType(FileType.Temp, FileType.Main, message.Chat.Id);
+
+                            // Get the user settings
+                            ChatConfig chatConfig = ChatConfig.Load(message.Chat.Id);
+
+                            // Send repaired file
+                            using (FileStream fs = System.IO.File.OpenRead(FileHandling.GetFilePath(FileType.Main, message.Chat.Id)))
+                            {
+                                InputOnlineFile inputOnlineFile = new InputOnlineFile(fs, string.Format(Strings.edited_filename, DateTime.Now.ToString("s")));
+                                await Worker.botClient.SendDocumentAsync(
+                                        chatId: message.Chat.Id,
+                                        document: inputOnlineFile,
+                                        caption: string.Format(HealthText("health_fixed", message.Chat.Id), repaired) + "\n\n" + GetFileInfoString(MainJWLibraryFile, message.Chat.Id),
+                                        replyMarkup: chatConfig.AutoDeleteFile ? null : new InlineKeyboardMarkup(new[] {
+                                            InlineKeyboardButton.WithCallbackData(Strings.delete_file, Command.Delete)
+                                        })
+                                        );
+                            }
+
+                            // Check if you have to delete file after send
+                            if (chatConfig.AutoDeleteFile)
+                                OnCommand(message, Command.Delete, false);
+                        }
+                        catch (Exception exception)
+                        {
+                            Worker.Logger.LogError(message: exception.Message, exception: exception);
+                            await Worker.botClient.SendTextMessageAsync(message.Chat.Id, string.Format(HealthText("health_fix_failed", message.Chat.Id), exception.Message));
+                        }
+                        finally
+                        {
+                            // Never leave a stale temp file behind
+                            FileHandling.DeleteFile(FileType.Temp, message.Chat.Id);
+                        }
+                    }
+                    break;
+
                 case Command.Settings:
                     // Set settings buttons
                     InlineKeyboardMarkup settingsKeyboardMarkup = new InlineKeyboardMarkup(new[] {
                              new[] { InlineKeyboardButton.WithCallbackData(Strings.change_language_detail, Command.SetLang)},
+                             ChatConfig.Load(message.Chat.Id).PreviewBeforeMerge?
+                             new[] { InlineKeyboardButton.WithCallbackData(string.Format(HealthText("preview_setting", message.Chat.Id), Strings.yes),Command.PreviewOff)}:
+                             new[] { InlineKeyboardButton.WithCallbackData(string.Format(HealthText("preview_setting", message.Chat.Id), Strings.no),Command.PreviewOn) },
                              ChatConfig.Load(message.Chat.Id).AutoDeleteFile?
                              new[] { InlineKeyboardButton.WithCallbackData(string.Format(Strings.auto_delete, Strings.yes),Command.AutodeleteOff)}:
                              new[] { InlineKeyboardButton.WithCallbackData(string.Format(Strings.auto_delete, Strings.no),Command.AutodeleteOn) }
@@ -468,7 +601,7 @@ namespace JWLMergeBot
                     break;
 
 
-                // Change language 
+                // Change language
                 case Command.SetLang:
                     await Worker.botClient.EditMessageTextAsync(
                         chatId: message.Chat.Id,
@@ -482,6 +615,7 @@ namespace JWLMergeBot
                                 new[] {
                                 new[] { InlineKeyboardButton.WithCallbackData(Strings.lang_it, Command.SetLangIt) },
                                 new[] { InlineKeyboardButton.WithCallbackData(Strings.lang_en, Command.SetLangEn) },
+                                new[] { InlineKeyboardButton.WithCallbackData(Strings.lang_de, Command.SetLangDe) },
                                 new[] { InlineKeyboardButton.WithCallbackData(Strings.back, Command.Settings) }
                                     }
                             )
@@ -508,6 +642,33 @@ namespace JWLMergeBot
                     }
                     goto case Command.Settings;
 
+                // Change language to german
+                case Command.SetLangDe:
+                    {
+                        ChatConfig chatConfig = ChatConfig.Load(message.Chat.Id);
+                        chatConfig.Language = "de";
+                        chatConfig.Save(message.Chat.Id);
+                        chatConfig.ApplyLanguage();
+                    }
+                    goto case Command.Settings;
+
+                // Change merge preview setting
+                case Command.PreviewOn:
+                case Command.PreviewOff:
+                    {
+                        ChatConfig chatConfig = ChatConfig.Load(message.Chat.Id);
+                        chatConfig.PreviewBeforeMerge = command.Equals(Command.PreviewOn);
+                        chatConfig.Save(message.Chat.Id);
+                    }
+                    goto case Command.Settings;
+
+                // Merge preview decisions
+                case Command.MergeGo:
+                case Command.MergeCancel:
+                case "/mo":
+                    await OnMergeCommand(message, command);
+                    break;
+
                 // Change autodelete setting
                 case Command.AutodeleteOn:
                 case Command.AutodeleteOff:
@@ -517,6 +678,13 @@ namespace JWLMergeBot
                         chatConfig.Save(message.Chat.Id);
                     }
                     goto case Command.Settings;
+            }
+
+            // Conflict review buttons (/mr_N show, /mk_N keep stored, /mn_N use new)
+            if (Regex.IsMatch(command, @"^/m[rkn]_\d+$"))
+            {
+                await OnMergeCommand(message, command);
+                return;
             }
 
             // Regex commands
@@ -569,7 +737,9 @@ namespace JWLMergeBot
                                         // Send the message
                                         try
                                         {
-                                            await Worker.botClient.SendTextMessageAsync(ChatId, botMessage.Text[chatConfig.Language]);
+                                            // Use the chat language, or English when the message has no text in that language
+                                            string broadcastText = botMessage.Text.ContainsKey(chatConfig.Language) ? botMessage.Text[chatConfig.Language] : botMessage.Text["en"];
+                                            await Worker.botClient.SendTextMessageAsync(ChatId, broadcastText);
                                         }
                                         catch (Exception exception)
                                         {
@@ -601,6 +771,451 @@ namespace JWLMergeBot
         }
 
         private static String ManifestDateTimeFormat = "yyyy-MM-ddTHH:mm:sszzz";
+
+        // ---------------------------------------------------------------- Merge (shared by the direct and the previewed path)
+
+        private static readonly HashSet<long> MergesInProgress = new HashSet<long>();
+
+        /// <summary>Merges, stores and sends the result. Used by the direct path and after the user confirmed a preview.</summary>
+        private static async Task MergeAndSend(Message message, BackupFile MainJWLibraryFile, BackupFile TempJWLibraryFile, FileType incomingType, MergePreviewResult preview, IReadOnlyDictionary<string, bool> choices)
+        {
+            IBackupFileService backupFileService = new BackupFileService();
+            try
+            {
+                // Merge files
+                BackupFile backup = backupFileService.Merge(new List<BackupFile>() { MainJWLibraryFile, TempJWLibraryFile });
+
+                // Apply the versions the user picked for notes edited on both devices
+                if (preview != null && choices != null && choices.Count > 0)
+                    new MergePreview().ApplyChoices(backup, preview.Conflicts, choices);
+
+                // Set the greatest Modification date
+                if (
+                    DateTime.TryParseExact(MainJWLibraryFile.Manifest.UserDataBackup.LastModifiedDate, ManifestDateTimeFormat, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out DateTime MainJWLibraryFileLastModifiedDate) &&
+                    DateTime.TryParseExact(TempJWLibraryFile.Manifest.UserDataBackup.LastModifiedDate, ManifestDateTimeFormat, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out DateTime TempJWLibraryFileLastModifiedDate)
+                    )
+                {
+                    if (MainJWLibraryFileLastModifiedDate > TempJWLibraryFileLastModifiedDate)
+                        backup.Manifest.UserDataBackup.LastModifiedDate = MainJWLibraryFile.Manifest.UserDataBackup.LastModifiedDate;
+                    else
+                        backup.Manifest.UserDataBackup.LastModifiedDate = TempJWLibraryFile.Manifest.UserDataBackup.LastModifiedDate;
+                }
+                MainJWLibraryFile.Manifest.CreationDate = DateTime.Now.ToString(ManifestDateTimeFormat);
+
+                // Write the merged database
+                backupFileService.WriteNewDatabase(backup, FileHandling.GetFilePath(FileType.Merged, message.Chat.Id), FileHandling.GetFilePath(FileType.Main, message.Chat.Id), new List<string> { MainJWLibraryFile.FilePath, TempJWLibraryFile.FilePath });
+
+                // Now the merged file become the main stored file
+                FileHandling.ChangeFileType(FileType.Merged, FileType.Main, message.Chat.Id);
+
+                // Get the user settings
+                ChatConfig chatConfig = ChatConfig.Load(message.Chat.Id);
+
+                // Send merged file
+                using (FileStream fs = System.IO.File.OpenRead(FileHandling.GetFilePath(FileType.Main, message.Chat.Id)))
+                {
+                    InputOnlineFile inputOnlineFile = new InputOnlineFile(fs, string.Format(Strings.merged_filename, DateTime.Now.ToString("s")));
+                    await Worker.botClient.SendDocumentAsync(
+                            chatId: message.Chat.Id,
+                            document: inputOnlineFile,
+                            caption: (chatConfig.AutoDeleteFile ? Strings.merged_file : Strings.merged_file_keep) + "\n\n" + GetFileInfoString(backup, message.Chat.Id),
+                            replyMarkup: chatConfig.AutoDeleteFile ? null : new InlineKeyboardMarkup(new[] {
+                                     InlineKeyboardButton.WithCallbackData(Strings.delete_file, Command.Delete)
+                            })
+                           );
+                }
+
+                // Check if you have to delete file after send
+                if (chatConfig.AutoDeleteFile)
+                    OnCommand(message, Command.Delete, false);
+
+                // Increase merged files count
+                chatConfig.MergedFileCount++;
+                chatConfig.Save(message.Chat.Id);
+            }
+            catch (Exception exception)
+            {
+                Worker.Logger.LogError(message: exception.Message, exception: exception);
+                await Worker.botClient.SendTextMessageAsync(message.Chat.Id, string.Format(Strings.processing_error, exception.Message));
+            }
+            finally
+            {
+                // At the end, delete the incoming file (and any waiting-decision state)
+                if (incomingType == FileType.Pending)
+                    FileHandling.ClearPending(message.Chat.Id);
+                else
+                    FileHandling.DeleteFile(incomingType, message.Chat.Id);
+            }
+        }
+
+        // ---------------------------------------------------------------- Merge preview and conflict review
+
+        private class PendingMerge
+        {
+            public BackupFile Main;
+            public BackupFile Incoming;
+            public MergePreviewResult Preview;
+            public Dictionary<string, bool> Decisions;
+        }
+
+        private static Dictionary<string, bool> LoadDecisions(long chatId)
+        {
+            try
+            {
+                string path = FileHandling.GetFilePath(FileType.PendingState, chatId);
+                if (System.IO.File.Exists(path))
+                    return JsonConvert.DeserializeObject<Dictionary<string, bool>>(System.IO.File.ReadAllText(path)) ?? new Dictionary<string, bool>();
+            }
+            catch (Exception)
+            {
+            }
+            return new Dictionary<string, bool>();
+        }
+
+        private static void SaveDecisions(long chatId, Dictionary<string, bool> decisions)
+        {
+            System.IO.File.WriteAllText(FileHandling.GetFilePath(FileType.PendingState, chatId), JsonConvert.SerializeObject(decisions));
+        }
+
+        /// <summary>Reloads everything from disk, so a bot restart between preview and decision is harmless.</summary>
+        private static PendingMerge LoadPendingMerge(long chatId)
+        {
+            if (!FileHandling.IsPendingValid(chatId) || !FileHandling.FileExists(FileType.Main, chatId))
+                return null;
+
+            IBackupFileService service = new BackupFileService();
+            PendingMerge pending = new PendingMerge();
+            pending.Main = service.Load(FileHandling.GetFilePath(FileType.Main, chatId));
+            pending.Incoming = service.Load(FileHandling.GetFilePath(FileType.Pending, chatId));
+            pending.Preview = new MergePreview().Compute(pending.Main, pending.Incoming);
+            pending.Decisions = LoadDecisions(chatId);
+            return pending;
+        }
+
+        private static string Trunc(string text, int max)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                return null;
+            text = text.Trim();
+            return text.Length <= max ? text : text.Substring(0, max).TrimEnd() + "…";
+        }
+
+        private static async Task ShowMergePreview(Message message, bool edit, MergePreviewResult preview, Dictionary<string, bool> decisions)
+        {
+            long chatId = message.Chat.Id;
+            string T(string key) => HealthText(key, chatId);
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine(T("merge_title"));
+            sb.AppendLine();
+            sb.AppendLine(T("merge_intro"));
+            if (preview.NewNotes > 0) sb.AppendLine(string.Format(T("merge_line_notes"), preview.NewNotes));
+            if (preview.NewHighlights > 0) sb.AppendLine(string.Format(T("merge_line_highlights"), preview.NewHighlights));
+            if (preview.NewBookmarks > 0) sb.AppendLine(string.Format(T("merge_line_bookmarks"), preview.NewBookmarks));
+            if (preview.NewTags > 0) sb.AppendLine(string.Format(T("merge_line_tags"), preview.NewTags));
+            if (preview.NewPlaylistItems > 0) sb.AppendLine(string.Format(T("merge_line_playlist"), preview.NewPlaylistItems));
+            if (preview.UnchangedNotes > 0) sb.AppendLine(string.Format(T("merge_line_unchanged"), preview.UnchangedNotes));
+
+            List<InlineKeyboardButton[]> rows = new List<InlineKeyboardButton[]>();
+            if (preview.Conflicts.Count > 0)
+            {
+                sb.AppendLine();
+                sb.AppendLine(string.Format(T("merge_line_conflicts"), preview.Conflicts.Count));
+                int decided = preview.Conflicts.Count(c => decisions.ContainsKey(c.Guid));
+                if (decided > 0)
+                    sb.AppendLine(string.Format(T("merge_line_decided"), decided, preview.Conflicts.Count));
+                rows.Add(new[] { InlineKeyboardButton.WithCallbackData(string.Format(T("merge_btn_review"), preview.Conflicts.Count), "/mr_0") });
+            }
+            sb.AppendLine();
+            sb.Append(T("merge_footer"));
+
+            rows.Add(new[] {
+                InlineKeyboardButton.WithCallbackData(T("merge_btn_go"), Command.MergeGo),
+                InlineKeyboardButton.WithCallbackData(T("merge_btn_cancel"), Command.MergeCancel)
+            });
+
+            InlineKeyboardMarkup markup = new InlineKeyboardMarkup(rows);
+            if (edit)
+                await Worker.botClient.EditMessageTextAsync(chatId: chatId, messageId: message.MessageId, text: sb.ToString(), replyMarkup: markup);
+            else
+                await Worker.botClient.SendTextMessageAsync(chatId: chatId, text: sb.ToString(), replyMarkup: markup);
+        }
+
+        private static async Task ShowMergeConflict(Message message, MergePreviewResult preview, Dictionary<string, bool> decisions, int index)
+        {
+            long chatId = message.Chat.Id;
+            string T(string key) => HealthText(key, chatId);
+            CultureInfo culture = CultureInfo.GetCultureInfo(ChatConfig.Load(chatId).Language);
+
+            index = Math.Max(0, Math.Min(index, preview.Conflicts.Count - 1));
+            NoteConflict c = preview.Conflicts[index];
+            string Date(NoteVersion v) => v.Modified == DateTime.MinValue ? "?" : v.Modified.ToString("g", culture);
+            string Body(NoteVersion v)
+            {
+                string title = Trunc(v.Title, 120);
+                string content = Trunc(v.Content, 450);
+                if (title == null && content == null) return T("merge_empty");
+                return (title != null ? title + "\n" : "") + (content ?? "");
+            }
+
+            bool? choice = decisions.TryGetValue(c.Guid, out bool takeNew) ? takeNew : (bool?)null;
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine(string.Format(T("merge_conflict_title"), index + 1, preview.Conflicts.Count, c.Where));
+            sb.AppendLine();
+            sb.AppendLine(string.Format(T("merge_stored_label"), Date(c.Stored)));
+            sb.AppendLine(Body(c.Stored));
+            sb.AppendLine();
+            sb.AppendLine(string.Format(T("merge_new_label"), Date(c.Incoming)));
+            sb.AppendLine(Body(c.Incoming));
+            sb.AppendLine();
+            if (choice == null)
+                sb.Append(T(c.IncomingWinsByDefault ? "merge_default_new" : "merge_default_stored"));
+            else
+                sb.Append(T(choice.Value ? "merge_chosen_new" : "merge_chosen_stored"));
+
+            List<InlineKeyboardButton[]> rows = new List<InlineKeyboardButton[]>();
+            rows.Add(new[] {
+                InlineKeyboardButton.WithCallbackData((choice == false ? "✓ " : "") + T("merge_btn_stored"), "/mk_" + index),
+                InlineKeyboardButton.WithCallbackData((choice == true ? "✓ " : "") + T("merge_btn_new"), "/mn_" + index)
+            });
+            List<InlineKeyboardButton> nav = new List<InlineKeyboardButton>();
+            if (index > 0) nav.Add(InlineKeyboardButton.WithCallbackData("◀", "/mr_" + (index - 1)));
+            nav.Add(InlineKeyboardButton.WithCallbackData(T("merge_btn_overview"), "/mo"));
+            if (index < preview.Conflicts.Count - 1) nav.Add(InlineKeyboardButton.WithCallbackData("▶", "/mr_" + (index + 1)));
+            rows.Add(nav.ToArray());
+            rows.Add(new[] {
+                InlineKeyboardButton.WithCallbackData(T("merge_btn_go_now"), Command.MergeGo),
+                InlineKeyboardButton.WithCallbackData(T("merge_btn_cancel"), Command.MergeCancel)
+            });
+
+            await Worker.botClient.EditMessageTextAsync(chatId: chatId, messageId: message.MessageId, text: sb.ToString(), replyMarkup: new InlineKeyboardMarkup(rows));
+        }
+
+        /// <summary>Handles /merge_go, /merge_cancel, /mo (overview) and /mr_N, /mk_N, /mn_N (conflict review).</summary>
+        private static async Task OnMergeCommand(Message message, string command)
+        {
+            try
+            {
+                await OnMergeCommandCore(message, command);
+            }
+            catch (Exception exception)
+            {
+                // e.g. Telegram refuses to edit a message into the very same text after a double tap: harmless, never crash the bot
+                Worker.Logger.LogError(message: exception.Message, exception: exception);
+            }
+        }
+
+        private static async Task OnMergeCommandCore(Message message, string command)
+        {
+            long chatId = message.Chat.Id;
+
+            if (command == Command.MergeCancel)
+            {
+                FileHandling.ClearPending(chatId);
+                await Worker.botClient.EditMessageTextAsync(chatId: chatId, messageId: message.MessageId, text: HealthText("merge_cancelled", chatId));
+                return;
+            }
+
+            PendingMerge pending;
+            try
+            {
+                pending = LoadPendingMerge(chatId);
+            }
+            catch (Exception exception)
+            {
+                Worker.Logger.LogError(message: exception.Message, exception: exception);
+                FileHandling.ClearPending(chatId);
+                await Worker.botClient.EditMessageTextAsync(chatId: chatId, messageId: message.MessageId, text: string.Format(HealthText("merge_pending_error", chatId), exception.Message));
+                return;
+            }
+
+            if (pending == null)
+            {
+                await Worker.botClient.EditMessageTextAsync(chatId: chatId, messageId: message.MessageId, text: HealthText("merge_no_pending", chatId));
+                return;
+            }
+
+            if (command == Command.MergeGo)
+            {
+                lock (MergesInProgress)
+                {
+                    if (!MergesInProgress.Add(chatId))
+                        return; // double tap
+                }
+
+                try
+                {
+                    await Worker.botClient.EditMessageTextAsync(chatId: chatId, messageId: message.MessageId, text: HealthText("merge_running", chatId));
+                    await Worker.botClient.SendChatActionAsync(chatId, Telegram.Bot.Types.Enums.ChatAction.Typing);
+                    await MergeAndSend(message, pending.Main, pending.Incoming, FileType.Pending, pending.Preview, pending.Decisions);
+                }
+                finally
+                {
+                    lock (MergesInProgress)
+                    {
+                        MergesInProgress.Remove(chatId);
+                    }
+                }
+                return;
+            }
+
+            if (command == "/mo")
+            {
+                await ShowMergePreview(message, true, pending.Preview, pending.Decisions);
+                return;
+            }
+
+            Match m = Regex.Match(command, @"^/m([rkn])_(\d+)$");
+            if (!m.Success || pending.Preview.Conflicts.Count == 0)
+            {
+                await ShowMergePreview(message, true, pending.Preview, pending.Decisions);
+                return;
+            }
+
+            int index = int.Parse(m.Groups[2].Value);
+            if (index >= pending.Preview.Conflicts.Count)
+                index = pending.Preview.Conflicts.Count - 1;
+
+            if (m.Groups[1].Value != "r")
+            {
+                // Remember the choice, then go on to the next conflict (or back to the overview after the last one)
+                pending.Decisions[pending.Preview.Conflicts[index].Guid] = m.Groups[1].Value == "n";
+                SaveDecisions(chatId, pending.Decisions);
+
+                if (index + 1 >= pending.Preview.Conflicts.Count)
+                {
+                    await ShowMergePreview(message, true, pending.Preview, pending.Decisions);
+                    return;
+                }
+                index++;
+            }
+
+            await ShowMergeConflict(message, pending.Preview, pending.Decisions, index);
+        }
+
+        // Localized text for the health check, resolved with the chat language (safe across awaits)
+        private static string HealthText(string key, long chatId)
+        {
+            CultureInfo culture = CultureInfo.GetCultureInfo(ChatConfig.Load(chatId).Language);
+            return (Strings.ResourceManager.GetString(key, culture) ?? key).Replace("\\n", "\n");
+        }
+
+        private static string BuildHealthReportText(HealthReport report, long chatId)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine(string.Format(HealthText("health_summary", chatId), report.Notes, report.Highlights, report.Bookmarks, report.Tags));
+            sb.AppendLine();
+
+            if (report.Issues.Count == 0)
+            {
+                sb.Append(HealthText("health_ok", chatId));
+                return sb.ToString();
+            }
+
+            sb.AppendLine(HealthText("health_found", chatId));
+            foreach (HealthIssue issue in report.Issues.OrderByDescending(i => i.Severity))
+            {
+                string icon = issue.Severity == HealthSeverity.Critical ? "🔴" : issue.Severity == HealthSeverity.Warning ? "🟡" : "⚪";
+                string format = HealthText("health_issue_" + issue.Kind.ToString().ToLowerInvariant(), chatId);
+                sb.AppendLine(icon + " " + string.Format(format, issue.Count));
+            }
+            sb.AppendLine();
+            sb.AppendLine(HealthText("health_legend", chatId));
+            if (report.HasFixable)
+                sb.Append(HealthText("health_fix_hint", chatId));
+            else
+                sb.Append(HealthText("health_ok", chatId));
+            return sb.ToString();
+        }
+
+        private static string Bar(int value, int max, int width = 10)
+        {
+            if (max <= 0 || value <= 0) return "";
+            int filled = Math.Max(1, (int)Math.Round((double)value / max * width));
+            return new string('█', filled);
+        }
+
+        private static string BuildStudyStatsText(StudyStatsResult s, long chatId)
+        {
+            CultureInfo culture = CultureInfo.GetCultureInfo(ChatConfig.Load(chatId).Language);
+            string T(string key) => HealthText(key, chatId);
+            string Date(DateTime? d) => d == null ? "-" : d.Value.ToString("d", culture);
+
+            if (s.Notes == 0 && s.Highlights == 0 && s.Bookmarks == 0)
+                return T("stats_empty");
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine(T("stats_title"));
+            sb.AppendLine();
+            sb.AppendLine(string.Format(T("stats_totals"), s.Notes, s.NotesWords, s.Highlights, s.Bookmarks, s.Tags));
+
+            if (s.ActiveDays > 0)
+            {
+                string busiest = s.BusiestWeekday == null ? "-" : culture.DateTimeFormat.GetDayName(s.BusiestWeekday.Value);
+                sb.AppendLine();
+                sb.AppendLine(string.Format(T("stats_activity"), Date(s.FirstActivity), Date(s.LastActivity), s.ActiveDays,
+                    s.LongestStreak, s.CurrentStreak, s.NotesLast30Days, busiest));
+            }
+
+            sb.AppendLine();
+            sb.AppendLine(string.Format(T("stats_bible"), s.BibleBooksTouched, s.BibleChaptersTouched));
+            if (s.TopBibleBooks.Count > 0)
+            {
+                sb.AppendLine(T("stats_top_books"));
+                int max = s.TopBibleBooks.Max(b => b.Count);
+                foreach (NamedCount b in s.TopBibleBooks)
+                    sb.AppendLine($"{b.Name} {Bar(b.Count, max)} {b.Count}");
+            }
+
+            if (s.TopTags.Count > 0)
+            {
+                sb.AppendLine();
+                sb.AppendLine(T("stats_top_tags"));
+                int max = s.TopTags.Max(t => t.Count);
+                foreach (NamedCount t in s.TopTags)
+                    sb.AppendLine($"{t.Name} {Bar(t.Count, max)} {t.Count}");
+            }
+
+            if (s.TopPublications.Count > 0)
+            {
+                sb.AppendLine();
+                sb.AppendLine(T("stats_top_pubs"));
+                int max = s.TopPublications.Max(p => p.Count);
+                foreach (NamedCount p in s.TopPublications)
+                    sb.AppendLine($"{p.Name} {Bar(p.Count, max)} {p.Count}");
+            }
+
+            if (s.Highlights > 0)
+            {
+                string[] colorIcons = { "", "🟨", "🟩", "🟦", "🌸", "🟧", "🟪" };
+                StringBuilder colors = new StringBuilder();
+                for (int i = 1; i <= 6; i++)
+                    if (s.HighlightColors[i] > 0)
+                        colors.Append($"{colorIcons[i]} {s.HighlightColors[i]}  ");
+                if (colors.Length > 0)
+                {
+                    sb.AppendLine();
+                    sb.AppendLine(T("stats_colors"));
+                    sb.AppendLine(colors.ToString().TrimEnd());
+                }
+            }
+
+            if (s.Milestones.Count > 0)
+            {
+                sb.AppendLine();
+                sb.AppendLine(T("stats_milestones"));
+                foreach (string m in s.Milestones)
+                {
+                    string[] parts = m.Split(':');
+                    sb.AppendLine("🏅 " + string.Format(T("stats_ms_" + parts[0]), parts[1]));
+                }
+            }
+
+            sb.AppendLine();
+            sb.Append(T("stats_note"));
+            return sb.ToString();
+        }
 
         private static String GetFileInfoString(BackupFile JWLibraryFile, long chatId)
         {

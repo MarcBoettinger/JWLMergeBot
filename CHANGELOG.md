@@ -1,3 +1,13 @@
+## [1.10.0.19] - 2026-09-30
+
+* Italian texts updated: playlists are supported, correct bot name in the welcome message, playlist count in the file info, typo fixed
+* German added as a language (/settings, then Change language). Broadcast messages fall back to English when they have no text for a chat's language
+* Merge preview: before merging, the bot shows what will be added (notes, highlights, bookmarks, tags, playlist items) and waits for confirmation. Can be switched off in /settings
+* Conflict review: notes edited on both devices can be reviewed one by one, choosing the stored or the new version
+* Fixed /botinfo: correct repository link and credits, no more bogus library version
+* New commands: /health scans the stored file (like the Library Doctor on jwsync.org) and /health_fix repairs it
+* Health check finds duplicate/empty notes, broken links, duplicate locations and other problems that can stop a restore
+
 ## [1.9.0.18] - 2026-05-02
 
 * Support for the v16 db schema

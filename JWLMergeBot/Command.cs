@@ -13,6 +13,7 @@ namespace JWLMergeBot
         public const string SetLang = "/setlang";
         public const string SetLangEn = "/setlang_en";
         public const string SetLangIt = "/setlang_it";
+        public const string SetLangDe = "/setlang_de";
         public const string Settings = "/settings";
         public const string Start = "/start";
         public const string AutodeleteOn = "/autodelete_on";
@@ -20,6 +21,13 @@ namespace JWLMergeBot
         public const string EditFile = "/editfile";
         public const string DeleteFavorites = "/deletefavorites";
         public const string DeleteFavoritesConfirmed = "/deletefavorites_confirm";
+        public const string Health = "/health";
+        public const string HealthFix = "/health_fix";
+        public const string StudyStats = "/studystats";
+        public const string PreviewOn = "/preview_on";
+        public const string PreviewOff = "/preview_off";
+        public const string MergeGo = "/merge_go";
+        public const string MergeCancel = "/merge_cancel";
         #endregion
 
         #region Admins only

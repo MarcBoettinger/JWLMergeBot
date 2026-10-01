@@ -10,7 +10,8 @@ namespace JWLMergeBot
         public static List<string> JWLibraryExtensions = new List<string> { ".jwlibrary", ".jwlibrary.bin" };
         private static int MaxFilesizeByte = 20 * 1024 * 1024;
         private static long TempFileBusyTimeout = 60;
-        public enum FileType { Main, Temp, Merged, Log, Chat };
+        private static long PendingMergeHours = 24;
+        public enum FileType { Main, Temp, Merged, Log, Chat, Pending, PendingState };
         #endregion
 
         #region Directories
@@ -74,6 +75,10 @@ namespace JWLMergeBot
                     return Path.Combine(GetTempDirectory(), $"{chatId}_temp.jwlibrary");
                 case FileType.Merged:
                     return Path.Combine(GetTempDirectory(), $"{chatId}_merged.jwlibrary");
+                case FileType.Pending:
+                    return Path.Combine(GetTempDirectory(), $"{chatId}_pending.jwlibrary");
+                case FileType.PendingState:
+                    return Path.Combine(GetTempDirectory(), $"{chatId}_pending.json");
                 case FileType.Chat:
                     return Path.Combine(GetTempChatDirectory(chatId), document.FileName);
                 default:
@@ -111,6 +116,23 @@ namespace JWLMergeBot
             }
             else
                 return false;
+        }
+
+        /// <summary>True if a file waiting for the user's merge decision exists and is not older than a day.</summary>
+        public static bool IsPendingValid(long chatId)
+        {
+            if (!FileExists(FileType.Pending, chatId))
+                return false;
+            if (File.GetLastWriteTime(GetFilePath(FileType.Pending, chatId)).AddHours(PendingMergeHours).CompareTo(DateTime.Now) > 0)
+                return true;
+            ClearPending(chatId);
+            return false;
+        }
+
+        public static void ClearPending(long chatId)
+        {
+            DeleteFile(FileType.Pending, chatId);
+            DeleteFile(FileType.PendingState, chatId);
         }
 
         public static string GetReadableFilesize(FileType fileType, long chatId)

@@ -17,6 +17,13 @@ namespace JWLMergeBot
 			set { _Language = value; } 
 		}
 		public bool AutoDeleteFile { get; set; }
+		private bool? _PreviewBeforeMerge;
+		// On by default, also for chats saved before this setting existed
+		public bool PreviewBeforeMerge
+		{
+			get { return _PreviewBeforeMerge ?? true; }
+			set { _PreviewBeforeMerge = value; }
+		}
 		private int _MergedFileCount;
         public int MergedFileCount
         {

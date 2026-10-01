@@ -304,7 +304,16 @@ namespace JWLMergeBot.Properties {
         }
         
         /// <summary>
-        ///   Cerca una stringa localizzata simile a 🇬🇧 English.
+        ///   Cerca una stringa localizzata simile a 🇩🇪 German.
+        /// </summary>
+        internal static string lang_de {
+            get {
+                return ResourceManager.GetString("lang_de", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 🇬🇧 English.
         /// </summary>
         internal static string lang_en {
             get {

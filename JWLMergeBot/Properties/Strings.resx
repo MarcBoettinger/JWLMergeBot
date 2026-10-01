@@ -130,7 +130,7 @@
     <value>Bot info</value>
   </data>
   <data name="bot_info_details" xml:space="preserve">
-    <value>JWLMergeBot version: {0}\nJWLMerge version: {1}\nRepository and infos: https://gitlab.com/AlessandroLucchet/JWLMergeBot</value>
+    <value>JWLMergeBot version: {0}\nBased on JWLMerge by Antony Corbett and the original JWLMergeBot by Alessandro Lucchet.\nRepository and infos: https://github.com/MarcBoettinger/JWLMergeBot</value>
   </data>
   <data name="bot_started" xml:space="preserve">
     <value>Started JWLMergeBot v{0}</value>
@@ -226,7 +226,7 @@
     <value>A message from {0} has been dropped because the chat has been temporary banned</value>
   </data>
   <data name="message_syntax" xml:space="preserve">
-    <value>ℹ️ This is the syntax of the command:\n/sendmessage {\n  "Recipients":"ChatId|WithSettingsInitialized|WithStoredFile",\n  "Text":{\n    "it": "\uD83D\uDCE2 Italian message",\n    "en": "\u2139\uFE0F English message"\n  }\n}</value>
+    <value>ℹ️ This is the syntax of the command:\n/sendmessage {\n  "Recipients":"ChatId|WithSettingsInitialized|WithStoredFile",\n  "Text":{\n    "it": "\uD83D\uDCE2 Italian message",\n    "en": "\u2139\uFE0F English message",\n    "de": "\u2139\uFE0F German message"\n  }\n}</value>
   </data>
   <data name="message_type_callbackquery" xml:space="preserve">
     <value>a callback query</value>
@@ -287,5 +287,239 @@
   </data>
   <data name="yes" xml:space="preserve">
     <value>Yes</value>
+  </data>
+  <data name="health_button" xml:space="preserve">
+    <value>🩺 Health check</value>
+  </data>
+  <data name="health_no_file" xml:space="preserve">
+    <value>👾 I've no file in memory. Send me your backup first, then run /health</value>
+  </data>
+  <data name="health_summary" xml:space="preserve">
+    <value>🩺 Library health check\n{0} notes · {1} highlights · {2} bookmarks · {3} tags</value>
+  </data>
+  <data name="health_ok" xml:space="preserve">
+    <value>✅ Your library looks healthy. Nothing to fix!</value>
+  </data>
+  <data name="health_found" xml:space="preserve">
+    <value>Here is what I found:</value>
+  </data>
+  <data name="health_legend" xml:space="preserve">
+    <value>🔴 can stop a restore · 🟡 clutter · ⚪ just so you know</value>
+  </data>
+  <data name="health_fix_hint" xml:space="preserve">
+    <value>Tap the button to repair the 🔴 and 🟡 items. Nothing is changed until you do.</value>
+  </data>
+  <data name="health_fix_button" xml:space="preserve">
+    <value>🔧 Repair my file</value>
+  </data>
+  <data name="health_fixing" xml:space="preserve">
+    <value>🔧 Repairing your file…</value>
+  </data>
+  <data name="health_fixed" xml:space="preserve">
+    <value>✅ Done: {0} item(s) repaired.\nRestore this file in JW Library. Keep your old backup until you have checked the result.</value>
+  </data>
+  <data name="health_fix_failed" xml:space="preserve">
+    <value>❌ I could not repair the file safely, so I changed nothing.\n{0}</value>
+  </data>
+  <data name="health_nothing_to_fix" xml:space="preserve">
+    <value>👍 Nothing to repair.</value>
+  </data>
+  <data name="health_issue_duplicatelocations" xml:space="preserve">
+    <value>Duplicate publication locations: {0}</value>
+  </data>
+  <data name="health_issue_orphanblockranges" xml:space="preserve">
+    <value>Highlight ranges without a highlight: {0}</value>
+  </data>
+  <data name="health_issue_duplicateblockranges" xml:space="preserve">
+    <value>Highlights with duplicated ranges: {0}</value>
+  </data>
+  <data name="health_issue_highlightswithoutlocation" xml:space="preserve">
+    <value>Highlights pointing to a missing location: {0}</value>
+  </data>
+  <data name="health_issue_noteswithbrokenlinks" xml:space="preserve">
+    <value>Notes with a broken link to a highlight or location: {0}</value>
+  </data>
+  <data name="health_issue_bookmarkswithoutlocation" xml:space="preserve">
+    <value>Bookmarks pointing to a missing location: {0}</value>
+  </data>
+  <data name="health_issue_inputfieldswithoutlocation" xml:space="preserve">
+    <value>Saved input fields without a location: {0}</value>
+  </data>
+  <data name="health_issue_brokentaglinks" xml:space="preserve">
+    <value>Tag links pointing to something missing: {0}</value>
+  </data>
+  <data name="health_issue_duplicatetaglinks" xml:space="preserve">
+    <value>Duplicated tag links: {0}</value>
+  </data>
+  <data name="health_issue_invalidorduplicateguids" xml:space="preserve">
+    <value>Invalid or duplicated note/highlight IDs: {0}</value>
+  </data>
+  <data name="health_issue_emptynotes" xml:space="preserve">
+    <value>Empty notes: {0}</value>
+  </data>
+  <data name="health_issue_duplicatenotes" xml:space="preserve">
+    <value>Duplicate notes: {0}</value>
+  </data>
+  <data name="health_issue_unusedlocations" xml:space="preserve">
+    <value>Unused leftover locations: {0}</value>
+  </data>
+  <data name="health_issue_unusedtags" xml:space="preserve">
+    <value>Tags not used by any note (kept): {0}</value>
+  </data>
+  <data name="health_issue_highlightswithoutranges" xml:space="preserve">
+    <value>Highlights without a text range (kept): {0}</value>
+  </data>
+  <data name="stats_button" xml:space="preserve">
+    <value>📊 Study stats</value>
+  </data>
+  <data name="stats_title" xml:space="preserve">
+    <value>📊 Your study stats</value>
+  </data>
+  <data name="stats_totals" xml:space="preserve">
+    <value>📝 {0} notes (~{1} words)\n🖍 {2} highlights\n🔖 {3} bookmarks\n🏷 {4} tags</value>
+  </data>
+  <data name="stats_activity" xml:space="preserve">
+    <value>📅 Activity (from note dates)\nFirst note: {0}\nLatest note: {1}\nActive days: {2}\nLongest streak: {3} day(s)\nCurrent streak: {4} day(s)\nNotes in the last 30 days: {5}\nBusiest day: {6}</value>
+  </data>
+  <data name="stats_bible" xml:space="preserve">
+    <value>📖 Bible coverage\n{0}/66 books · {1} chapters touched</value>
+  </data>
+  <data name="stats_top_books" xml:space="preserve">
+    <value>Most studied books:</value>
+  </data>
+  <data name="stats_top_tags" xml:space="preserve">
+    <value>🏷 Top tags</value>
+  </data>
+  <data name="stats_top_pubs" xml:space="preserve">
+    <value>📚 Most annotated publications</value>
+  </data>
+  <data name="stats_colors" xml:space="preserve">
+    <value>🎨 Highlight colours</value>
+  </data>
+  <data name="stats_milestones" xml:space="preserve">
+    <value>🏆 Milestones</value>
+  </data>
+  <data name="stats_empty" xml:space="preserve">
+    <value>There is not enough in this file to make stats yet. Add some notes and highlights first!</value>
+  </data>
+  <data name="stats_note" xml:space="preserve">
+    <value>ℹ️ Highlights carry no date in the backup, so activity and streaks only count notes.</value>
+  </data>
+  <data name="stats_ms_notes" xml:space="preserve">
+    <value>{0} notes written</value>
+  </data>
+  <data name="stats_ms_highlights" xml:space="preserve">
+    <value>{0} highlights made</value>
+  </data>
+  <data name="stats_ms_streak" xml:space="preserve">
+    <value>{0}-day study streak</value>
+  </data>
+  <data name="stats_ms_books" xml:space="preserve">
+    <value>{0} Bible books explored</value>
+  </data>
+  <data name="stats_ms_tags" xml:space="preserve">
+    <value>{0} tags in use</value>
+  </data>
+  <data name="stats_none" xml:space="preserve">
+    <value>none</value>
+  </data>
+  <data name="merge_title" xml:space="preserve">
+    <value>🔍 Merge preview</value>
+  </data>
+  <data name="merge_intro" xml:space="preserve">
+    <value>Merging the new file into your stored one would:</value>
+  </data>
+  <data name="merge_line_notes" xml:space="preserve">
+    <value>➕ add {0} new note(s)</value>
+  </data>
+  <data name="merge_line_highlights" xml:space="preserve">
+    <value>➕ add {0} new highlight(s)</value>
+  </data>
+  <data name="merge_line_bookmarks" xml:space="preserve">
+    <value>➕ add {0} new bookmark(s)</value>
+  </data>
+  <data name="merge_line_tags" xml:space="preserve">
+    <value>➕ add {0} new tag(s)</value>
+  </data>
+  <data name="merge_line_playlist" xml:space="preserve">
+    <value>➕ add {0} new playlist item(s)</value>
+  </data>
+  <data name="merge_line_unchanged" xml:space="preserve">
+    <value>= {0} note(s) are identical in both files</value>
+  </data>
+  <data name="merge_line_conflicts" xml:space="preserve">
+    <value>⚠️ {0} note(s) were edited on both devices. Unless you choose otherwise, the most recent edit wins.</value>
+  </data>
+  <data name="merge_line_decided" xml:space="preserve">
+    <value>✍️ You have chosen for {0} of {1}.</value>
+  </data>
+  <data name="merge_footer" xml:space="preserve">
+    <value>Nothing is deleted by a merge, and nothing is written until you confirm.</value>
+  </data>
+  <data name="merge_nothing_new" xml:space="preserve">
+    <value>👍 Nothing new: your stored file already contains everything in this one, so I changed nothing.</value>
+  </data>
+  <data name="merge_btn_go" xml:space="preserve">
+    <value>✅ Merge</value>
+  </data>
+  <data name="merge_btn_go_now" xml:space="preserve">
+    <value>✅ Merge now</value>
+  </data>
+  <data name="merge_btn_review" xml:space="preserve">
+    <value>🔍 Review {0} conflict(s)</value>
+  </data>
+  <data name="merge_btn_cancel" xml:space="preserve">
+    <value>❌ Cancel</value>
+  </data>
+  <data name="merge_btn_stored" xml:space="preserve">
+    <value>📦 Keep stored</value>
+  </data>
+  <data name="merge_btn_new" xml:space="preserve">
+    <value>🆕 Use new</value>
+  </data>
+  <data name="merge_btn_overview" xml:space="preserve">
+    <value>📋 Overview</value>
+  </data>
+  <data name="merge_conflict_title" xml:space="preserve">
+    <value>⚠️ Conflict {0}/{1} · {2}</value>
+  </data>
+  <data name="merge_stored_label" xml:space="preserve">
+    <value>📦 Stored file · {0}</value>
+  </data>
+  <data name="merge_new_label" xml:space="preserve">
+    <value>🆕 New file · {0}</value>
+  </data>
+  <data name="merge_empty" xml:space="preserve">
+    <value>(empty)</value>
+  </data>
+  <data name="merge_default_new" xml:space="preserve">
+    <value>Without a choice, the new file's version wins (more recent).</value>
+  </data>
+  <data name="merge_default_stored" xml:space="preserve">
+    <value>Without a choice, the stored version wins (more recent or same date).</value>
+  </data>
+  <data name="merge_chosen_stored" xml:space="preserve">
+    <value>Your choice: keep the stored version.</value>
+  </data>
+  <data name="merge_chosen_new" xml:space="preserve">
+    <value>Your choice: use the new version.</value>
+  </data>
+  <data name="merge_cancelled" xml:space="preserve">
+    <value>❌ Merge cancelled. Nothing was changed.</value>
+  </data>
+  <data name="merge_no_pending" xml:space="preserve">
+    <value>There is no merge waiting for your decision.</value>
+  </data>
+  <data name="merge_running" xml:space="preserve">
+    <value>🔀 Merging…</value>
+  </data>
+  <data name="merge_pending_error" xml:space="preserve">
+    <value>❌ I could not read the waiting files, so I cancelled this merge. Nothing was changed. Please send the file again.\n{0}</value>
+  </data>
+  <data name="preview_setting" xml:space="preserve">
+    <value>🔍 Preview before merging: {0}</value>
+  </data>
+  <data name="lang_de" xml:space="preserve">
+    <value>🇩🇪 German</value>
   </data>
 </root>

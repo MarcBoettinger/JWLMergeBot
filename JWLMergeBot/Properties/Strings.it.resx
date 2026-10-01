@@ -130,7 +130,7 @@
     <value>Informazioni bot</value>
   </data>
   <data name="bot_info_details" xml:space="preserve">
-    <value>Versione JWLMergeBot: {0}\nVersione JWLMerge: {1}\nRepository e informazioni: https://gitlab.com/AlessandroLucchet/JWLMergeBot</value>
+    <value>Versione JWLMergeBot: {0}\nBasato su JWLMerge di Antony Corbett e sul JWLMergeBot originale di Alessandro Lucchet.\nRepository e informazioni: https://github.com/MarcBoettinger/JWLMergeBot</value>
   </data>
   <data name="bot_started" xml:space="preserve">
     <value>Avviato JWLMergeBot v{0}</value>
@@ -187,7 +187,7 @@
     <value>Informazioni</value>
   </data>
   <data name="file_info_details" xml:space="preserve">
-    <value>ℹ️ Alcune informazioni sul file:\nDimensione file: {0}\nNumero di note: {1}\nNumero di segnalibri: {2}\nNumero di evidenziature: {3}\nNumero di tag: {4}\nNumero di playlist: nessuna! Non le supporto</value>
+    <value>ℹ️ Alcune informazioni sul file:\nDimensione file: {0}\nNumero di note: {1}\nNumero di segnalibri: {2}\nNumero di evidenziature: {3}\nNumero di tag: {4}\nNumero di playlist: {5}</value>
   </data>
   <data name="file_not_exists" xml:space="preserve">
     <value>👾 Non ho nessun file in memoria</value>
@@ -226,7 +226,7 @@
     <value>Un messaggio da {0} è stato ignorato perché la chat è stata temporaneamente bannata</value>
   </data>
   <data name="message_syntax" xml:space="preserve">
-    <value>ℹ️ Questa è la sintassi del comando:\n/sendmessage {\n  "Recipients":"ChatId|WithSettingsInitialized|WithStoredFile",\n  "Text":{\n    "it": "\uD83D\uDCE2 Italian message",\n    "en": "\u2139\uFE0F English message"\n  }\n}</value>
+    <value>ℹ️ Questa è la sintassi del comando:\n/sendmessage {\n  "Recipients":"ChatId|WithSettingsInitialized|WithStoredFile",\n  "Text":{\n    "it": "\uD83D\uDCE2 Italian message",\n    "en": "\u2139\uFE0F English message",\n    "de": "\u2139\uFE0F German message"\n  }\n}</value>
   </data>
   <data name="message_type_callbackquery" xml:space="preserve">
     <value>una callback query</value>
@@ -250,7 +250,7 @@
     <value>UserDataBackup_Old_Schema.jwlibrary</value>
   </data>
   <data name="old_schema_error" xml:space="preserve">
-    <value>❌ Non riesco ad unire l'ultimo file che mi hai mandato con quello che avevo in memoria. Quest'ultimo è stato creato da una vecchia versione di JW Library e dovrebbe essere aggiornato per poter essere processato.\n\nIl file allegato a questo messaggio è il vecchio file. Se vuoi unirlo dovresti:\n- Eseguire un backup dei dati correnti da JW Library\n- Ripristinare qu esto vecchio file in JW Library\n- Creare un nuovo backup e mandarmelo\n\nNella mia memoria ho rimpiazzato il vecchio file con il nuovo che mi hai mandato</value>
+    <value>❌ Non riesco ad unire l'ultimo file che mi hai mandato con quello che avevo in memoria. Quest'ultimo è stato creato da una vecchia versione di JW Library e dovrebbe essere aggiornato per poter essere processato.\n\nIl file allegato a questo messaggio è il vecchio file. Se vuoi unirlo dovresti:\n- Eseguire un backup dei dati correnti da JW Library\n- Ripristinare questo vecchio file in JW Library\n- Creare un nuovo backup e mandarmelo\n\nNella mia memoria ho rimpiazzato il vecchio file con il nuovo che mi hai mandato</value>
   </data>
   <data name="processing_error" xml:space="preserve">
     <value>❗️ Errore nell'unione del file: {0}</value>
@@ -271,7 +271,7 @@
     <value>Inizia</value>
   </data>
   <data name="start_details" xml:space="preserve">
-    <value>Ciao {0}, sono @JWLMergeBot 🤖\nIl mio compito è quello di unire due file di backup di JW Library in uno solo 🔗\n\nFunziono così:\n1. Tu mi mandi un file 📩\n2. Io lo memorizzo 📨\n3. Tu mi mandi un secondo file 📩\n4. Io lo unisco al primo e ti mando indietro il file unito 🔗\n\nChiaramente, mandandomi il file accetti che io lo memorizzi 📝\nCome potrei unirlo se non lo memorizzo? 🤪\nComunque potrai eliminarlo quando vuoi con l'apposito comando /delete 🗑\n\nNota! Al momento non supporto le playlist. Le playlist verranno rimosse dai file uniti ❗️\n\nEnjoy! 🤖</value>
+    <value>Ciao {0}, sono @JWLibraryMergeBot 🤖\nIl mio compito è quello di unire due file di backup di JW Library in uno solo 🔗\n\nFunziono così:\n1. Tu mi mandi un file 📩\n2. Io lo memorizzo 📨\n3. Tu mi mandi un secondo file 📩\n4. Io lo unisco al primo e ti mando indietro il file unito 🔗\n\nChiaramente, mandandomi il file accetti che io lo memorizzi 📝\nCome potrei unirlo se non lo memorizzo? 🤪\nComunque potrai eliminarlo quando vuoi con l'apposito comando /delete 🗑\n\nUltima novità: ora supporto le playlist! ❗️\n\n Se il servizio ti è utile, considera di donare un Euro a marc.boettinger@gmx.de tramite PayPal \n\n Enjoy! 🤖</value>
   </data>
   <data name="stat" xml:space="preserve">
     <value>File memorizzati: {0}\nUtenti:\n{1}</value>
@@ -287,5 +287,239 @@
   </data>
   <data name="yes" xml:space="preserve">
     <value>Sì</value>
+  </data>
+  <data name="health_button" xml:space="preserve">
+    <value>🩺 Controllo salute</value>
+  </data>
+  <data name="health_no_file" xml:space="preserve">
+    <value>👾 Non ho nessun file in memoria. Mandami prima il tuo backup, poi usa /health</value>
+  </data>
+  <data name="health_summary" xml:space="preserve">
+    <value>🩺 Controllo salute della libreria\n{0} note · {1} evidenziature · {2} segnalibri · {3} tag</value>
+  </data>
+  <data name="health_ok" xml:space="preserve">
+    <value>✅ La tua libreria è in salute. Niente da riparare!</value>
+  </data>
+  <data name="health_found" xml:space="preserve">
+    <value>Ecco cosa ho trovato:</value>
+  </data>
+  <data name="health_legend" xml:space="preserve">
+    <value>🔴 può bloccare il ripristino · 🟡 disordine · ⚪ solo per informazione</value>
+  </data>
+  <data name="health_fix_hint" xml:space="preserve">
+    <value>Premi il pulsante per riparare i punti 🔴 e 🟡. Finché non lo fai non cambio nulla.</value>
+  </data>
+  <data name="health_fix_button" xml:space="preserve">
+    <value>🔧 Ripara il mio file</value>
+  </data>
+  <data name="health_fixing" xml:space="preserve">
+    <value>🔧 Sto riparando il file…</value>
+  </data>
+  <data name="health_fixed" xml:space="preserve">
+    <value>✅ Fatto: {0} elemento/i riparato/i.\nRipristina questo file in JW Library. Conserva il vecchio backup finché non hai controllato il risultato.</value>
+  </data>
+  <data name="health_fix_failed" xml:space="preserve">
+    <value>❌ Non sono riuscito a riparare il file in sicurezza, quindi non ho cambiato nulla.\n{0}</value>
+  </data>
+  <data name="health_nothing_to_fix" xml:space="preserve">
+    <value>👍 Niente da riparare.</value>
+  </data>
+  <data name="health_issue_duplicatelocations" xml:space="preserve">
+    <value>Posizioni di pubblicazione duplicate: {0}</value>
+  </data>
+  <data name="health_issue_orphanblockranges" xml:space="preserve">
+    <value>Intervalli di evidenziatura senza evidenziatura: {0}</value>
+  </data>
+  <data name="health_issue_duplicateblockranges" xml:space="preserve">
+    <value>Evidenziature con intervalli duplicati: {0}</value>
+  </data>
+  <data name="health_issue_highlightswithoutlocation" xml:space="preserve">
+    <value>Evidenziature che puntano a una posizione mancante: {0}</value>
+  </data>
+  <data name="health_issue_noteswithbrokenlinks" xml:space="preserve">
+    <value>Note con un collegamento rotto a evidenziatura o posizione: {0}</value>
+  </data>
+  <data name="health_issue_bookmarkswithoutlocation" xml:space="preserve">
+    <value>Segnalibri che puntano a una posizione mancante: {0}</value>
+  </data>
+  <data name="health_issue_inputfieldswithoutlocation" xml:space="preserve">
+    <value>Campi di input salvati senza posizione: {0}</value>
+  </data>
+  <data name="health_issue_brokentaglinks" xml:space="preserve">
+    <value>Collegamenti ai tag che puntano a qualcosa di mancante: {0}</value>
+  </data>
+  <data name="health_issue_duplicatetaglinks" xml:space="preserve">
+    <value>Collegamenti ai tag duplicati: {0}</value>
+  </data>
+  <data name="health_issue_invalidorduplicateguids" xml:space="preserve">
+    <value>ID di note/evidenziature non validi o duplicati: {0}</value>
+  </data>
+  <data name="health_issue_emptynotes" xml:space="preserve">
+    <value>Note vuote: {0}</value>
+  </data>
+  <data name="health_issue_duplicatenotes" xml:space="preserve">
+    <value>Note duplicate: {0}</value>
+  </data>
+  <data name="health_issue_unusedlocations" xml:space="preserve">
+    <value>Posizioni inutilizzate rimaste: {0}</value>
+  </data>
+  <data name="health_issue_unusedtags" xml:space="preserve">
+    <value>Tag non usati da nessuna nota (li lascio): {0}</value>
+  </data>
+  <data name="health_issue_highlightswithoutranges" xml:space="preserve">
+    <value>Evidenziature senza intervallo di testo (le lascio): {0}</value>
+  </data>
+  <data name="stats_button" xml:space="preserve">
+    <value>📊 Statistiche di studio</value>
+  </data>
+  <data name="stats_title" xml:space="preserve">
+    <value>📊 Le tue statistiche di studio</value>
+  </data>
+  <data name="stats_totals" xml:space="preserve">
+    <value>📝 {0} note (~{1} parole)\n🖍 {2} evidenziature\n🔖 {3} segnalibri\n🏷 {4} tag</value>
+  </data>
+  <data name="stats_activity" xml:space="preserve">
+    <value>📅 Attività (dalle date delle note)\nPrima nota: {0}\nUltima nota: {1}\nGiorni attivi: {2}\nSerie più lunga: {3} giorno/i\nSerie attuale: {4} giorno/i\nNote negli ultimi 30 giorni: {5}\nGiorno più intenso: {6}</value>
+  </data>
+  <data name="stats_bible" xml:space="preserve">
+    <value>📖 Copertura della Bibbia\n{0}/66 libri · {1} capitoli toccati</value>
+  </data>
+  <data name="stats_top_books" xml:space="preserve">
+    <value>Libri più studiati:</value>
+  </data>
+  <data name="stats_top_tags" xml:space="preserve">
+    <value>🏷 Tag principali</value>
+  </data>
+  <data name="stats_top_pubs" xml:space="preserve">
+    <value>📚 Pubblicazioni più annotate</value>
+  </data>
+  <data name="stats_colors" xml:space="preserve">
+    <value>🎨 Colori delle evidenziature</value>
+  </data>
+  <data name="stats_milestones" xml:space="preserve">
+    <value>🏆 Traguardi</value>
+  </data>
+  <data name="stats_empty" xml:space="preserve">
+    <value>Non c'è ancora abbastanza in questo file per fare delle statistiche. Aggiungi prima qualche nota ed evidenziatura!</value>
+  </data>
+  <data name="stats_note" xml:space="preserve">
+    <value>ℹ️ Le evidenziature non hanno una data nel backup, quindi attività e serie contano solo le note.</value>
+  </data>
+  <data name="stats_ms_notes" xml:space="preserve">
+    <value>{0} note scritte</value>
+  </data>
+  <data name="stats_ms_highlights" xml:space="preserve">
+    <value>{0} evidenziature fatte</value>
+  </data>
+  <data name="stats_ms_streak" xml:space="preserve">
+    <value>Serie di studio di {0} giorni</value>
+  </data>
+  <data name="stats_ms_books" xml:space="preserve">
+    <value>{0} libri della Bibbia esplorati</value>
+  </data>
+  <data name="stats_ms_tags" xml:space="preserve">
+    <value>{0} tag in uso</value>
+  </data>
+  <data name="stats_none" xml:space="preserve">
+    <value>nessuno</value>
+  </data>
+  <data name="merge_title" xml:space="preserve">
+    <value>🔍 Anteprima dell'unione</value>
+  </data>
+  <data name="merge_intro" xml:space="preserve">
+    <value>Unire il nuovo file a quello salvato comporterebbe:</value>
+  </data>
+  <data name="merge_line_notes" xml:space="preserve">
+    <value>➕ {0} nuova/e nota/e</value>
+  </data>
+  <data name="merge_line_highlights" xml:space="preserve">
+    <value>➕ {0} nuova/e evidenziatura/e</value>
+  </data>
+  <data name="merge_line_bookmarks" xml:space="preserve">
+    <value>➕ {0} nuovo/i segnalibro/i</value>
+  </data>
+  <data name="merge_line_tags" xml:space="preserve">
+    <value>➕ {0} nuovo/i tag</value>
+  </data>
+  <data name="merge_line_playlist" xml:space="preserve">
+    <value>➕ {0} nuovo/i elemento/i di playlist</value>
+  </data>
+  <data name="merge_line_unchanged" xml:space="preserve">
+    <value>= {0} nota/e identica/e nei due file</value>
+  </data>
+  <data name="merge_line_conflicts" xml:space="preserve">
+    <value>⚠️ {0} nota/e modificata/e su entrambi i dispositivi. Se non scegli diversamente, vince la modifica più recente.</value>
+  </data>
+  <data name="merge_line_decided" xml:space="preserve">
+    <value>✍️ Hai scelto per {0} su {1}.</value>
+  </data>
+  <data name="merge_footer" xml:space="preserve">
+    <value>L'unione non elimina nulla, e non scrivo nulla finché non confermi.</value>
+  </data>
+  <data name="merge_nothing_new" xml:space="preserve">
+    <value>👍 Niente di nuovo: il file salvato contiene già tutto quello che c'è in questo, quindi non ho cambiato nulla.</value>
+  </data>
+  <data name="merge_btn_go" xml:space="preserve">
+    <value>✅ Unisci</value>
+  </data>
+  <data name="merge_btn_go_now" xml:space="preserve">
+    <value>✅ Unisci ora</value>
+  </data>
+  <data name="merge_btn_review" xml:space="preserve">
+    <value>🔍 Controlla {0} conflitto/i</value>
+  </data>
+  <data name="merge_btn_cancel" xml:space="preserve">
+    <value>❌ Annulla</value>
+  </data>
+  <data name="merge_btn_stored" xml:space="preserve">
+    <value>📦 Tieni salvata</value>
+  </data>
+  <data name="merge_btn_new" xml:space="preserve">
+    <value>🆕 Usa nuova</value>
+  </data>
+  <data name="merge_btn_overview" xml:space="preserve">
+    <value>📋 Riepilogo</value>
+  </data>
+  <data name="merge_conflict_title" xml:space="preserve">
+    <value>⚠️ Conflitto {0}/{1} · {2}</value>
+  </data>
+  <data name="merge_stored_label" xml:space="preserve">
+    <value>📦 File salvato · {0}</value>
+  </data>
+  <data name="merge_new_label" xml:space="preserve">
+    <value>🆕 Nuovo file · {0}</value>
+  </data>
+  <data name="merge_empty" xml:space="preserve">
+    <value>(vuoto)</value>
+  </data>
+  <data name="merge_default_new" xml:space="preserve">
+    <value>Senza una scelta, vince la versione del nuovo file (più recente).</value>
+  </data>
+  <data name="merge_default_stored" xml:space="preserve">
+    <value>Senza una scelta, vince la versione salvata (più recente o stessa data).</value>
+  </data>
+  <data name="merge_chosen_stored" xml:space="preserve">
+    <value>La tua scelta: tieni la versione salvata.</value>
+  </data>
+  <data name="merge_chosen_new" xml:space="preserve">
+    <value>La tua scelta: usa la versione nuova.</value>
+  </data>
+  <data name="merge_cancelled" xml:space="preserve">
+    <value>❌ Unione annullata. Non è stato cambiato nulla.</value>
+  </data>
+  <data name="merge_no_pending" xml:space="preserve">
+    <value>Non c'è nessuna unione in attesa di una tua decisione.</value>
+  </data>
+  <data name="merge_running" xml:space="preserve">
+    <value>🔀 Unione in corso…</value>
+  </data>
+  <data name="merge_pending_error" xml:space="preserve">
+    <value>❌ Non sono riuscito a leggere i file in attesa, quindi ho annullato questa unione. Non è stato cambiato nulla. Rimanda il file.\n{0}</value>
+  </data>
+  <data name="preview_setting" xml:space="preserve">
+    <value>🔍 Anteprima prima di unire: {0}</value>
+  </data>
+  <data name="lang_de" xml:space="preserve">
+    <value>🇩🇪 Tedesco</value>
   </data>
 </root>
