@@ -259,7 +259,7 @@
     <value>Start</value>
   </data>
   <data name="start_details" xml:space="preserve">
-    <value>Hallo {0}, ich bin @JWLibraryMergeBot 🤖\nMeine Aufgabe ist es, zwei Sicherungsdateien von JW Library zu einer zusammenzuführen 🔗\n\nSo funktioniere ich:\n1. Du sendest mir eine Datei 📩\n2. Ich speichere sie 📨\n3. Du sendest mir eine weitere Datei 📩\n4. Ich führe sie mit der ersten zusammen und schicke dir die zusammengeführte Datei zurück 🔗\n\nWenn du mir eine Datei schickst, bist du natürlich damit einverstanden, dass ich sie speichere 📝\nWie sollte ich sie sonst zusammenführen? 🤪\nDu kannst sie aber jederzeit mit dem Befehl /delete löschen 🗑\n\nNeueste Änderung: Ich unterstütze Playlists! ❗️\n\n Wenn dir der Dienst gefällt, denke doch über eine Spende von einem Euro per PayPal an marc.boettinger@gmx.de nach \n\n Viel Spaß! 🤖</value>
+    <value>Hallo {0}, ich bin @JWLibraryMergeBot 🤖\nMeine Aufgabe ist es, zwei Sicherungsdateien von JW Library zu einer zusammenzuführen 🔗\n\nSo funktioniere ich:\n1. Du sendest mir eine Datei 📩\n2. Ich speichere sie 📨\n3. Du sendest mir eine weitere Datei 📩\n4. Ich führe sie mit der ersten zusammen und schicke dir die zusammengeführte Datei zurück 🔗\n\nWenn du mir eine Datei schickst, bist du natürlich damit einverstanden, dass ich sie speichere 📝\nWie sollte ich sie sonst zusammenführen? 🤪\nDu kannst sie aber jederzeit mit dem Befehl /delete löschen 🗑\n\nNeueste Änderung: Ich unterstütze Playlists! ❗️\n\n Viel Spaß! 🤖</value>
   </data>
   <data name="stat" xml:space="preserve">
     <value>Gespeicherte Dateien: {0}\nBenutzer:\n{1}</value>

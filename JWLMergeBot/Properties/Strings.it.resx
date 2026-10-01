@@ -271,7 +271,7 @@
     <value>Inizia</value>
   </data>
   <data name="start_details" xml:space="preserve">
-    <value>Ciao {0}, sono @JWLibraryMergeBot 🤖\nIl mio compito è quello di unire due file di backup di JW Library in uno solo 🔗\n\nFunziono così:\n1. Tu mi mandi un file 📩\n2. Io lo memorizzo 📨\n3. Tu mi mandi un secondo file 📩\n4. Io lo unisco al primo e ti mando indietro il file unito 🔗\n\nChiaramente, mandandomi il file accetti che io lo memorizzi 📝\nCome potrei unirlo se non lo memorizzo? 🤪\nComunque potrai eliminarlo quando vuoi con l'apposito comando /delete 🗑\n\nUltima novità: ora supporto le playlist! ❗️\n\n Se il servizio ti è utile, considera di donare un Euro a marc.boettinger@gmx.de tramite PayPal \n\n Enjoy! 🤖</value>
+    <value>Ciao {0}, sono @JWLibraryMergeBot 🤖\nIl mio compito è quello di unire due file di backup di JW Library in uno solo 🔗\n\nFunziono così:\n1. Tu mi mandi un file 📩\n2. Io lo memorizzo 📨\n3. Tu mi mandi un secondo file 📩\n4. Io lo unisco al primo e ti mando indietro il file unito 🔗\n\nChiaramente, mandandomi il file accetti che io lo memorizzi 📝\nCome potrei unirlo se non lo memorizzo? 🤪\nComunque potrai eliminarlo quando vuoi con l'apposito comando /delete 🗑\n\nUltima novità: ora supporto le playlist! ❗️\n\n Enjoy! 🤖</value>
   </data>
   <data name="stat" xml:space="preserve">
     <value>File memorizzati: {0}\nUtenti:\n{1}</value>
