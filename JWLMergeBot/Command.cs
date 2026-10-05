@@ -28,6 +28,11 @@ namespace JWLMergeBot
         public const string PreviewOff = "/preview_off";
         public const string MergeGo = "/merge_go";
         public const string MergeCancel = "/merge_cancel";
+        public const string Tags = "/tags";
+        public const string TagsUnused = "/tags_unused";
+        public const string TagsUnusedConfirm = "/tags_unused_confirm";
+        public const string Extract = "/extract";
+        public const string ExtractTags = "/ext_tags";
         #endregion
 
         #region Admins only

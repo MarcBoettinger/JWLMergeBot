@@ -276,10 +276,16 @@ public sealed class BackupFileService : IBackupFileService
             Log.Logger.Debug("Created ZipArchive");
 
             var tmpDatabaseFileName = ExtractDatabaseToFile(originalJwlibraryFilePathForSchema);
+            string? finalDatabaseFileName = null;
             try
             {
+                // Build the finished database first, so that the manifest hash describes
+                // the file that is really shipped (and not the empty template it was cloned from)
+                ProgressMessage("Building database");
+                finalDatabaseFileName = CreateTemporaryDatabaseFile(backup.Database, tmpDatabaseFileName);
+
                 backup.Manifest.UserDataBackup.DatabaseName = DatabaseEntryName;
-                backup.Manifest.UserDataBackup.Hash = GenerateDatabaseHash(tmpDatabaseFileName);
+                backup.Manifest.UserDataBackup.Hash = GenerateDatabaseHash(finalDatabaseFileName);
 
                 var manifestEntry = archive.CreateEntry(ManifestEntryName);
                 using (var entryStream = manifestEntry.Open())
@@ -294,13 +300,19 @@ public sealed class BackupFileService : IBackupFileService
                             }));
                 }
                     
-                AddDatabaseEntryToArchive(archive, backup.Database, tmpDatabaseFileName);
+                ProgressMessage("Adding database to archive");
+                archive.CreateEntryFromFile(finalDatabaseFileName, DatabaseEntryName);
                 AddMediaToArchive(archive, sourceJwlibraryFilePaths, backup.Database.IndependentMedias);
             }
             finally
             {
                 Log.Logger.Debug("Deleting {tmpDatabaseFileName}", tmpDatabaseFileName);
                 File.Delete(tmpDatabaseFileName);
+
+                if (finalDatabaseFileName != null)
+                {
+                    File.Delete(finalDatabaseFileName);
+                }
             }
         }
 
@@ -812,7 +824,7 @@ public sealed class BackupFileService : IBackupFileService
     {
         ProgressMessage("Generating database hash");
 
-        using var fs = new FileStream(databaseFilePath, FileMode.Open);
+        using var fs = new FileStream(databaseFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         using var bs = new BufferedStream(fs);
 #pragma warning disable SYSLIB0021
         using var sha1 = new SHA256Managed();
@@ -826,24 +838,6 @@ public sealed class BackupFileService : IBackupFileService
         }
 
         return sb.ToString();
-    }
-
-    private void AddDatabaseEntryToArchive(
-        ZipArchive archive, 
-        Database database, 
-        string originalDatabaseFilePathForSchema)
-    {
-        ProgressMessage("Adding database to archive");
-            
-        var tmpDatabaseFile = CreateTemporaryDatabaseFile(database, originalDatabaseFilePathForSchema);
-        try
-        {
-            archive.CreateEntryFromFile(tmpDatabaseFile, DatabaseEntryName);
-        }
-        finally
-        {
-            File.Delete(tmpDatabaseFile);
-        }
     }
 
     private void AddMediaToArchive(ZipArchive archive, IEnumerable<string> sourceJwlibraryFilePaths, IEnumerable<IndependentMedia> independentMedias)

@@ -26,7 +26,7 @@ using JWLMergeBot.Helpers;
 
 namespace JWLMergeBot
 {
-    class Logic
+    partial class Logic
     {
         public static async void OnFile(Message message)
         {
@@ -364,6 +364,8 @@ namespace JWLMergeBot
                              new[] { InlineKeyboardButton.WithCallbackData(Strings.delete_favorites, Command.DeleteFavorites) },
                              new[] { InlineKeyboardButton.WithCallbackData(HealthText("health_button", message.Chat.Id), Command.Health) },
                              new[] { InlineKeyboardButton.WithCallbackData(HealthText("stats_button", message.Chat.Id), Command.StudyStats) },
+                             new[] { InlineKeyboardButton.WithCallbackData(HealthText("tags_btn", message.Chat.Id), Command.Tags) },
+                             new[] { InlineKeyboardButton.WithCallbackData(HealthText("extract_btn", message.Chat.Id), Command.Extract) },
                         });
 
                     // Insert or update the menu
@@ -686,6 +688,10 @@ namespace JWLMergeBot
                 await OnMergeCommand(message, command);
                 return;
             }
+
+            // Search, tag manager and extract
+            if (await OnToolsCommand(message, command, fromCallback))
+                return;
 
             // Regex commands
             // Regexs
@@ -1154,6 +1160,8 @@ namespace JWLMergeBot
             sb.AppendLine("<b>" + Esc(T("stats_title")) + "</b>");
             sb.AppendLine();
             sb.AppendLine(Esc(string.Format(T("stats_totals"), N(s.Notes), N(s.NotesWords), N(s.Highlights), N(s.Bookmarks), N(s.Tags))));
+            if (s.AverageWordsPerNote > 0)
+                sb.AppendLine(Esc(string.Format(T("stats_words"), N(s.AverageWordsPerNote), N(s.LongestNoteWords))));
 
             if (s.ActiveDays > 0)
             {
@@ -1163,12 +1171,25 @@ namespace JWLMergeBot
                     s.LongestStreak, s.CurrentStreak, s.NotesLast30Days, busiest)));
             }
 
+            if (s.NotesPerMonth.Any(m => m.Value > 0))
+            {
+                sb.AppendLine();
+                sb.AppendLine("<b>" + Esc(T("stats_monthly")) + "</b>");
+                sb.AppendLine("<pre>" + Esc(TextBars.Table(s.NotesPerMonth.Select(m => new KeyValuePair<string, int>(m.Key.ToString("MMM yy", culture), m.Value)))) + "</pre>");
+            }
+
             sb.AppendLine();
             sb.AppendLine(Esc(string.Format(T("stats_bible"), s.BibleBooksTouched, N(s.BibleChaptersTouched))));
             if (s.TopBibleBooks.Count > 0)
             {
                 sb.AppendLine(Esc(T("stats_top_books")));
                 sb.AppendLine(StatsBlock(s.TopBibleBooks));
+            }
+
+            if (s.TopHighlightedChapters.Count > 0)
+            {
+                sb.AppendLine("<b>" + Esc(T("stats_top_chapters")) + "</b>");
+                sb.AppendLine(StatsBlock(s.TopHighlightedChapters));
             }
 
             if (s.TopTags.Count > 0)

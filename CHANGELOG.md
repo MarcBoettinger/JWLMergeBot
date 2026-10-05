@@ -1,8 +1,17 @@
-## [1.10.0.19] - 2026-09-30
+## [1.11.0.20] - 2026-10-05
 
+* Search: /search finds notes by words, with scripture or publication, date, snippet and tags (search words stay out of the log)
+* Tag manager: /tags lists tags with counts; /renametag, /mergetags and a button for unused tags
+* Extract: /extract makes a small backup by tag, service year or last 6/12 months; the stored file is untouched
+* Study stats: notes per month, words per note, most highlighted chapters
+* Fixed the manifest hash: it now describes the database that is actually written (it used to hash the empty template)
+* Removed the donation request from the welcome message (all languages)
 * Study stats: aligned bar columns with finer bars (monospace blocks), unambiguous dates (8 May 2017) and thousands separators
 * Italian texts updated: playlists are supported, correct bot name in the welcome message, playlist count in the file info, typo fixed
 * German added as a language (/settings, then Change language). Broadcast messages fall back to English when they have no text for a chat's language
+
+## [1.10.0.19] - 2026-09-30
+
 * Merge preview: before merging, the bot shows what will be added (notes, highlights, bookmarks, tags, playlist items) and waits for confirmation. Can be switched off in /settings
 * Conflict review: notes edited on both devices can be reviewed one by one, choosing the stored or the new version
 * Fixed /botinfo: correct repository link and credits, no more bogus library version

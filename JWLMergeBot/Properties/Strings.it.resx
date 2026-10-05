@@ -522,4 +522,124 @@
   <data name="lang_de" xml:space="preserve">
     <value>🇩🇪 Tedesco</value>
   </data>
+  <data name="tools_no_file" xml:space="preserve">
+    <value>👾 Non ho nessun file salvato. Mandami prima il tuo backup.</value>
+  </data>
+  <data name="tools_edit_failed" xml:space="preserve">
+    <value>❌ Non sono riuscito a salvare la modifica, quindi ho lasciato il file com'era.\n{0}</value>
+  </data>
+  <data name="search_usage" xml:space="preserve">
+    <value>🔎 Cerca nelle tue note, per esempio:\n/search amore\nOgni parola deve comparire nel titolo, nel testo, in un tag o nel luogo di una nota.</value>
+  </data>
+  <data name="search_none" xml:space="preserve">
+    <value>🔎 Nessun risultato per “{0}”.</value>
+  </data>
+  <data name="search_header" xml:space="preserve">
+    <value>🔎 {0} nota/e trovata/e per “{1}”</value>
+  </data>
+  <data name="search_more" xml:space="preserve">
+    <value>…e altre {0}. Aggiungi una parola per restringere la ricerca.</value>
+  </data>
+  <data name="tags_btn" xml:space="preserve">
+    <value>🏷 Gestisci i tag</value>
+  </data>
+  <data name="tags_title" xml:space="preserve">
+    <value>🏷 I tuoi tag</value>
+  </data>
+  <data name="tags_none" xml:space="preserve">
+    <value>Non hai ancora nessun tag.</value>
+  </data>
+  <data name="tags_more" xml:space="preserve">
+    <value>…e altri {0} tag</value>
+  </data>
+  <data name="tags_help" xml:space="preserve">
+    <value>✏️ Rinomina: /renametag vecchio &gt; nuovo\n🔀 Unisci: /mergetags origine &gt; destinazione\n(Unire sposta tutto dal primo tag al secondo e rimuove il primo.)</value>
+  </data>
+  <data name="tags_btn_unused" xml:space="preserve">
+    <value>🗑 Elimina {0} tag inutilizzato/i</value>
+  </data>
+  <data name="tags_unused_ask" xml:space="preserve">
+    <value>⚠️ Eliminare {0} tag che nessuna nota usa?</value>
+  </data>
+  <data name="tags_unused_none" xml:space="preserve">
+    <value>👍 Non ci sono tag inutilizzati.</value>
+  </data>
+  <data name="tags_btn_yes" xml:space="preserve">
+    <value>✅ Sì, elimina</value>
+  </data>
+  <data name="tags_rename_usage" xml:space="preserve">
+    <value>✏️ Usa: /renametag vecchio nome &gt; nuovo nome</value>
+  </data>
+  <data name="tags_merge_usage" xml:space="preserve">
+    <value>🔀 Usa: /mergetags origine &gt; destinazione</value>
+  </data>
+  <data name="tags_not_found" xml:space="preserve">
+    <value>❌ Non ho trovato nessun tag chiamato “{0}”.</value>
+  </data>
+  <data name="tags_ambiguous" xml:space="preserve">
+    <value>❌ Più di un tag corrisponde a “{0}” (differiscono solo per maiuscole/minuscole). Scrivi il nome esatto.</value>
+  </data>
+  <data name="tags_name_taken" xml:space="preserve">
+    <value>❌ Esiste già un tag chiamato “{0}”. Usa /mergetags per unirli.</value>
+  </data>
+  <data name="tags_same" xml:space="preserve">
+    <value>👍 Niente da cambiare.</value>
+  </data>
+  <data name="tags_invalid" xml:space="preserve">
+    <value>❌ Questo non è un nome di tag valido.</value>
+  </data>
+  <data name="tags_renamed" xml:space="preserve">
+    <value>✅ Tag rinominato: {0} → {1}</value>
+  </data>
+  <data name="tags_merged" xml:space="preserve">
+    <value>✅ Unito “{0}” in “{1}” ({2} elemento/i spostato/i)</value>
+  </data>
+  <data name="tags_deleted" xml:space="preserve">
+    <value>✅ {0} tag inutilizzato/i eliminato/i</value>
+  </data>
+  <data name="extract_btn" xml:space="preserve">
+    <value>✂️ Estrai una parte</value>
+  </data>
+  <data name="extract_menu" xml:space="preserve">
+    <value>✂️ Crea un piccolo backup dal tuo file salvato. Il file salvato non viene cambiato.\n\nI periodi usano la data dell'ultima modifica di ogni nota. Le evidenziature non hanno una data, quindi vengono incluse solo quelle collegate a una nota conservata.</value>
+  </data>
+  <data name="extract_btn_tag" xml:space="preserve">
+    <value>🏷 Per tag</value>
+  </data>
+  <data name="extract_btn_sy0" xml:space="preserve">
+    <value>📅 Questo anno di servizio</value>
+  </data>
+  <data name="extract_btn_sy1" xml:space="preserve">
+    <value>📅 Anno di servizio scorso</value>
+  </data>
+  <data name="extract_btn_m6" xml:space="preserve">
+    <value>📅 Ultimi 6 mesi</value>
+  </data>
+  <data name="extract_btn_m12" xml:space="preserve">
+    <value>📅 Ultimi 12 mesi</value>
+  </data>
+  <data name="extract_pick_tag" xml:space="preserve">
+    <value>🏷 Scegli un tag:</value>
+  </data>
+  <data name="extract_none" xml:space="preserve">
+    <value>👍 Nessuna nota corrisponde, quindi non c'è niente da estrarre.</value>
+  </data>
+  <data name="extract_working" xml:space="preserve">
+    <value>✂️ Estrazione in corso…</value>
+  </data>
+  <data name="extract_done" xml:space="preserve">
+    <value>✂️ Estratto pronto: {0} nota/e, {1} evidenziatura/e, {2} tag.\nÈ un piccolo backup a parte, il file salvato resta invariato. Segnalibri e playlist non sono inclusi.</value>
+  </data>
+  <data name="extract_failed" xml:space="preserve">
+    <value>❌ Non sono riuscito a creare l'estratto. Non è stato cambiato nulla.\n{0}</value>
+  </data>
+  <data name="stats_monthly" xml:space="preserve">
+    <value>📆 Note per mese</value>
+  </data>
+  <data name="stats_words" xml:space="preserve">
+    <value>📏 Parole per nota: circa {0} in media, la più lunga {1}</value>
+  </data>
+  <data name="stats_top_chapters" xml:space="preserve">
+    <value>🖍 Capitoli più evidenziati</value>
+  </data>
 </root>

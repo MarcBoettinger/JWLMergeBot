@@ -114,7 +114,7 @@ public sealed class MergePreview
 
             result.Conflicts.Add(new NoteConflict(
                 g.ToString(),
-                Describe(n, incomingLocations) ?? Describe(existing, storedLocations) ?? "?",
+                LocationDescriber.Describe(n, incomingLocations) ?? LocationDescriber.Describe(existing, storedLocations) ?? "?",
                 ToVersion(existing),
                 ToVersion(n)));
         }
@@ -223,36 +223,6 @@ public sealed class MergePreview
     private static NoteVersion ToVersion(Note n)
     {
         return new NoteVersion(n.Title ?? string.Empty, n.Content ?? string.Empty, n.LastModified, n.GetLastModifiedDateTime());
-    }
-
-    private static string? Describe(Note n, Dictionary<int, Location> locations)
-    {
-        if (n.LocationId == null || !locations.TryGetValue(n.LocationId.Value, out var loc))
-        {
-            return null;
-        }
-
-        if (loc.BookNumber is >= 1 and <= 66)
-        {
-            var text = BibleBookNames.GetName(loc.BookNumber.Value);
-            if (loc.ChapterNumber != null)
-            {
-                text += " " + loc.ChapterNumber;
-                if (n.BlockType == 2 && n.BlockIdentifier != null)
-                {
-                    text += ":" + n.BlockIdentifier;
-                }
-            }
-
-            return text;
-        }
-
-        if (!string.IsNullOrWhiteSpace(loc.KeySymbol))
-        {
-            return loc.IssueTagNumber > 0 ? $"{loc.KeySymbol} {loc.IssueTagNumber}" : loc.KeySymbol;
-        }
-
-        return null;
     }
 
     private static string LocationKey(Location l)

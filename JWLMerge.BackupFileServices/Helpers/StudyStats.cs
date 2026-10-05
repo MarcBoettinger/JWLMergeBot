@@ -38,10 +38,17 @@ public sealed class StudyStatsResult
     public DayOfWeek? BusiestWeekday { get; set; }
     public int[] NotesPerWeekday { get; } = new int[7]; // index = (int)DayOfWeek
 
+    /// <summary>Notes per month for the last 12 months, oldest first (month = first day of the month).</summary>
+    public List<KeyValuePair<DateTime, int>> NotesPerMonth { get; } = new();
+
+    public int AverageWordsPerNote { get; set; }
+    public int LongestNoteWords { get; set; }
+
     // Bible coverage
     public int BibleBooksTouched { get; set; }
     public int BibleChaptersTouched { get; set; }
     public List<NamedCount> TopBibleBooks { get; } = new();
+    public List<NamedCount> TopHighlightedChapters { get; } = new();
 
     // Other
     public List<NamedCount> TopTags { get; } = new();
@@ -86,6 +93,7 @@ public sealed class StudyStats
         ComputeWords(db, r);
         ComputeActivity(db, r, today.Date);
         ComputeBible(db, r, locations);
+        ComputeHighlightedChapters(db, r, locations);
         ComputeTags(db, r);
         ComputePublications(db, r, locations);
 
@@ -103,13 +111,23 @@ public sealed class StudyStats
 
     private static void ComputeWords(Database db, StudyStatsResult r)
     {
-        var words = 0;
+        var total = 0;
+        var withText = 0;
+        var longest = 0;
         foreach (var n in db.Notes)
         {
-            words += CountWords(n.Title) + CountWords(n.Content);
+            var w = CountWords(n.Title) + CountWords(n.Content);
+            total += w;
+            if (w > 0)
+            {
+                withText++;
+                longest = Math.Max(longest, w);
+            }
         }
 
-        r.NotesWords = words;
+        r.NotesWords = total;
+        r.LongestNoteWords = longest;
+        r.AverageWordsPerNote = withText == 0 ? 0 : (int)Math.Round((double)total / withText);
     }
 
     private static int CountWords(string? s)
@@ -122,6 +140,7 @@ public sealed class StudyStats
     private static void ComputeActivity(Database db, StudyStatsResult r, DateTime today)
     {
         var days = new SortedSet<DateTime>();
+        var perMonth = new Dictionary<DateTime, int>();
 
         foreach (var n in db.Notes)
         {
@@ -136,10 +155,21 @@ public sealed class StudyStats
             days.Add(d);
             r.NotesPerWeekday[(int)d.DayOfWeek]++;
 
+            var month = new DateTime(d.Year, d.Month, 1);
+            perMonth[month] = perMonth.TryGetValue(month, out var pm) ? pm + 1 : 1;
+
             if (d > today.AddDays(-30) && d <= today)
             {
                 r.NotesLast30Days++;
             }
+        }
+
+        // the last 12 months, including empty ones, so that gaps are visible
+        var thisMonth = new DateTime(today.Year, today.Month, 1);
+        for (var i = 11; i >= 0; i--)
+        {
+            var m = thisMonth.AddMonths(-i);
+            r.NotesPerMonth.Add(new KeyValuePair<DateTime, int>(m, perMonth.TryGetValue(m, out var c) ? c : 0));
         }
 
         if (days.Count == 0)
@@ -214,6 +244,26 @@ public sealed class StudyStats
         foreach (var kv in perBook.OrderByDescending(k => k.Value).ThenBy(k => k.Key).Take(5))
         {
             r.TopBibleBooks.Add(new NamedCount(BibleBookNames.GetName(kv.Key), kv.Value));
+        }
+    }
+
+    private static void ComputeHighlightedChapters(Database db, StudyStatsResult r, Dictionary<int, Location> locations)
+    {
+        var perChapter = new Dictionary<(int Book, int Chapter), int>();
+        foreach (var u in db.UserMarks)
+        {
+            if (locations.TryGetValue(u.LocationId, out var loc) &&
+                loc.BookNumber is >= 1 and <= BibleBookCount &&
+                loc.ChapterNumber != null)
+            {
+                var key = (loc.BookNumber.Value, loc.ChapterNumber.Value);
+                perChapter[key] = perChapter.TryGetValue(key, out var c) ? c + 1 : 1;
+            }
+        }
+
+        foreach (var kv in perChapter.OrderByDescending(k => k.Value).ThenBy(k => k.Key.Book).ThenBy(k => k.Key.Chapter).Take(5))
+        {
+            r.TopHighlightedChapters.Add(new NamedCount(BibleBookNames.GetName(kv.Key.Book) + " " + kv.Key.Chapter, kv.Value));
         }
     }
 

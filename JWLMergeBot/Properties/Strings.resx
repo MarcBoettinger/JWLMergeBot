@@ -522,4 +522,127 @@
   <data name="lang_de" xml:space="preserve">
     <value>🇩🇪 German</value>
   </data>
+  <data name="tools_no_file" xml:space="preserve">
+    <value>👾 I have no stored file. Send me your backup first.</value>
+  </data>
+  <data name="tools_edit_failed" xml:space="preserve">
+    <value>❌ I couldn't save the change, so I left your file untouched.\n{0}</value>
+  </data>
+  <data name="search_usage" xml:space="preserve">
+    <value>🔎 Search your notes, for example:\n/search love\nEvery word must appear in the title, the text, a tag or the place of a note.</value>
+  </data>
+  <data name="search_none" xml:space="preserve">
+    <value>🔎 Nothing found for “{0}”.</value>
+  </data>
+  <data name="search_header" xml:space="preserve">
+    <value>🔎 {0} note(s) found for “{1}”</value>
+  </data>
+  <data name="search_more" xml:space="preserve">
+    <value>…and {0} more. Add a word to narrow it down.</value>
+  </data>
+  <data name="tags_btn" xml:space="preserve">
+    <value>🏷 Manage tags</value>
+  </data>
+  <data name="tags_title" xml:space="preserve">
+    <value>🏷 Your tags</value>
+  </data>
+  <data name="tags_none" xml:space="preserve">
+    <value>You have no tags yet.</value>
+  </data>
+  <data name="tags_more" xml:space="preserve">
+    <value>…and {0} more tags</value>
+  </data>
+  <data name="tags_help" xml:space="preserve">
+    <value>✏️ Rename: /renametag old &gt; new\n🔀 Merge: /mergetags source &gt; target\n(Merging moves everything from the first tag to the second and removes the first.)</value>
+  </data>
+  <data name="tags_btn_unused" xml:space="preserve">
+    <value>🗑 Delete {0} unused tag(s)</value>
+  </data>
+  <data name="tags_unused_ask" xml:space="preserve">
+    <value>⚠️ Delete {0} tag(s) that no note uses?</value>
+  </data>
+  <data name="tags_unused_none" xml:space="preserve">
+    <value>👍 There are no unused tags.</value>
+  </data>
+  <data name="tags_btn_yes" xml:space="preserve">
+    <value>✅ Yes, delete</value>
+  </data>
+  <data name="tags_rename_usage" xml:space="preserve">
+    <value>✏️ Use: /renametag old name &gt; new name</value>
+  </data>
+  <data name="tags_merge_usage" xml:space="preserve">
+    <value>🔀 Use: /mergetags source &gt; target</value>
+  </data>
+  <data name="tags_not_found" xml:space="preserve">
+    <value>❌ I couldn't find a tag called “{0}”.</value>
+  </data>
+  <data name="tags_ambiguous" xml:space="preserve">
+    <value>❌ More than one tag matches “{0}” (they differ only in upper/lower case). Please type the name exactly.</value>
+  </data>
+  <data name="tags_name_taken" xml:space="preserve">
+    <value>❌ A tag called “{0}” already exists. Use /mergetags to combine them.</value>
+  </data>
+  <data name="tags_same" xml:space="preserve">
+    <value>👍 Nothing to change.</value>
+  </data>
+  <data name="tags_invalid" xml:space="preserve">
+    <value>❌ That is not a valid tag name.</value>
+  </data>
+  <data name="tags_renamed" xml:space="preserve">
+    <value>✅ Tag renamed: {0} → {1}</value>
+  </data>
+  <data name="tags_merged" xml:space="preserve">
+    <value>✅ Merged “{0}” into “{1}” ({2} item(s) moved)</value>
+  </data>
+  <data name="tags_deleted" xml:space="preserve">
+    <value>✅ {0} unused tag(s) deleted</value>
+  </data>
+  <data name="extract_btn" xml:space="preserve">
+    <value>✂️ Extract a part</value>
+  </data>
+  <data name="extract_menu" xml:space="preserve">
+    <value>✂️ Make a small backup from your stored file. Your stored file is not changed.\n\nPeriods use the date each note was last edited. Highlights have no date, so only the highlights attached to a kept note come along.</value>
+  </data>
+  <data name="extract_btn_tag" xml:space="preserve">
+    <value>🏷 By tag</value>
+  </data>
+  <data name="extract_btn_sy0" xml:space="preserve">
+    <value>📅 This service year</value>
+  </data>
+  <data name="extract_btn_sy1" xml:space="preserve">
+    <value>📅 Last service year</value>
+  </data>
+  <data name="extract_btn_m6" xml:space="preserve">
+    <value>📅 Last 6 months</value>
+  </data>
+  <data name="extract_btn_m12" xml:space="preserve">
+    <value>📅 Last 12 months</value>
+  </data>
+  <data name="extract_pick_tag" xml:space="preserve">
+    <value>🏷 Pick a tag:</value>
+  </data>
+  <data name="extract_none" xml:space="preserve">
+    <value>👍 No notes match, so there is nothing to extract.</value>
+  </data>
+  <data name="extract_working" xml:space="preserve">
+    <value>✂️ Extracting…</value>
+  </data>
+  <data name="extract_done" xml:space="preserve">
+    <value>✂️ Extract ready: {0} note(s), {1} highlight(s), {2} tag(s).\nIt is a separate small backup, your stored file is unchanged. Bookmarks and playlists are not included.</value>
+  </data>
+  <data name="extract_failed" xml:space="preserve">
+    <value>❌ I couldn't make the extract. Nothing was changed.\n{0}</value>
+  </data>
+  <data name="stats_monthly" xml:space="preserve">
+    <value>📆 Notes per month</value>
+  </data>
+  <data name="stats_words" xml:space="preserve">
+    <value>📏 Words per note: about {0} on average, longest {1}</value>
+  </data>
+  <data name="stats_top_chapters" xml:space="preserve">
+    <value>🖍 Most highlighted chapters</value>
+  </data>
+  <data name="extract_filename" xml:space="preserve">
+    <value>UserDataBackup_{0}_Extract.jwlibrary</value>
+  </data>
 </root>

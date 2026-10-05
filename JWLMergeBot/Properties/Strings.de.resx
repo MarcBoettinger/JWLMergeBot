@@ -510,4 +510,124 @@
   <data name="lang_de" xml:space="preserve">
     <value>🇩🇪 Deutsch</value>
   </data>
+  <data name="tools_no_file" xml:space="preserve">
+    <value>👾 Ich habe keine Datei gespeichert. Sende mir zuerst deine Sicherung.</value>
+  </data>
+  <data name="tools_edit_failed" xml:space="preserve">
+    <value>❌ Ich konnte die Änderung nicht speichern und habe deine Datei unverändert gelassen.\n{0}</value>
+  </data>
+  <data name="search_usage" xml:space="preserve">
+    <value>🔎 Durchsuche deine Notizen, zum Beispiel:\n/search Liebe\nJedes Wort muss im Titel, im Text, in einem Tag oder im Ort einer Notiz vorkommen.</value>
+  </data>
+  <data name="search_none" xml:space="preserve">
+    <value>🔎 Nichts gefunden für „{0}“.</value>
+  </data>
+  <data name="search_header" xml:space="preserve">
+    <value>🔎 {0} Notiz(en) gefunden für „{1}“</value>
+  </data>
+  <data name="search_more" xml:space="preserve">
+    <value>…und {0} weitere. Füge ein Wort hinzu, um die Suche einzugrenzen.</value>
+  </data>
+  <data name="tags_btn" xml:space="preserve">
+    <value>🏷 Tags verwalten</value>
+  </data>
+  <data name="tags_title" xml:space="preserve">
+    <value>🏷 Deine Tags</value>
+  </data>
+  <data name="tags_none" xml:space="preserve">
+    <value>Du hast noch keine Tags.</value>
+  </data>
+  <data name="tags_more" xml:space="preserve">
+    <value>…und {0} weitere Tags</value>
+  </data>
+  <data name="tags_help" xml:space="preserve">
+    <value>✏️ Umbenennen: /renametag alt &gt; neu\n🔀 Zusammenführen: /mergetags Quelle &gt; Ziel\n(Beim Zusammenführen wird alles vom ersten Tag auf den zweiten übertragen und der erste entfernt.)</value>
+  </data>
+  <data name="tags_btn_unused" xml:space="preserve">
+    <value>🗑 {0} ungenutzte(n) Tag(s) löschen</value>
+  </data>
+  <data name="tags_unused_ask" xml:space="preserve">
+    <value>⚠️ {0} Tag(s) löschen, die in keiner Notiz verwendet werden?</value>
+  </data>
+  <data name="tags_unused_none" xml:space="preserve">
+    <value>👍 Es gibt keine ungenutzten Tags.</value>
+  </data>
+  <data name="tags_btn_yes" xml:space="preserve">
+    <value>✅ Ja, löschen</value>
+  </data>
+  <data name="tags_rename_usage" xml:space="preserve">
+    <value>✏️ So geht’s: /renametag alter Name &gt; neuer Name</value>
+  </data>
+  <data name="tags_merge_usage" xml:space="preserve">
+    <value>🔀 So geht’s: /mergetags Quelle &gt; Ziel</value>
+  </data>
+  <data name="tags_not_found" xml:space="preserve">
+    <value>❌ Ich habe keinen Tag namens „{0}“ gefunden.</value>
+  </data>
+  <data name="tags_ambiguous" xml:space="preserve">
+    <value>❌ Mehrere Tags passen zu „{0}“ (sie unterscheiden sich nur in Groß-/Kleinschreibung). Bitte gib den Namen genau ein.</value>
+  </data>
+  <data name="tags_name_taken" xml:space="preserve">
+    <value>❌ Einen Tag namens „{0}“ gibt es schon. Nutze /mergetags, um sie zusammenzuführen.</value>
+  </data>
+  <data name="tags_same" xml:space="preserve">
+    <value>👍 Nichts zu ändern.</value>
+  </data>
+  <data name="tags_invalid" xml:space="preserve">
+    <value>❌ Das ist kein gültiger Tag-Name.</value>
+  </data>
+  <data name="tags_renamed" xml:space="preserve">
+    <value>✅ Tag umbenannt: {0} → {1}</value>
+  </data>
+  <data name="tags_merged" xml:space="preserve">
+    <value>✅ „{0}“ in „{1}“ zusammengeführt ({2} Element(e) verschoben)</value>
+  </data>
+  <data name="tags_deleted" xml:space="preserve">
+    <value>✅ {0} ungenutzte(r) Tag(s) gelöscht</value>
+  </data>
+  <data name="extract_btn" xml:space="preserve">
+    <value>✂️ Teil auslesen</value>
+  </data>
+  <data name="extract_menu" xml:space="preserve">
+    <value>✂️ Erstelle aus deiner gespeicherten Datei eine kleine Sicherung. Deine gespeicherte Datei bleibt unverändert.\n\nZeiträume richten sich nach dem Datum der letzten Bearbeitung jeder Notiz. Markierungen haben kein Datum, deshalb kommen nur die Markierungen mit, die an einer behaltenen Notiz hängen.</value>
+  </data>
+  <data name="extract_btn_tag" xml:space="preserve">
+    <value>🏷 Nach Tag</value>
+  </data>
+  <data name="extract_btn_sy0" xml:space="preserve">
+    <value>📅 Dieses Dienstjahr</value>
+  </data>
+  <data name="extract_btn_sy1" xml:space="preserve">
+    <value>📅 Letztes Dienstjahr</value>
+  </data>
+  <data name="extract_btn_m6" xml:space="preserve">
+    <value>📅 Letzte 6 Monate</value>
+  </data>
+  <data name="extract_btn_m12" xml:space="preserve">
+    <value>📅 Letzte 12 Monate</value>
+  </data>
+  <data name="extract_pick_tag" xml:space="preserve">
+    <value>🏷 Wähle einen Tag:</value>
+  </data>
+  <data name="extract_none" xml:space="preserve">
+    <value>👍 Keine Notiz passt, also gibt es nichts auszulesen.</value>
+  </data>
+  <data name="extract_working" xml:space="preserve">
+    <value>✂️ Wird ausgelesen…</value>
+  </data>
+  <data name="extract_done" xml:space="preserve">
+    <value>✂️ Auszug fertig: {0} Notiz(en), {1} Markierung(en), {2} Tag(s).\nEs ist eine eigene kleine Sicherung, deine gespeicherte Datei bleibt unverändert. Lesezeichen und Playlists sind nicht enthalten.</value>
+  </data>
+  <data name="extract_failed" xml:space="preserve">
+    <value>❌ Ich konnte den Auszug nicht erstellen. Es wurde nichts verändert.\n{0}</value>
+  </data>
+  <data name="stats_monthly" xml:space="preserve">
+    <value>📆 Notizen pro Monat</value>
+  </data>
+  <data name="stats_words" xml:space="preserve">
+    <value>📏 Wörter pro Notiz: durchschnittlich etwa {0}, längste {1}</value>
+  </data>
+  <data name="stats_top_chapters" xml:space="preserve">
+    <value>🖍 Am häufigsten markierte Kapitel</value>
+  </data>
 </root>

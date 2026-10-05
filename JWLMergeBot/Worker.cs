@@ -93,7 +93,7 @@ namespace JWLMergeBot
                 if (message.Text != null)
                 {
                     // Gotta somethings
-                    Logger.LogInformation(string.Format(Strings.received_something, Strings.message_type_text, GetFormattedChatName(message.Chat), message.Text));
+                    Logger.LogInformation(string.Format(Strings.received_something, Strings.message_type_text, GetFormattedChatName(message.Chat), LoggableText(message.Text)));
 
                     // Process command
                     Logic.OnCommand(message, message.Text, false);
@@ -127,6 +127,14 @@ namespace JWLMergeBot
                 // Process command
                 Logic.OnCommand(callbackQuery.Message, callbackQuery.Data, true);
             }
+        }
+
+        // Search words and tag names are the user's own content: log only which command was used
+        private static string LoggableText(string text)
+        {
+            if (text != null && System.Text.RegularExpressions.Regex.IsMatch(text, @"^/(search|renametag|mergetags)\b"))
+                return text.Split(' ')[0] + " …";
+            return text;
         }
 
         private static String GetFormattedChatName(Chat chat)

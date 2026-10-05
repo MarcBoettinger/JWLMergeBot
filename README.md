@@ -15,7 +15,10 @@ It will keep a repository of your notes, highlights, bookmarks, playlists... and
 * 🔗 **Merge** two backups into one, playlists included
 * 🔍 **Merge preview**: see what will be added before anything is written, and choose which version wins for notes edited on both devices
 * 🩺 **Health check**: find (and safely repair) duplicate or empty notes, broken links and other problems that can stop a restore
-* 📊 **Study stats**: totals, note streaks, Bible coverage, top tags, highlight colours and milestones
+* 📊 **Study stats**: totals, notes per month, note streaks, words per note, Bible coverage, most highlighted chapters, top tags, highlight colours and milestones
+* 🔎 **Search** your notes by words
+* 🏷 **Tag manager**: list, rename, merge and clean up your tags
+* ✂️ **Extract** a small backup: one tag, a service year or the last months
 * ✂️ **Edit tools**: for example, remove all your favorites
 * 🌍 English, German and Italian, switchable per chat
 
@@ -36,6 +39,15 @@ The preview can be switched off in **/settings**, in which case the bot merges s
 ### Health check
 Send **/health** to scan your stored file. It is read only: it reports what it found, sorted by importance (🔴 can stop a restore, 🟡 clutter, ⚪ just so you know). Tap **Repair my file** to fix the 🔴 and 🟡 items and get the repaired file back. If the bot can't repair the file safely, it changes nothing.
 
+### Search
+Send **/search** followed by one or more words, for example `/search love`. Every word must appear in the title, the text, a tag or the place of a note (upper and lower case don't matter). The bot lists the most recent matches with their scripture or publication.
+
+### Tags
+Send **/tags** to see your tags with the number of items each one carries. Rename one with `/renametag old > new`, merge two with `/mergetags source > target` (everything moves to the second tag and the first is removed), or delete the tags no note uses with the button under the list. These changes update your stored file, and the bot sends you the edited file.
+
+### Extract
+**/extract** cuts a small backup out of your stored file: the notes of one tag, of the current or the last service year, or of the last 6 or 12 months. The extract contains these notes with their tags and attached highlights, but no bookmarks or playlists. Your stored file is not changed. Periods use the date each note was last edited.
+
 ### Study stats
 Send **/studystats** for a summary of your study. Highlights carry no date in a backup, so activity and streaks are based on your notes only.
 
@@ -46,6 +58,9 @@ Send **/studystats** for a summary of your study. Highlights carry no date in a 
 | /fileinfo | Details about the stored file |
 | /health | Scan the stored file for problems |
 | /studystats | Statistics about your study |
+| /search words | Find notes |
+| /tags | Manage your tags |
+| /extract | Make a small backup from a part of your file |
 | /editfile | Edit tools |
 | /settings | Language, delete after send, merge preview |
 | /delete | Delete your stored file now |
