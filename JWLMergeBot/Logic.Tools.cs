@@ -45,14 +45,14 @@ namespace JWLMergeBot
                     return true;
                 }
 
-                m = Regex.Match(command, @"^/renametag(?:@\w+)?(?:\s+(.+))?$", RegexOptions.Singleline);
+                m = Regex.Match(command, @"^/(?:renametags?|rename_tags?)(?:@\w+)?(?:\s+(.+))?$", RegexOptions.Singleline);
                 if (m.Success)
                 {
                     await OnRenameTag(message, m.Groups[1].Success ? m.Groups[1].Value : "");
                     return true;
                 }
 
-                m = Regex.Match(command, @"^/mergetags(?:@\w+)?(?:\s+(.+))?$", RegexOptions.Singleline);
+                m = Regex.Match(command, @"^/(?:mergetags?|merge_tags?)(?:@\w+)?(?:\s+(.+))?$", RegexOptions.Singleline);
                 if (m.Success)
                 {
                     await OnMergeTagsCommand(message, m.Groups[1].Success ? m.Groups[1].Value : "");
@@ -94,8 +94,21 @@ namespace JWLMergeBot
             }
             catch (Exception exception)
             {
-                // Never let a failing tool take the bot down (also covers Telegram refusing to edit a message into the same text)
+                // Never let a failing tool take the bot down
                 Worker.Logger.LogError(message: exception.Message, exception: exception);
+
+                // Say so, otherwise a failure looks like "nothing happened". A double tap makes Telegram refuse to
+                // edit a message into the same text: that one is harmless and stays quiet
+                if (!exception.Message.Contains("message is not modified"))
+                {
+                    try
+                    {
+                        await Worker.botClient.SendTextMessageAsync(chatId, string.Format(Tx("tools_error", chatId), exception.Message.Length > 300 ? exception.Message.Substring(0, 300) : exception.Message));
+                    }
+                    catch (Exception)
+                    {
+                    }
+                }
             }
 
             return false;
@@ -268,6 +281,10 @@ namespace JWLMergeBot
         private static bool TrySplitPair(string args, out string first, out string second)
         {
             first = second = null;
+
+            // phones and keyboards offer look-alikes of ">": treat them the same
+            args = args.Replace("->", ">").Replace("=>", ">").Replace('→', '>').Replace('＞', '>').Replace('›', '>').Replace('»', '>');
+
             int i = args.IndexOf('>');
             if (i <= 0)
                 return false;
@@ -331,8 +348,15 @@ namespace JWLMergeBot
             {
                 // tell which of the two names caused the problem
                 TagManager probe = new TagManager();
-                string name = probe.Find(file.Database, source, out _) != TagResult.Ok ? source : target;
-                await Worker.botClient.SendTextMessageAsync(chatId, TagFailureText(result, name, chatId));
+                bool sourceFound = probe.Find(file.Database, source, out _) == TagResult.Ok;
+                if (result == TagResult.NotFound && sourceFound)
+                {
+                    // the usual case: the user wants a new name, which is a rename and not a merge
+                    await Worker.botClient.SendTextMessageAsync(chatId, string.Format(Tx("tags_merge_target_missing", chatId), source, target));
+                    return;
+                }
+
+                await Worker.botClient.SendTextMessageAsync(chatId, TagFailureText(result, sourceFound ? target : source, chatId));
                 return;
             }
 

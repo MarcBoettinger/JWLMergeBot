@@ -630,4 +630,10 @@
   <data name="stats_top_chapters" xml:space="preserve">
     <value>🖍 Am häufigsten markierte Kapitel</value>
   </data>
+  <data name="tags_merge_target_missing" xml:space="preserve">
+    <value>❌ Es gibt keinen Tag namens „{1}“, in den zusammengeführt werden könnte. Zum Umbenennen von „{0}“ sende:\n/renametag {0} &gt; {1}</value>
+  </data>
+  <data name="tools_error" xml:space="preserve">
+    <value>❌ Etwas ist schiefgelaufen: {0}</value>
+  </data>
 </root>

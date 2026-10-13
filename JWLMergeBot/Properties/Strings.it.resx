@@ -642,4 +642,10 @@
   <data name="stats_top_chapters" xml:space="preserve">
     <value>🖍 Capitoli più evidenziati</value>
   </data>
+  <data name="tags_merge_target_missing" xml:space="preserve">
+    <value>❌ Non esiste nessun tag chiamato “{1}” in cui unire. Per rinominare “{0}”, scrivi:\n/renametag {0} &gt; {1}</value>
+  </data>
+  <data name="tools_error" xml:space="preserve">
+    <value>❌ Qualcosa è andato storto: {0}</value>
+  </data>
 </root>

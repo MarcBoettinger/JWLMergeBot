@@ -1141,9 +1141,9 @@ namespace JWLMergeBot
             return text.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;");
         }
 
-        private static string StatsBlock(IEnumerable<NamedCount> items)
+        private static string StatsBlock(IEnumerable<NamedCount> items, int nameWidth = 14)
         {
-            return "<pre>" + Esc(TextBars.Table(items.Select(i => new KeyValuePair<string, int>(i.Name, i.Count)))) + "</pre>";
+            return "<pre>" + Esc(TextBars.Table(items.Select(i => new KeyValuePair<string, int>(i.Name, i.Count)), nameWidth)) + "</pre>";
         }
 
         private static string BuildStudyStatsText(StudyStatsResult s, long chatId)
@@ -1189,7 +1189,7 @@ namespace JWLMergeBot
             if (s.TopHighlightedChapters.Count > 0)
             {
                 sb.AppendLine("<b>" + Esc(T("stats_top_chapters")) + "</b>");
-                sb.AppendLine(StatsBlock(s.TopHighlightedChapters));
+                sb.AppendLine(StatsBlock(s.TopHighlightedChapters, 18)); // "1 Corinthians 13" must stay readable
             }
 
             if (s.TopTags.Count > 0)
